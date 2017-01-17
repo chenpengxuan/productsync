@@ -1,0 +1,13 @@
+com\ymatou\product\basemodel\ErrorCode.class
+com\ymatou\product\basemodel\Constants.class
+com\ymatou\product\ApolloTransactionInfo.class
+com\ymatou\product\basemodel\BaseRequest.class
+com\ymatou\product\basemodel\FacadeAspect.class
+com\ymatou\product\basemodel\BaseInfo.class
+com\ymatou\product\basemodel\ApiException.class
+com\ymatou\product\basemodel\BaseNetCompatibleResp.class
+com\ymatou\product\basemodel\BaseResponse.class
+com\ymatou\product\basemodel\BaseNetCompatibleResp$1.class
+com\ymatou\product\BizConfig.class
+com\ymatou\product\basemodel\ProductSyncRequest.class
+com\ymatou\product\BusinessCredentialInfo.class

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <property name="pattern"
+              value="%date [%thread] %-5level %logger{40} KEY[%X{logPrefix}] - %msg%n" />
+    <property name="appId" value="productsync.iapi.ymatou.com" />
+    <property name="basePackage" value="com.ymatou.product" />
+    <property name="baseDir" value="/usr/local/log/${appId}" />
+
+    <property name="level" value="debug" />
+    <property name="charset" value="UTF-8" />
+    <property name="immediateFlush" value="true" />
+    <property name="queueSize" value="1024" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="HTTP-POST-ERROR-APPENDER"
+              class="com.ymatou.errorreporter.logbackappender.HttpPostErrorAppender">
+        <!-- http post target url -->
+        <param name="targetUrl" value="http://alarm.ymatou.com/Alarm/SaveSingle" />
+        <!-- your application id -->
+        <param name="appId" value="${appId}" />
+    </appender>
+
+    <appender name="ERROR-APPENDER"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <file>${baseDir}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseDir}/error.%d{yyyy-MM-dd}
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC-ERROR-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${queueSize}</queueSize>
+        <appender-ref ref="ERROR-APPENDER" />
+    </appender>
+
+    <appender name="DEFAULT-APPENDER"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${baseDir}/default.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseDir}/default.%d{yyyy-MM-dd}
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC-DEFAULT-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${queueSize}</queueSize>
+        <appender-ref ref="DEFAULT-APPENDER" />
+    </appender>
+
+    <appender name="REPOSITORY-APPENDER"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${baseDir}/Repository.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseDir}/Repository.%d{yyyy-MM-dd}
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC-REPOSITORY-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${queueSize}</queueSize>
+        <appender-ref ref="REPOSITORY-APPENDER" />
+    </appender>
+
+    <appender name="SERVICE-APPENDER"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${baseDir}/Service.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseDir}/Service.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC-SERVICE-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${queueSize}</queueSize>
+        <appender-ref ref="SERVICE-APPENDER" />
+    </appender>
+
+    <appender name="CONTROLLER-APPENDER"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${baseDir}/Controller.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseDir}/Controller.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>${charset}</charset>
+            <pattern>${pattern}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC-CONTROLLER-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${queueSize}</queueSize>
+        <appender-ref ref="CONTROLLER-APPENDER" />
+    </appender>
+    <!-- Repository -->
+    <logger name="${basePackage}.repository" additivity="false">
+        <level value="${level}" />
+        <appender-ref ref="ASYNC-REPOSITORY-APPENDER" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC-ERROR-APPENDER" />
+        <appender-ref ref="HTTP-POST-ERROR-APPENDER" />
+    </logger>
+
+    <!-- Service -->
+    <logger name="${basePackage}.service" additivity="false">
+        <level value="${level}" />
+        <appender-ref ref="ASYNC-SERVICE-APPENDER" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC-ERROR-APPENDER" />
+        <appender-ref ref="HTTP-POST-ERROR-APPENDER" />
+    </logger>
+
+    <!-- Controller -->
+    <logger name="${basePackage}.controller" additivity="false">
+        <level value="${level}" />
+        <appender-ref ref="ASYNC-CONTROLLER-APPENDER" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC-ERROR-APPENDER" />
+        <appender-ref ref="HTTP-POST-ERROR-APPENDER" />
+    </logger>
+
+    <!-- InfraStructure -->
+    <logger name="${basePackage}.infrastructure" additivity="false">
+        <level value="${level}" />
+        <appender-ref ref="ASYNC-CONTROLLER-APPENDER" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC-ERROR-APPENDER" />
+        <appender-ref ref="HTTP-POST-ERROR-APPENDER" />
+    </logger>
+
+    <!-- default -->
+    <root level="${level}">
+        <appender-ref ref="ASYNC-DEFAULT-APPENDER" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC-ERROR-APPENDER" />
+        <appender-ref ref="HTTP-POST-ERROR-APPENDER" />
+    </root>
+</configuration>
