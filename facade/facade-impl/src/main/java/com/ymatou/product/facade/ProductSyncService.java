@@ -1,8 +1,8 @@
 package com.ymatou.product.facade;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.ymatou.product.basemodel.BaseRequest;
 import com.ymatou.product.basemodel.BaseResponse;
+import com.ymatou.product.basemodel.BusinessCode;
 import com.ymatou.product.basemodel.ProductSyncRequest;
 import com.ymatou.product.domain.ActionTypeEnum;
 import com.ymatou.product.service.IProductService;
@@ -30,12 +30,16 @@ public class ProductSyncService implements IProductSyncService {
     @Path("/{cache:(?i:cache)}/{mongocrud:(?:mongocrud)}")
     @Override
     public BaseResponse productSync(ProductSyncRequest request) {
-         BaseResponse response = new
-        switch (ActionTypeEnum.findByActionType(request.getActionType())){
-            case DeleteProduct:
-                return productService.DeleteProduct(request.getLiveId(),request.getProductId(),request.getTransactionId());
-                break;
+         BaseResponse response = new BaseResponse();
+        try{
+            switch (ActionTypeEnum.findByActionType(request.getActionType())){
+                case DeleteProduct:
+                    response.setSuccess(productService.DeleteProduct(request.getLiveId(),request.getProductId(),request.getTransactionId()));
+                    break;
+            }
+        }catch (Exception ex){
+            response = BaseResponse.newFailInstance(BusinessCode.UNKNOWN);
         }
-        return null;
+        return response;
     }
 }

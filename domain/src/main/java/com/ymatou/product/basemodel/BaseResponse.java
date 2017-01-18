@@ -7,7 +7,7 @@ public class BaseResponse<S extends BaseResponse> extends BaseInfo {
     private static final long serialVersionUID = -4151184461517116847L;
     private boolean isSuccess;
 
-    private ErrorCode errorCode;
+    private BusinessCode code;
 
     private String errorMessage;
 
@@ -23,20 +23,24 @@ public class BaseResponse<S extends BaseResponse> extends BaseInfo {
         isSuccess = success;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    public BusinessCode getErrorCode() {
+        return code;
     }
 
-    public void setErrorCode(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+    public void setBusinessCode(BusinessCode code) {
+        this.code = code;
     }
 
-    public String getErrorMessage() {
+    public String getBusinessCode() {
         return errorMessage;
     }
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     public BaseResponse() {
@@ -45,13 +49,14 @@ public class BaseResponse<S extends BaseResponse> extends BaseInfo {
     public static BaseResponse newSuccessInstance( ) {
         BaseResponse result = new BaseResponse();
         result.setSuccess(true);
+        result.setBusinessCode(BusinessCode.SUCESS);
         return result;
     }
 
-    public static BaseResponse newFailInstance( ErrorCode errorCode ) {
+    public static BaseResponse newFailInstance( BusinessCode errorCode ) {
         BaseResponse result = new BaseResponse();
         result.setSuccess(false);
-        result.setErrorCode(errorCode);
+        result.setBusinessCode(errorCode);
         result.setErrorMessage(errorCode == null ? "" : errorCode.getMessage());
         return result;
     }

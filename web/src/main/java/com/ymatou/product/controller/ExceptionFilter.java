@@ -1,7 +1,7 @@
 package com.ymatou.product.controller;
 
 import com.ymatou.product.basemodel.BaseResponse;
-import com.ymatou.product.basemodel.ErrorCode;
+import com.ymatou.product.basemodel.BusinessCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,7 +22,7 @@ public class ExceptionFilter {
         BaseResponse<BaseResponse> response = new BaseResponse<BaseResponse>();
         response.setErrorMessage(ex.getCause().getMessage());
         response.setSuccess(false);
-        response.setErrorCode(ErrorCode.UNKNOWN);
+        response.setBusinessCode(BusinessCode.UNKNOWN);
         return response;
     }
 }

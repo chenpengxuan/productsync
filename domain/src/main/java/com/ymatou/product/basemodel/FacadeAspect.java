@@ -34,7 +34,7 @@ public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
 
-    @Pointcut("execution(* com.ymatou.tradingquery.facade.*Facade.*(*)) && args(req)")
+    @Pointcut("execution(* com.ymatou.product.facade.*Service.*(*)) && args(req)")
     public void executeFacade(BaseRequest req) {
     }
 
@@ -46,7 +46,7 @@ public class FacadeAspect {
 
         if (req == null) {
             logger.error("{} Request请求为空: null", joinPoint.getSignature());
-            return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "request is null");
+            return buildErrorResponse(joinPoint, BusinessCode.ILLEGAL_ARGUMENT, "request is null");
         }
         long startTime = System.currentTimeMillis();
 
@@ -62,7 +62,7 @@ public class FacadeAspect {
             resp = joinPoint.proceed(new Object[]{req});
 
         } catch (IllegalArgumentException e) {
-            resp = buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, e.getLocalizedMessage());
+            resp = buildErrorResponse(joinPoint, BusinessCode.ILLEGAL_ARGUMENT, e.getLocalizedMessage());
             logger.error("无效参数: {}", req, e);
         } catch (ApiException e) {
             //前端可能将错误msg直接抛给用户
@@ -71,7 +71,7 @@ public class FacadeAspect {
                     e.getErrorCode() + "|" + e.getErrorCode().getMessage(), e);
         } catch (Throwable e) {
             //前端可能将错误msg直接抛给用户
-            resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
+            resp = buildErrorResponse(joinPoint, BusinessCode.UNKNOWN, "系统异常，请稍后重试");
             logger.error("Unknown error in executing request:{}", req, e);
         } finally {
             logger.debug("Resp:" + resp);
@@ -87,12 +87,12 @@ public class FacadeAspect {
         return resp;
     }
 
-    private BaseResponse buildErrorResponse(ProceedingJoinPoint joinPoint, ErrorCode errorCode, String errorMsg)
+    private BaseResponse buildErrorResponse(ProceedingJoinPoint joinPoint, BusinessCode errorCode, String errorMsg)
             throws InstantiationException, IllegalAccessException {
 
         MethodSignature ms = (MethodSignature) joinPoint.getSignature();
         BaseResponse resp = (BaseResponse) ms.getReturnType().newInstance();
-        resp.setErrorCode(errorCode);
+        resp.setBusinessCode(errorCode);
         resp.setErrorMessage(errorMsg);
         resp.setSuccess(false);
         return resp;

@@ -1,4 +1,5 @@
-package com.ymatou.product.infrastructure;/*
+package com.ymatou.product.infrastructure;
+/*
  *
  * (C) Copyright 2016 Ymatou (http://www.ymatou.com/). All rights reserved.
  *

@@ -67,7 +67,7 @@ public class BaseNetCompatibleResp extends BaseInfo {
         if (baseResp.isSuccess()) {
             restResp.setCode(200); // 成功
         } else {
-            ErrorCode errorCode = baseResp.getErrorCode() == null ? ErrorCode.UNKNOWN : baseResp.getErrorCode();
+            BusinessCode errorCode = baseResp.getErrorCode()== null ? BusinessCode.UNKNOWN : baseResp.getErrorCode();
             restResp.setBcode(errorCode.getCode());
             switch (errorCode) {
                 case ILLEGAL_ARGUMENT:

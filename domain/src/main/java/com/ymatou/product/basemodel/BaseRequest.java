@@ -78,14 +78,14 @@ public abstract class BaseRequest extends BaseInfo {
    public void Validate() throws ApiException{
        StringBuilder errorMsgs = new StringBuilder();
        if(StringUtils.isEmpty(productId) && liveId == 0){
-           throw new ApiException(ErrorCode.ILLEGAL_ARGUMENT,"商品id与直播id不能都为空");
+           throw new ApiException(BusinessCode.ILLEGAL_ARGUMENT,"商品id与直播id不能都为空");
        }
        Set<ConstraintViolation<BaseRequest>> violations = VALIDATOR.validate(this);
        if (violations != null && violations.size() > 0) {
            for (ConstraintViolation<BaseRequest> violation : violations) {
                errorMsgs.append(violation.getPropertyPath()).append(":").append(violation.getMessage()).append("|");
            }
-           throw new ApiException(ErrorCode.ILLEGAL_ARGUMENT,errorMsgs.substring(0, errorMsgs.length() - 1));
+           throw new ApiException(BusinessCode.ILLEGAL_ARGUMENT,errorMsgs.substring(0, errorMsgs.length() - 1));
        }
    }
 }

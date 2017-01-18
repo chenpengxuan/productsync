@@ -12,5 +12,5 @@ public interface IProductService {
      * @param transactionId 业务凭据id
      * @return
      */
-    boolean DeleteProduct(int liveId,String productId,int transactionId);
+    boolean DeleteProduct(int liveId,String productId,int transactionId) throws Exception;
 }

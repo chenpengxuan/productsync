@@ -121,7 +121,7 @@ public class DynamicDataSourceRegister
      */
     private void initCustomDataSources() throws Exception{
         // 读取配置文件获取更多数据源
-        PropertySource propertySource = new ResourcePropertySource("datasource", "classpath:datasource.properties");
+        PropertySource propertySource = new ResourcePropertySource("datasource", "classpath*:**/datasource.properties");
         MutablePropertySources propertySources = new MutablePropertySources();
         propertySources.addFirst(propertySource);
         String dsPrefixs = (String)propertySource.getProperty(datasourcePerfix + "dataSourceName");

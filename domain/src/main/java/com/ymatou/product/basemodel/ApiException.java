@@ -9,7 +9,7 @@ public class ApiException extends Exception {
     /**
      * 业务检查异常编码
      */
-    private ErrorCode errorCode;
+    private BusinessCode errorCode;
 
     /**
      * 业务检查异常信息
@@ -20,11 +20,11 @@ public class ApiException extends Exception {
         return errorMsg;
     }
 
-    public ErrorCode getErrorCode() {
+    public BusinessCode getErrorCode() {
         return errorCode;
     }
 
-    public ApiException(ErrorCode errorCode, String errorMsg)
+    public ApiException(BusinessCode errorCode, String errorMsg)
     {
         super(errorCode + ":" + errorMsg);
         this.errorCode = errorCode;

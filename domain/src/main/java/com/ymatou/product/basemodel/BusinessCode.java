@@ -6,12 +6,10 @@
 package com.ymatou.product.basemodel;
 
 /**
- *
- * 
- * @author tuwenjie
- *
+ * 业务编码
+ * Created by chenpengxuan on 2016/9/5.
  */
-public enum ErrorCode {
+public enum BusinessCode {
 
     // 请求参数非法
     ILLEGAL_ARGUMENT(100, "请求参数非法"),
@@ -19,13 +17,15 @@ public enum ErrorCode {
     // 请求处理过程中，出现未知错误
     UNKNOWN(199, "未知错误，系统异常"),
 
+    //请求处理成功
+    SUCESS(200,"操作成功"),
     ;
 
     private int code;
 
     private String message;
 
-    private ErrorCode(int code, String message) {
+    private BusinessCode(int code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -44,10 +44,10 @@ public enum ErrorCode {
      * @param code
      * @return
      */
-    public static ErrorCode getByCode(int code) {
-        for (ErrorCode errorCode : ErrorCode.values()) {
-            if (errorCode.getCode() == code) {
-                return errorCode;
+    public static BusinessCode getByCode(int code) {
+        for (BusinessCode bsCode : BusinessCode.values()) {
+            if (bsCode.getCode() == code) {
+                return bsCode;
             }
         }
         return null;
