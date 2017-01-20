@@ -20,9 +20,9 @@ allprojects {
 
     apply plugin: "java"
     apply plugin: "idea"
-    apply plugin: "spring-boot"
+//    apply plugin: "spring-boot"
     apply plugin: "maven"
-    apply plugin: "eclipse-wtp"
+//    apply plugin: "eclipse-wtp"
 
     compileJava {
         sourceCompatibility = 1.8
