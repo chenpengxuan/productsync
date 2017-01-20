@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ ~ /*
+ ~ (C) Copyright 2016 Ymatou (http://www.ymatou.com/).
+ ~ All rights reserved.
+ ~ */
+ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ymatou.productsync.infrastructure.sqldb.CommandQuery">
+
+<!--获取商品橱窗推荐状态-->
+    <select id="ProductOnOffTop"
+            resultMap="com.ymatou.productsync.infrastructure.sqldb.UserResultMap.productOnOffTopMap">
+        SELECT isTop  FROM dbo.Ymt_Products
+        WHERE sProductId = #{ProductId};
+    </select>
+
+</mapper>
