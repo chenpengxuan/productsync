@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.ymatou.errorreporter:errorreporter-logback:1.0.7">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.ymatou.errorreporter/errorreporter-logback/1.0.7/b9bc860eebb19e08db67e76b66028ae96a87bda/errorreporter-logback-1.0.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.ymatou.errorreporter/errorreporter-logback/1.0.7/b8050e0cbe041e9fbdc3b91e2da31409a4f4b57d/errorreporter-logback-1.0.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

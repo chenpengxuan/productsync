@@ -1,0 +1,53 @@
+description = "this is a infrastructure jar"
+
+jar {
+	baseName = "productsync-infrastructure"
+}
+
+dependencies {
+	compile(project(":facade:model"))
+	compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+	compile("org.springframework.boot:spring-boot-starter-data-mongodb:$springBootVersion")
+	compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:$springBootMybatisVersion")
+	compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+	compile "org.springframework:spring-context-support:${springContextSupportVresion}"
+
+//	compile "org.mybatis:mybatis-spring:${mybatisSpringVersion}"
+//	compile "org.mybatis:mybatis:${mybatisVersion}"
+	compile "net.sourceforge.jtds:jtds:${jtdsVersion}"
+
+	compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+	compile "org.slf4j:slf4j-api:${slf4jVersion}"
+
+	compile "com.alibaba:dubbo:${dubboxVersion}"
+	compile "com.alibaba:druid:${druidVersion}"
+
+	compile "ch.qos.logback:logback-classic:${logbackVersion}"
+
+	compile "org.jboss.resteasy:resteasy-jaxrs:${resteasyJaxrsVersion}"
+	compile "org.jboss.resteasy:resteasy-client:${resteasyJaxrsVersion}"
+
+	compile "org.apache.httpcomponents:httpclient:${httpclientVersion}"
+	compile "org.apache.httpcomponents:httpcore:${httpcoreVersion}"
+
+	compile ("com.github.sgroschupf:zkclient:${zkclientVersion}"){
+		exclude group: 'org.apache.zookeeper', module: 'zookeeper'
+	}
+
+	compile "com.esotericsoftware:kryo:${kryoVersion}"
+	compile "de.javakaffee:kryo-serializers:${kryoSerializersVersion}"
+
+	compile "org.quartz-scheduler:quartz:${quartzVersion}"
+
+	//ymatou
+	compile "com.ymatou:performancemonitorclient:${performanceMonitorClientVersion}"
+	compile "com.ymatou.errorreporter:errorreporter-logback:${errorreporterVersion}"
+	compile "com.ymatou.disconf:disconf-client:${disconfVersion}"
+}
+
+
+configurations {
+
+	compile.exclude group: "junit" ,module:"junit"
+}
+

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: com.alibaba:dubbo:2.8.4">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/alibaba/dubbo/2.8.4/dubbo-2.8.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

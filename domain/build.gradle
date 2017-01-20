@@ -1,0 +1,11 @@
+description = "this is a repository jar"
+
+jar {
+    baseName = 'productsync-domain'
+}
+
+
+dependencies {
+    compile(project(":infrastructure"))
+}
+

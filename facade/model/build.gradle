@@ -1,0 +1,43 @@
+description = "this is a model jar"
+
+jar {
+    baseName = "ordersync-facade-model"
+    version = "${facadeVersion}"
+}
+
+
+dependencies {
+
+    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb:$springBootVersion")
+    compile "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonVersion}"
+    compile "com.alibaba:fastjson:${fastjsonVersion}"
+
+    compile("org.jboss.resteasy:resteasy-jackson2-provider:${resteasyJaxrsVersion}") {
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
+    }
+    compile "javax.el:el-api:${elApiVersion}"
+
+//    compile "com.ymatou.ordersync:ordersync-model:${modelVersion}"
+}
+
+//上传到nexus
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://172.16.100.98/nexus/content/repositories/releases")
+                    { authentication(userName: "admin", password: "admin123") }
+            snapshotRepository(url: "http://172.16.100.98/nexus/content/repositories/snapshots")
+                    { authentication(userName: "admin", password: "admin123") }
+            pom.version = "$project.version"
+            pom.artifactId = "productsync-facade-model"
+            pom.groupId = "$project.group"
+        }
+    }
+}
+
+
+
