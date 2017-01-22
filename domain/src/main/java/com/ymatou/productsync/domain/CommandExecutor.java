@@ -22,6 +22,6 @@ public class CommandExecutor {
     }
     
     private void updateTransactionInfo(int transactionId,SyncStatusEnum status){
-        //// FIXME: 2017/1/19 更新业务凭据信息
+        //// FIXME: 2017/1/19 更新业务凭据信息1
     }
 }
