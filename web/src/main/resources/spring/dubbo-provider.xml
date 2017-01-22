@@ -50,7 +50,7 @@
                     extension="com.ymatou.ordersync.infrastructure.serialize.JacksonConfig"/>
 
 
-    <dubbo:reference id="orderSyncFacade" interface="com.ymatou.orderes.facade.OrderSyncFacade"/>
+    <dubbo:reference id="productSyncFacade" interface="com.ymatou.productsync.facade.SyncCommandFacade"/>
 
 
     <!--<dubbo:protocol name="rest" server="tomcat" port="8080" />-->
