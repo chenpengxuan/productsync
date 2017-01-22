@@ -7,12 +7,14 @@
  -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ymatou.productsync.infrastructure.sqldb.CommandQuery">
+<mapper namespace="com.ymatou.productsync.domain.sqlrepo.CommandQuery">
 
-<!--获取商品橱窗推荐状态-->
-    <select id="ProductOnOffTop"
-            resultMap="com.ymatou.productsync.infrastructure.sqldb.UserResultMap.productOnOffTopMap">
-        SELECT isTop  FROM dbo.Ymt_Products
+<!--设置、取消橱窗商品-->
+    <select id="setTopProduct"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT top 1
+        'isTop'
+        FROM dbo.Ymt_Products
         WHERE sProductId = #{ProductId};
     </select>
 
