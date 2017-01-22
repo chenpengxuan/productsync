@@ -24,7 +24,7 @@ public class SyncByCommandReq extends BaseRequest {
     private String appId;
 
     /**
-     * 业务场景指令
+     * 业务场景指令1
      */
     @NotBlank(message = "业务指令不能为空")
     private String actionType;
