@@ -1,4 +1,4 @@
-package com.ymatou.productsync.domain;
+package com.ymatou.productsync.domain.executor;
 
 /**
  * 业务指令枚举

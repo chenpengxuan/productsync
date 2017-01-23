@@ -1,0 +1,12 @@
+description = "this is a infrastructure jar"
+
+jar {
+	baseName = "productsync-infrastructure"
+}
+
+dependencies {
+	compile(project(":web"))
+	compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+}
+
+

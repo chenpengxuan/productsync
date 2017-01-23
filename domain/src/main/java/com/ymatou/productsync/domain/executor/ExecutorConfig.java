@@ -1,4 +1,4 @@
-package com.ymatou.productsync.domain;
+package com.ymatou.productsync.domain.executor;
 
 import com.ymatou.productsync.domain.model.UpdateData;
 

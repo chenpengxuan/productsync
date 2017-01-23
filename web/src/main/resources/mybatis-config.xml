@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 全局参数 -->
+        <settings>
+            <setting name="jdbcTypeForNull" value="NULL" />
+        </settings>
+
+    <!--<mappers>-->
+        <!--&lt;!&ndash; 批量加载-->
+            <!--指定接口的包名称，自动扫描包下的所有mapper接口进行加载-->
+        <!--&ndash;&gt;-->
+        <!--&lt;!&ndash;<package name="com.ymatou.productsync.domain.sqlrepo"/>&ndash;&gt;-->
+        <!--<mapper resource="classpath:com.ymatou.productsync.domain.sqlrepo/CommandQuery.xml"/>-->
+        <!--<mapper resource="classpath:com.ymatou.productsync.domain.sqlrepo/ProductResultMap.xml"/>-->
+    <!--</mappers>-->
+</configuration>

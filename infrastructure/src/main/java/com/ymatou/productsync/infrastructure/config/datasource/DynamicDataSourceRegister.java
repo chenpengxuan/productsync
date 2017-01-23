@@ -4,7 +4,10 @@ package com.ymatou.productsync.infrastructure.config.datasource;
  * Created by chenpengxuan on 2016/9/1.
  */
 
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.log4j.Logger;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -43,6 +48,8 @@ public class DynamicDataSourceRegister
     private PropertyValues dataSourcePropertyValues;
     @Autowired
     private Properties propertiesDisconf;
+    @Autowired
+    private Environment env;
 
     // 如配置文件中未指定数据源类型，使用该默认值
     private static final Object DATASOURCE_TYPE_DEFAULT = "com.alibaba.druid.pool.DruidDataSource";
@@ -137,5 +144,34 @@ public class DynamicDataSourceRegister
             customDataSources.put(dsPrefix, ds);
             dataBinder(ds, dsMap);
         }
+    }
+
+    /**
+     * 使用xml方式必须实现sqlsessionfactory
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
+
+        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+
+        // 获取properties中的对应配置信息
+        String mapperLocation = "classpath*:sqlmap/*.xml";
+        String configLocation = "classpath:mybatis-settings.xml";
+        String dialect = "mysql";
+
+        Properties properties = new Properties();
+        properties.setProperty("dialect", dialect);
+
+        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setConfigurationProperties(properties);
+
+        // 设置MapperLocations configLocation路径
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+//        sessionFactory.setMapperLocations(resourcePatternResolver.getResources(mapperLocation));
+//        sessionFactory.setConfigLocation(resourcePatternResolver.getResource(configLocation));
+        sessionFactory.setMapperLocations(resourcePatternResolver.getResources(env.getProperty("mybatis.mapper-locations")));
+        return sessionFactory.getObject();
     }
 }

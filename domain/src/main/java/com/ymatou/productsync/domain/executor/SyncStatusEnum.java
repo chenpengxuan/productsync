@@ -1,4 +1,4 @@
-package com.ymatou.productsync.domain;
+package com.ymatou.productsync.domain.executor;
 
 /**
  * Created by zhangyifan on 2016/12/15.
