@@ -7,7 +7,6 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +28,10 @@ public class SetOnTopExecutorConfig implements ExecutorConfig{
     @Override
     public UpdateData loadSourceData(int activityId, String productId) {
         List<List<Map<String,Object>>> result = commandQuery.setTopProduct(productId);
+        List<List<Map<String,Object>>> result1= commandQuery.setTopProduct2(productId);
+        List<List<Map<String,Object>>> result2= commandQuery.setTopProduct3(21);
         Map<String,List<Map<String,Object>>> tempUpdateData = new Hashtable<>();
-        tempUpdateData.put("Products",result.stream().findFirst().orElse(Collections.emptyList()));
+//        tempUpdateData.put("Products",result.stream().findFirst().orElse(Collections.emptyList()));
         UpdateData updateData = new UpdateData();
         updateData.setUpdateData(tempUpdateData);
         return updateData;

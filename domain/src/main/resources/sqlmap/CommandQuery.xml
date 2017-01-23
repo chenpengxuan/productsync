@@ -10,11 +10,35 @@
 <mapper namespace="com.ymatou.productsync.domain.sqlrepo.CommandQuery">
 
 <!--设置、取消橱窗商品-->
-    <select id="setTopProduct"
+    <select id="setTopProduct" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT top 1
-        'isTop'
+
+        SELECT TOP 1
+        sProductId AS 'ProductId',
+        iCategoryId AS 'CategoryId'
         FROM dbo.Ymt_Products WITH(NOLOCK)
-        WHERE sProductId = #{productId};
+        WHERE sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
+
+    <!--设置、取消橱窗商品-->
+    <select id="setTopProduct2"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT TOP 1
+        ActionType AS 'ActionType',
+        ProductId AS 'ProductId'
+        FROM dbo.ApolloTransactionInfo WITH(NOLOCK)
+        WHERE TransactionId = 1;
+    </select>
+
+    <!--设置、取消橱窗商品-->
+    <select id="setTopProduct3"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT TOP 1
+        iActivityId AS 'ActivityId',
+        sName AS 'Name'
+        FROM dbo.Ymt_Activity WITH(NOLOCK)
+        WHERE iActivityId = #{liveId};
     </select>
 </mapper>

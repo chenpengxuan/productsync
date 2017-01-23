@@ -22,7 +22,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testSetOnTopExecutorConfig(){
-        String productId = "";
+        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         UpdateData updateData= setOnTopExecutorConfig.loadSourceData(0,productId);
     }
 

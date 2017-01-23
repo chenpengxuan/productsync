@@ -147,7 +147,7 @@ public class DynamicDataSourceRegister
     }
 
     /**
-     * 使用xml方式必须实现sqlsessionfactory
+     * 使用xml方式必须实现sqlsessionfactory(使用spring boot 可以注释掉以下方法)
      * @return
      * @throws Exception
      */
@@ -163,7 +163,7 @@ public class DynamicDataSourceRegister
         properties.setProperty("dialect", dialect);
 
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setConfigurationProperties(properties);
+//        sessionFactory.setConfigurationProperties(properties);
 
         // 设置MapperLocations
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();

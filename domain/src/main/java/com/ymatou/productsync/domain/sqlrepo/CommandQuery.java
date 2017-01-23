@@ -17,9 +17,11 @@ public interface CommandQuery {
      * @return
      */
     @TargetDataSource("productDataSource")
-//    @Select("SELECT top 1 "+
-//            "        isTop" +
-//            "        FROM dbo.Ymt_Products" +
-//            "        WHERE sProductId = #{productId}")
     List<List<Map<String,Object>>> setTopProduct(@Param("productId") String productId);
+
+    @TargetDataSource("apolloLogDataSource")
+    List<List<Map<String,Object>>> setTopProduct2(@Param("productId") String productId);
+
+    @TargetDataSource("liveDataSource")
+    List<List<Map<String,Object>>> setTopProduct3(@Param("liveId") int liveId);
 }
