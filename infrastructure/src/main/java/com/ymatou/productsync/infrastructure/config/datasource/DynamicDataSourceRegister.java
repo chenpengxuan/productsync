@@ -157,8 +157,6 @@ public class DynamicDataSourceRegister
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
 
         // 获取properties中的对应配置信息
-        String mapperLocation = "classpath*:sqlmap/*.xml";
-        String configLocation = "classpath:mybatis-settings.xml";
         String dialect = "mysql";
 
         Properties properties = new Properties();
@@ -167,10 +165,8 @@ public class DynamicDataSourceRegister
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setConfigurationProperties(properties);
 
-        // 设置MapperLocations configLocation路径
+        // 设置MapperLocations
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-//        sessionFactory.setMapperLocations(resourcePatternResolver.getResources(mapperLocation));
-//        sessionFactory.setConfigLocation(resourcePatternResolver.getResource(configLocation));
         sessionFactory.setMapperLocations(resourcePatternResolver.getResources(env.getProperty("mybatis.mapper-locations")));
         return sessionFactory.getObject();
     }
