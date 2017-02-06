@@ -14,8 +14,7 @@
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 
         SELECT TOP 1
-        sProductId AS 'ProductId',
-        iCategoryId AS 'CategoryId'
+        isTop AS 'IsTop'
         FROM dbo.Ymt_Products WITH(NOLOCK)
         WHERE sProductId = #{productId,jdbcType=VARCHAR};
     </select>
