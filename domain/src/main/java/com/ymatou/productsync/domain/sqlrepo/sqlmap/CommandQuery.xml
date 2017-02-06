@@ -12,7 +12,7 @@
 <!--获取商品橱窗推荐状态-->
     <select id="ProductOnOffTop"
             resultMap="com.ymatou.productsync.infrastructure.sqldb.UserResultMap.productOnOffTopMap">
-        SELECT isTop  FROM dbo.Ymt_Products
+        SELECT isTop as istop FROM dbo.Ymt_Products
         WHERE sProductId = #{ProductId};
     </select>
 
