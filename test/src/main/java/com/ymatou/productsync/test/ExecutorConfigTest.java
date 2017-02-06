@@ -1,14 +1,16 @@
 package com.ymatou.productsync.test;
 
+import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.SetOnTopExecutorConfig;
-import com.ymatou.productsync.domain.executor.commandconfig.TestIOC;
-import com.ymatou.productsync.domain.model.UpdateData;
+import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * 场景业务指令器test
@@ -20,18 +22,13 @@ public class ExecutorConfigTest {
     @Autowired
     private SetOnTopExecutorConfig setOnTopExecutorConfig;
 
+    @Autowired
+    private CommandExecutor commandExecutor;
+
     @Test
     public void testSetOnTopExecutorConfig(){
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
-        UpdateData updateData= setOnTopExecutorConfig.loadSourceData(0,productId);
-    }
-
-    @Autowired
-    private TestIOC testIOC;
-
-    @Test
-    public void testIoc(){
-        String aaa = "";
-
+        List<MongoData> updateData= setOnTopExecutorConfig.loadSourceData(0,productId);
+        commandExecutor.executorCommand(0,updateData);
     }
 }

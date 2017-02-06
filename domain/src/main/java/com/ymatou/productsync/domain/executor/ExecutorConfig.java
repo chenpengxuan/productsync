@@ -1,6 +1,8 @@
 package com.ymatou.productsync.domain.executor;
 
-import com.ymatou.productsync.domain.model.UpdateData;
+import com.ymatou.productsync.domain.model.MongoData;
+
+import java.util.List;
 
 /**
  * Created by chenpengxuan on 2017/1/19.
@@ -19,5 +21,5 @@ public interface ExecutorConfig {
      * @param productId
      * @return
      */
-    UpdateData loadSourceData(int activityId,String productId);
+    List<MongoData> loadSourceData(long activityId, String productId);
 }

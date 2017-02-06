@@ -2,14 +2,13 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.ProductCmdTypeEnum;
-import com.ymatou.productsync.domain.model.UpdateData;
+import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 设置、取消橱窗商品场景同步器设定
@@ -26,14 +25,23 @@ public class SetOnTopExecutorConfig implements ExecutorConfig{
     }
 
     @Override
-    public UpdateData loadSourceData(int activityId, String productId) {
-        List<List<Map<String,Object>>> result = commandQuery.setTopProduct(productId);
-        List<List<Map<String,Object>>> result1= commandQuery.setTopProduct2(productId);
-        List<List<Map<String,Object>>> result2= commandQuery.setTopProduct3(21);
-        Map<String,List<Map<String,Object>>> tempUpdateData = new Hashtable<>();
-//        tempUpdateData.put("Products",result.stream().findFirst().orElse(Collections.emptyList()));
-        UpdateData updateData = new UpdateData();
-        updateData.setUpdateData(tempUpdateData);
-        return updateData;
+    public List<MongoData> loadSourceData(long activityId, String productId) {
+        List<Map<String,Object>> sqlDataList = commandQuery.setTopProduct(productId);
+        List<MongoData> mongoDataList = new ArrayList<>();
+        MongoData mongoData = new MongoData();
+        //设置mongo表名
+        mongoData.setTableName("Products");
+        Map<String,Object> matchConditionInfo = new HashMap();
+        //设置匹配条件
+        matchConditionInfo.put("spid",productId);
+        //设置操作类型
+        mongoData.setOperationType(MongoOperationTypeEnum.CREATE);
+        mongoData.setMatchCondition(matchConditionInfo);
+        //设置要更新的数据边界
+        mongoData.setUpdateData(sqlDataList.stream().findFirst().orElse(Collections.emptyMap()));
+        mongoDataList.add(mongoData);
+        return mongoDataList;
     }
+
+
 }

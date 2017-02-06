@@ -53,7 +53,6 @@ public class DynamicDataSourceRegister
 
     // 如配置文件中未指定数据源类型，使用该默认值
     private static final Object DATASOURCE_TYPE_DEFAULT = "com.alibaba.druid.pool.DruidDataSource";
-    private Environment environment;
     // 数据源
     private Map<String, DataSource> customDataSources = new HashMap<>();
 

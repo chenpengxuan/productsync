@@ -12,23 +12,13 @@ import org.springframework.stereotype.Component;
 @DisconfFile(fileName = "mongo.properties")
 public class MongoProps {
     private String mongoProductUrl;
-    private String mongoProductName;
 
-    @DisconfFileItem(name = "mongoProductUrl")
+    @DisconfFileItem(name = "mongoProductUri")
     public String getMongoProductUrl() {
         return mongoProductUrl;
     }
 
     public void setMongoProductUrl(String mongoProductUrl) {
         this.mongoProductUrl = mongoProductUrl;
-    }
-
-    @DisconfFileItem(name = "mongoProductName")
-    public String getMongoProductName() {
-        return mongoProductName;
-    }
-
-    public void setMongoProductName(String mongoProductName) {
-        this.mongoProductName = mongoProductName;
     }
 }

@@ -16,6 +16,7 @@ dependencies {
 //	compile "org.mybatis:mybatis-spring:${mybatisSpringVersion}"
 //	compile "org.mybatis:mybatis:${mybatisVersion}"
 	compile "net.sourceforge.jtds:jtds:${jtdsVersion}"
+	compile "org.jongo:jongo:${jongoVersion}"
 
 	compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
 	compile "org.slf4j:slf4j-api:${slf4jVersion}"

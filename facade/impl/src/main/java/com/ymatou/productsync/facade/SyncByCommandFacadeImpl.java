@@ -4,6 +4,8 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.ExecutorConfigFactory;
+import com.ymatou.productsync.domain.executor.SyncStatusEnum;
+import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
     @Autowired
     private CommandExecutor executor;
 
+    @Autowired
+    private MongoRepository mongoRepository;
+
     /**
      * 根据业务场景指令同步相关信息
      * @param req 基于业务场景的请求
@@ -45,10 +50,10 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
         ExecutorConfig config = executorConfigFactory.getCommand(req.getActionType());
         if ( config == null ) {
             //参数错误，无需MQ重试
-            executor.transactionIllegalArgEXCEPTION(req.getTransactionId());
+            executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
             return BaseResponse.newSuccessInstance();
         }
-//        executor.sync(req.getOrderId(), config, req.getCmdReqId());
+        executor.executorCommand(req.getTransactionId(),config.loadSourceData(req.getActivityId(),req.getProductId()));
         //// FIXME: 2017/1/20 这里添加同步执行器中的同步核心方法
         return BaseResponse.newSuccessInstance();
     }

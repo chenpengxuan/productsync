@@ -17,7 +17,7 @@ public interface CommandQuery {
      * @return
      */
     @TargetDataSource("productDataSource")
-    List<List<Map<String,Object>>> setTopProduct(@Param("productId") String productId);
+    List<Map<String,Object>> setTopProduct(@Param("productId") String productId);
 
     @TargetDataSource("apolloLogDataSource")
     List<List<Map<String,Object>>> setTopProduct2(@Param("productId") String productId);
