@@ -16,6 +16,7 @@ jar {
 
 dependencies {
     compile(project(":facade:impl"))
+    compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:$springBootMybatisVersion")
 }
 
 //复制启动，停止脚本

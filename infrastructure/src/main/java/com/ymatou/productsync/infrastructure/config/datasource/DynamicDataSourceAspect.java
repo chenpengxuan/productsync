@@ -24,7 +24,7 @@ public class DynamicDataSourceAspect {
 
     private final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
     private final StopWatch sw = new StopWatch();
-    @Pointcut("execution(* com.ymatou.productsync.domain.*Query.*(..))")
+    @Pointcut("execution(* com.ymatou.productsync.domain.sqlrepo.*Query.*(..))")
     public void executeRepository() {
     }
 

@@ -1,9 +1,10 @@
-package com.ymatou.productsync.domain;
+package com.ymatou.productsync.domain.executor;
 
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import java.util.List;
  * 业务指令器工厂
  * Created by chenpengxuan on 2017/1/19.
  */
+@Component
 public class ExecutorConfigFactory {
     private static Logger logger = LoggerFactory.getLogger(ExecutorConfigFactory.class);
 

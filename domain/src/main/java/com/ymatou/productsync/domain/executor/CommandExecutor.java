@@ -1,11 +1,11 @@
-package com.ymatou.productsync.domain;
+package com.ymatou.productsync.domain.executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * 同步执行器
+ * 业务指令执行器
  * Created by chenpengxuan on 2017/1/19.
  */
 @Component
@@ -18,7 +18,7 @@ public class CommandExecutor {
      * @param transactionId 业务凭据id
      */
     public void transactionIllegalArgEXCEPTION(int transactionId) {
-        updateTransactionInfo(transactionId,SyncStatusEnum.IllegalArgEXCEPTION);
+        updateTransactionInfo(transactionId, SyncStatusEnum.IllegalArgEXCEPTION);
     }
     
     private void updateTransactionInfo(int transactionId,SyncStatusEnum status){

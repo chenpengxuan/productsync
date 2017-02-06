@@ -15,7 +15,7 @@
         http://code.alibabatech.com/schema/dubbo        
         http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
-    <bean id="propertiesDisconf"
+    <bean id="propertiesDisconf2"
           class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
         <property name="locations">
             <list>
@@ -24,11 +24,11 @@
         </property>
     </bean>
 
-    <bean id="propertyPlaceholderConfigurer"
+    <bean id="propertyPlaceholderConfigurer2"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="propertiesArray">
             <list>
-                <ref bean="propertiesDisconf"/>
+                <ref bean="propertiesDisconf2"/>
             </list>
         </property>
     </bean>
@@ -50,7 +50,7 @@
                     extension="com.ymatou.ordersync.infrastructure.serialize.JacksonConfig"/>
 
 
-    <dubbo:reference id="productSyncFacade" interface="com.ymatou.productsync.facade.SyncCommandFacade"/>
+    <!--<dubbo:reference id="productSyncFacade" interface="com.ymatou.productsync.facade.SyncCommandFacade"/>-->
 
 
     <!--<dubbo:protocol name="rest" server="tomcat" port="8080" />-->

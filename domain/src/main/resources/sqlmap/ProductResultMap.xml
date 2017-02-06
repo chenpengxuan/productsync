@@ -7,12 +7,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ymatou.productsync.infrastructure.sqldb.UserResultMap">
-    <resultMap id="productOnOffTopMap" type="com.ymatou.productsync.model.mongo.Products"/>
-
-    <resultMap id="longMap" type="java.lang.Long"/>
-    <resultMap id="stringMap" type="java.lang.String"/>
-
+<mapper namespace="com.ymatou.productsync.domain.sqlrepo.ProductResultMap">
     <resultMap id="keyValueMap1" type="java.util.Map"/>
     <resultMap id="keyValueMap2" type="java.util.Map"/>
     <resultMap id="keyValueMap3" type="java.util.Map"/>
