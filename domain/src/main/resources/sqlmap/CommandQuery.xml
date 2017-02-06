@@ -19,8 +19,8 @@
         WHERE sProductId = #{productId,jdbcType=VARCHAR};
     </select>
 
-    <!--设置、取消橱窗商品-->
-    <select id="setTopProduct2"
+    <!--获取商品详细信息-->
+    <select id="getProductBaseInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 
         SELECT TOP 1
