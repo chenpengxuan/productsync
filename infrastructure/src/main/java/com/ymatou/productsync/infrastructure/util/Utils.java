@@ -1,4 +1,4 @@
-package com.ymatou.productsync.infrastructure;
+package com.ymatou.productsync.infrastructure.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;

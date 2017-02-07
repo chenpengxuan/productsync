@@ -1,15 +1,17 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
-import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
+import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.executor.MongoDataCreator;
 import com.ymatou.productsync.domain.model.MongoData;
-import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
-import com.ymatou.productsync.infrastructure.constants.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 设置、取消橱窗商品场景同步器设定
@@ -30,17 +32,10 @@ public class SetOnTopExecutorConfig implements ExecutorConfig{
         List<Map<String,Object>> sqlDataList = commandQuery.setTopProduct(productId);
         List<MongoData> mongoDataList = new ArrayList<>();
         MongoData mongoData = new MongoData();
-        //设置mongo表名
-        mongoData.setTableName(Constants.ProductDb);
         Map<String,Object> matchConditionInfo = new HashMap();
         //设置匹配条件
         matchConditionInfo.put("spid",productId);
-        //设置操作类型
-        mongoData.setOperationType(MongoOperationTypeEnum.CREATE);
-        mongoData.setMatchCondition(matchConditionInfo);
-        //设置要更新的数据边界
-        mongoData.setUpdateData(sqlDataList);
-        mongoDataList.add(mongoData);
+        mongoDataList.add(MongoDataCreator.CreateProductUpdate(matchConditionInfo,sqlDataList));
         return mongoDataList;
     }
 }

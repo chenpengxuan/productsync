@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/7.
- * 创建指令命令
+ * mongo数据指令包装器
  */
 public  class MongoDataCreator {
 

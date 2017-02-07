@@ -8,7 +8,7 @@ jar {
 
 dependencies {
 
-    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+//    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     compile("org.springframework.boot:spring-boot-starter-data-mongodb:$springBootVersion")
     compile "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
     compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonVersion}"
@@ -20,8 +20,6 @@ dependencies {
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
     }
     compile "javax.el:el-api:${elApiVersion}"
-
-//    compile "com.ymatou.ordersync:ordersync-model:${modelVersion}"
 }
 
 //上传到nexus

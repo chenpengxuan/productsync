@@ -12,7 +12,7 @@ import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.BaseRequest;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
-import com.ymatou.productsync.infrastructure.Utils;
+import com.ymatou.productsync.infrastructure.util.Utils;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

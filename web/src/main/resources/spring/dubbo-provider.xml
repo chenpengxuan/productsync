@@ -19,7 +19,7 @@
           class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
         <property name="locations">
             <list>
-                <value>app.properties</value>
+                <value>application.properties</value>
             </list>
         </property>
     </bean>
@@ -33,22 +33,21 @@
         </property>
     </bean>
 
-    <!-- 提供方应用信息，用于计算依赖关系 -->
-    <dubbo:application name="ordersync"/>
+    <!--&lt;!&ndash; 提供方应用信息，用于计算依赖关系 &ndash;&gt;-->
+    <dubbo:application name="productsync"/>
 
     <dubbo:registry address="zookeeper://${dubbo.zoo}"/>
 
     <!--  关闭没有服务提供者是报错 -->
     <dubbo:consumer check="false"/>
 
-    <dubbo:annotation package="com.ymatou.ordersync.facade"/>
+    <dubbo:annotation package="com.ymatou.productsync.facade"/>
 
     <!-- 用dubbo协议在20880端口暴露服务 -->
-    <dubbo:protocol name="dubbo" port="${dubbo.port}" serialization="kryo"/>
+    <dubbo:protocol name="dubbo"  port="${dubbo.port}" serialization="kryo"/>
 
-    <dubbo:protocol name="rest" server="tomcat" port="${server.port}"
-                    extension="com.ymatou.ordersync.infrastructure.serialize.JacksonConfig"/>
-
+    <dubbo:protocol name="rest" server="tomcat" port="${server.port}" extension="com.ymatou.productsync.infrastructure.serialize.JacksonConfig"/>
+    <!---->
 
     <!--<dubbo:reference id="productSyncFacade" interface="com.ymatou.productsync.facade.SyncCommandFacade"/>-->
 

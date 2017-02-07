@@ -22,7 +22,7 @@ import org.springframework.context.annotation.ImportResource;
 				, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class
 		})
 @MapperScan(basePackages = {"com.ymatou.productsync.domain.sqlrepo"})
-@ImportResource({"classpath:spring/dubbo-provider.xml","classpath:datasource-disconf.xml"})
+@ImportResource({"classpath:datasource-disconf.xml"})
 @ComponentScan("com.ymatou")
 public class ProductSyncApplication {
 

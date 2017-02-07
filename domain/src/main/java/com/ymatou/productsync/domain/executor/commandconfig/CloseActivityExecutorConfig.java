@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static com.ymatou.productsync.infrastructure.Utils.MapFieldToStringArray;
+import static com.ymatou.productsync.infrastructure.util.Utils.MapFieldToStringArray;
 
 /**
  * Created by chenfei on 2017/2/7.
