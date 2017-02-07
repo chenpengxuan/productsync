@@ -10,9 +10,9 @@
 <mapper namespace="com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery">
 
 <!--获取直播相关信息-->
-    <select id="getActivityInfo" parameterType="java.lang.String"
+    <select id="getActivityInfo" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-select iActivityId as 'lid',
+select top 1 iActivityId as 'lid',
 sName as 'name',sTitle as 'title',
 sContent as 'content',
 sPicUrl as 'pic',
