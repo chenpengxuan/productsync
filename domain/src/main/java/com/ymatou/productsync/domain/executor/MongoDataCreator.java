@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/7.
- * 创建指令命令
+ * mongo数据指令包装器
  */
 public  class MongoDataCreator {
 
@@ -102,5 +102,18 @@ public  class MongoDataCreator {
     public static MongoData CreateProductAdd(Map<String,Object> matchCondition,
                                           List<Map<String, Object>> updateData){
         return Create(Constants.ProductDb,MongoOperationTypeEnum.CREATE,matchCondition,updateData);
+    }
+
+
+    /**
+     * 创建直播商品更新型
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+
+    public static MongoData CreateLiveProductUpdate(Map<String,Object> matchCondition,
+                                             List<Map<String, Object>> updateData){
+        return Create(Constants.LiveProudctDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
     }
 }

@@ -1,7 +1,7 @@
 package com.ymatou.productsync.domain.mongorepo;
 
-import com.alibaba.fastjson.JSON;
 import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * mongo 仓储操作相关
@@ -48,64 +46,14 @@ public class MongoRepository {
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
         switch (mongoData.getOperationType()) {
             case CREATE:
-                return collection.insert(makeJsonStringFromMap(mongoData.getUpdateData())).wasAcknowledged();
+                return collection.insert(MapUtil.makeJsonStringFromMap(mongoData.getUpdateData())).wasAcknowledged();
             case UPDATE:
-                return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
+                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case UPSERT:
-                return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
+                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case DELETE:
-                return collection.remove(makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
+                return collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
         }
         return false;
-    }
-
-    /**
-     * 将mapList转换成json字符串格式 例如：{xx:oo},{yy:xx}
-     * @param mapList
-     * @return
-     * @throws IllegalArgumentException
-     */
-    private String makeJsonStringFromMap(List<Map<String, Object>> mapList) throws IllegalArgumentException {
-        if (mapList == null || mapList.isEmpty())
-            throw new IllegalArgumentException("mongo 待操作数据不能为空");
-        return String.join(",",mapList.stream().map(x -> makeJsonStringFromMap(x)).toArray(String[]::new));
-    }
-
-    /**
-     * 将map转换成json字符串格式
-     *
-     * @return
-     */
-    private String makeJsonStringFromMap(Map<String, Object> map) throws IllegalArgumentException {
-        if (map == null || map.isEmpty())
-            throw new IllegalArgumentException("mongo 待操作数据不能为空");
-        return JSON.toJSONString(map);
-    }
-
-    /**
-     * 将map转换成obj格式
-     *
-     * @param map
-     * @return
-     * @throws IllegalArgumentException
-     */
-    private Object makeObjFromMap(Map<String, Object> map) throws IllegalArgumentException {
-        if (map == null || map.isEmpty())
-            throw new IllegalArgumentException("mongo 待操作数据不能为空");
-        return JSON.toJSON(map);
-    }
-
-    /**
-     * 将map转换成obj格式
-     *
-     * @param mapList
-     * @return
-     * @throws IllegalArgumentException
-     */
-    private List<Object> makeObjFromMap(List<Map<String, Object>> mapList) throws IllegalArgumentException {
-        if (mapList == null || mapList.isEmpty())
-            throw new IllegalArgumentException("mongo 待操作数据不能为空");
-        List<Object> tmpObjList = mapList.stream().map(x -> JSON.toJSON(x)).collect(Collectors.toList());
-        return mapList.stream().map(x -> JSON.toJSON(x)).collect(Collectors.toList());
     }
 }
