@@ -17,5 +17,5 @@ public interface LiveCommandQuery {
      * @return
      */
     @TargetDataSource("liveDataSource")
-    List<List<Map<String,Object>>> getActivityInfo(@Param("ActivityId") int ActivityId);
+    List<Map<String,Object>> getActivityInfo(@Param("ActivityId") long ActivityId);
 }
