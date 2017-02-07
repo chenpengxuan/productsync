@@ -2,6 +2,8 @@ package com.ymatou.productsync.infrastructure.util;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,5 +61,31 @@ public class MapUtil {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
         List<Object> tmpObjList = mapList.stream().map(x -> JSON.toJSON(x)).collect(Collectors.toList());
         return mapList.stream().map(x -> JSON.toJSON(x)).collect(Collectors.toList());
+    }
+
+    /**
+     * Map转换为list
+     * @param map
+     * @return
+     */
+    public  static List<Map<String,Object>> MapToList(Map<String,Object> map) {
+        List<Map<String,Object>> list = new ArrayList<>();
+        list.add(map);
+        return list;
+    }
+
+
+    /**
+     * 将maplist中的字符串转换为数组
+     * @param mapList
+     * @param field
+     * @param seperator
+     */
+    public static void MapFieldToStringArray(List<Map<String,Object>> mapList,String field, String seperator) {
+        if (mapList == null) return;
+        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
+        if (map != null) {
+            map.replace(field, map.get(field), map.get(field).toString().split(seperator));
+        }
     }
 }

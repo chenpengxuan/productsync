@@ -30,33 +30,6 @@ public class Utils {
     }
 
     /**
-     * Map转换为list
-     * @param map
-     * @return
-     */
-    public  static List<Map<String,Object>> MapToList(Map<String,Object> map) {
-        List<Map<String,Object>> list = new ArrayList<>();
-        list.add(map);
-        return list;
-    }
-
-
-    /**
-     * 将maplist中的字符串转换为数组
-     * @param mapList
-     * @param field
-     * @param seperator
-     */
-    public static void MapFieldToStringArray(List<Map<String,Object>> mapList,String field, String seperator) {
-        if (mapList == null) return;
-        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
-        if (map != null) {
-            map.replace(field, map.get(field), map.get(field).toString().split(seperator));
-        }
-    }
-
-
-    /**
      * 处理null问题
      *
      * @return

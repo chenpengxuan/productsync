@@ -81,4 +81,17 @@
         INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
         WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
     </select>
+
+    <!--获取商品详情-->
+    <select id="getProductDetailInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+        p.isNew AS 'isnew',
+        p.dListingTime AS 'newstart',
+        p.dNewEndTime AS 'newend'
+        FROM Ymt_ProductsInLive (NOLOCK) a
+        INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
+        WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
+    </select>
 </mapper>
