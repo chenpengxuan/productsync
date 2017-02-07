@@ -61,4 +61,6 @@ public class MongoData {
     public void setMatchCondition(Map<String, Object> matchCondition) {
         this.matchCondition = matchCondition;
     }
+
+
 }

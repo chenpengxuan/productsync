@@ -40,4 +40,32 @@
         FROM dbo.Ymt_Activity WITH(NOLOCK)
         WHERE iActivityId = #{liveId};
     </select>
+
+
+    <!--关闭直播-直播商品+品牌+商品新品时间-->
+    <select id="getLiveProductByActivityId"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT a.sProductId AS ProductId,
+			   a.iActivityId AS LiveId,
+			   a.iUserId AS SellerId,
+			   a.dStartTime AS StartTime,
+			   a.iCommentNum AS CommentCount,
+			   a.dEndTime AS EndTime,
+			   a.dAddTime AS AddTime,
+			   a.dReadyPutawayProductSort AS ReadyPutawayProductSort,
+			   a.iIsTop AS IsTop,
+			   p.isNew AS IsNew,
+			   p.dListingTime AS NewStartTime,
+			   p.dNewEndTime AS NewEndTime,
+			   a.iSellStatus AS SellStatus,
+			   p.iBrandId AS BrandId,
+			   p.sBrand AS BrandName,
+			   b.sBrandEn AS BrandEnName,
+			   p.iThirdCategoryId AS ThirdCategoryId
+		FROM Ymt_ProductsInLive (NOLOCK) a
+		INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
+		LEFT JOIN Ymt_ProductBrand (NOLOCK) b ON p.iBrandId = b.iBrandId
+		WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
+    </select>
 </mapper>

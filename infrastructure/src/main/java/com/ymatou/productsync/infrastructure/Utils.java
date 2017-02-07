@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangyifan on 2016/12/14.
@@ -28,6 +31,21 @@ public class Utils {
     public static String uuid() {
         return new ObjectId().toHexString();
     }
+
+    /**
+     * 将maplist中的字符串转换为数组
+     * @param mapList
+     * @param field
+     * @param seperator
+     */
+    public static void MapFieldToStringArray(List<Map<String,Object>> mapList,String field, String seperator) {
+        if (mapList == null) return;
+        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
+        if (map != null) {
+            map.replace(field, map.get(field), map.get(field).toString().split(seperator));
+        }
+    }
+
 
     /**
      * 处理null问题
