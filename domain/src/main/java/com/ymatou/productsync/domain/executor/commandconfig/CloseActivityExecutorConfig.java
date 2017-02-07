@@ -46,7 +46,7 @@ public class CloseActivityExecutorConfig implements ExecutorConfig {
         if(liveProductMapList!=null){
             liveProductMapList.stream().forEach(liveProductItem-> {
                 Object pid = liveProductItem.get("spid");
-                Map<String, Object> pidCondition = MongoParamCreator.CreateByMapKey("spid", liveProductItem);
+                Map<String, Object> pidCondition = MongoParamCreator.CreateProductId(pid.toString());
                 MongoData liveProductMongoData = MongoDataCreator.CreateLiveProductUpdate(pidCondition, Utils.MapToList(liveProductItem));
 
                 ///2.商品数据更新
