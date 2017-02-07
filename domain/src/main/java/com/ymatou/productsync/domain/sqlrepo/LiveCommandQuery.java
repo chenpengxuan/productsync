@@ -13,9 +13,28 @@ import java.util.Map;
 public interface LiveCommandQuery {
     /**
      * 获取直播相关信息
+     *
      * @param ActivityId
      * @return
      */
     @TargetDataSource("liveDataSource")
-    List<Map<String,Object>> getActivityInfo(@Param("ActivityId") long ActivityId);
+    List<Map<String, Object>> getActivityInfo(@Param("ActivityId") long ActivityId);
+
+    /**
+     * 根据countryid取国家信息
+     *
+     * @param CountryId
+     * @return
+     */
+    @TargetDataSource("ymtDataSource")
+    List<Map<String, Object>> getCountryInfo(@Param("CountryId") int CountryId);
+
+    /**
+     * 根据activytid获取商品列表
+     *
+     * @param ActivityId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductInfoByActivityId(@Param("ActivityId") long ActivityId);
 }

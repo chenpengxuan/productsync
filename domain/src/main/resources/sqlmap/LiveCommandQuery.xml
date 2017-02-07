@@ -9,7 +9,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery">
 
-<!--获取直播相关信息-->
+    <!--获取直播相关信息-->
     <select id="getActivityInfo" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 select top 1 iActivityId as 'lid',
@@ -30,5 +30,17 @@ bAppConfirmed as 'confirm',
 sLatlng as 'latlng'
 from Ymt_Activity where iActivityId=#{ActivityId}
 --还有country，brands，flag需要组织
+    </select>
+
+    <select id="getCountryInfo" parameterType="java.lang.Integer"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+SELECT sFlag,sCountryNameZh FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId = #{CountryId}
+    </select>
+
+    <select id="getProductInfoByActivityId" parameterType="java.lang.Long"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+SELECT distinct a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+WHERE b.[iActivityId] = #{ActivityId} and isnull(b.iaction,0)>-1
+order by a.dAddTime DESC ,sBrand
     </select>
 </mapper>
