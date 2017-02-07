@@ -13,7 +13,7 @@ public interface ExecutorConfig {
      *
      * @return
      */
-    ProductCmdTypeEnum getCommand();
+    CmdTypeEnum getCommand();
 
     /**
      * 获取待同步数据
