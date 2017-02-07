@@ -1,7 +1,7 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.ProductCmdTypeEnum;
+import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
@@ -20,8 +20,8 @@ public class SetOnTopExecutorConfig implements ExecutorConfig{
     private CommandQuery commandQuery;
 
     @Override
-    public ProductCmdTypeEnum getCommand() {
-        return ProductCmdTypeEnum.SetOnTop;
+    public CmdTypeEnum getCommand() {
+        return CmdTypeEnum.SetOnTop;
     }
 
     @Override

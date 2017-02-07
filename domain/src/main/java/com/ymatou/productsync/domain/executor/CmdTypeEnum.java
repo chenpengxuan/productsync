@@ -4,7 +4,8 @@ package com.ymatou.productsync.domain.executor;
  * 业务指令枚举
  * Created by chenpengxuan on 2017/1/19.
  */
-public enum ProductCmdTypeEnum {
+public enum CmdTypeEnum {
+//    商品部分
     /**
      * 添加商品（批量）,关联商品和直播
      */
@@ -113,5 +114,58 @@ public enum ProductCmdTypeEnum {
     /**
      * 修改商品活动价，老库是查询的，无需修改
      */
-    ModifyActivityPrice,;
+    ModifyActivityPrice,
+
+//    直播部分
+    /**
+     *添加直播
+     */
+    AddActivity,
+
+    /**
+     * 关闭直播
+     */
+    CloseActivity,
+
+    /**
+     * 确认直播
+     */
+    ConfirmActivity,
+
+    /**
+     * 创建直播
+     */
+    CreateActivity,
+
+    /**
+     * 删除直播
+     */
+    DeleteActivity,
+
+    /**
+     * 修改直播
+     */
+    ModifyActivity,
+
+    /**
+     * 保存直播信息
+     */
+    SaveActivity,
+
+    /**
+     * 修改直播
+     */
+    UpdateActivity,
+
+    /**
+     * 更新买手直播名称
+     */
+    UpdateActivityName,
+
+    /**
+     * 修改活动排序
+     */
+    UpdateActivitySort,
+
+    ;
 }

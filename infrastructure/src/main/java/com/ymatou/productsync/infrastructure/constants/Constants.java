@@ -12,4 +12,46 @@ public class Constants {
     public static final String LOG_PREFIX = "logPrefix";
     public static ConfigurableApplicationContext ctx;
     public static TomcatConfig TOMCAT_CONFIG;
+
+
+    /**
+     * 商品库名
+     */
+    public static final String ProductDb = "Products";
+
+    /**
+     * 规格库名
+     */
+    public static final String CatalogDb = "Catalogs";
+
+    /**
+     * 活动商品库名
+     */
+    public static final String ActivityProductDb = "ActivityProducts";
+
+    /**
+     * 活动商品库名
+     */
+    public static final String ProductDescriptionDb = "ProductDescriptions";
+
+    /**
+     * 直播库名
+     */
+    public static final String LiveDb = "Lives";
+
+    /**
+     * 活动库名
+     */
+    public static final String ActivityDb = "Activity";
+
+    /**
+     * 活动模板库名
+     */
+    public static final String ActivityTemplateDb = "ActivityTemplate";
+
+
+    /**
+     * 直播商品库名
+     */
+    public static final String LiveProudctDb = "LiveProducts";
 }
