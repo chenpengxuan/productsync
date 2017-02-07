@@ -4,9 +4,12 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/7.
@@ -23,8 +26,14 @@ public class CloseActivityExecutorConfig implements ExecutorConfig {
         MongoData mongoData = new MongoData();
         mongoData.setOperationType(MongoOperationTypeEnum.UPDATE);
         //设置mongo表名
-        mongoData.setTableName("Products");
+        mongoData.setTableName(Constants.LiveDb);
+        //设置匹配条件
+        Map<String,Object> matchConditionInfo = new HashMap();
+        matchConditionInfo.put("spid",productId);
+        mongoData.setMatchCondition(matchConditionInfo);
+        //设置要更新的数据
 
-        return null;
+        mongoDataList.add(mongoData);
+        return mongoDataList;
     }
 }
