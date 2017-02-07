@@ -32,4 +32,12 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String,Object>> getLiveProductByActivityId(@Param("activityId") long activityId);
+
+    /**
+     * 根据直播id获取商品新品信息
+     * @param activityId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductNewTimeByActivityId(@Param("activityId") long activityId);
 }

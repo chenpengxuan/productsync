@@ -103,4 +103,17 @@ public  class MongoDataCreator {
                                           List<Map<String, Object>> updateData){
         return Create(Constants.ProductDb,MongoOperationTypeEnum.CREATE,matchCondition,updateData);
     }
+
+
+    /**
+     * 创建直播商品更新型
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+
+    public static MongoData CreateLiveProductUpdate(Map<String,Object> matchCondition,
+                                             List<Map<String, Object>> updateData){
+        return Create(Constants.LiveProudctDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+    }
 }
