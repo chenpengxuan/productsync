@@ -35,10 +35,10 @@ public class SetOnTopExecutorConfig implements ExecutorConfig{
         //设置匹配条件
         matchConditionInfo.put("spid",productId);
         //设置操作类型
-        mongoData.setOperationType(MongoOperationTypeEnum.CREATE);
+        mongoData.setOperationType(MongoOperationTypeEnum.UPDATE);
         mongoData.setMatchCondition(matchConditionInfo);
         //设置要更新的数据边界
-        mongoData.setUpdateData(sqlDataList.stream().findFirst().orElse(Collections.emptyMap()));
+        mongoData.setUpdateData(sqlDataList);
         mongoDataList.add(mongoData);
         return mongoDataList;
     }

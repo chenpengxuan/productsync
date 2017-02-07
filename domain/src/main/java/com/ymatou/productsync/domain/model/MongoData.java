@@ -2,6 +2,7 @@ package com.ymatou.productsync.domain.model;
 
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,18 +20,18 @@ public class MongoData {
      */
     private Map<String,Object> matchCondition;
 
-    public Map<String, Object> getUpdateData() {
+    public List<Map<String, Object>> getUpdateData() {
         return updateData;
     }
 
-    public void setUpdateData(Map<String, Object> updateData) {
+    public void setUpdateData(List<Map<String, Object>> updateData) {
         this.updateData = updateData;
     }
 
     /**
      * 需要更新的数据 Map<String, Object>表示一行数据
      */
-    private Map<String, Object> updateData;
+    private List<Map<String, Object>> updateData;
 
     /**
      * mongo操作类型

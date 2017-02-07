@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,11 +48,14 @@ public class MongoRepository {
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
         switch (mongoData.getOperationType()) {
             case CREATE:
-                return collection.insert(makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
+            {
+                String[] strList = mongoData.getUpdateData().stream().map(x -> makeJsonStringFromMap(x)).toArray(String[]::new);
+                return collection.insert(String.join(",",strList)).wasAcknowledged();
+            }
             case UPDATE:
-                return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(makeObjFromMap(mongoData.getUpdateData())).getN() > 0;
+                return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case UPSERT:
-                return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(makeObjFromMap(mongoData.getUpdateData())).getN() > 0;
+                return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case DELETE:
                 return collection.remove(makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
         }
