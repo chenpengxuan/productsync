@@ -11,8 +11,7 @@
 
 <!--获取直播相关信息-->
     <select id="getActivityInfo" parameterType="java.lang.String"
-            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1，
-com.ymatou.ordersync.infrastructure.sqldb.UserResultMap.keyValueMap2">
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 select iActivityId as 'lid',
 sName as 'name',sTitle as 'title',
 sContent as 'content',

@@ -48,10 +48,7 @@ public class MongoRepository {
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
         switch (mongoData.getOperationType()) {
             case CREATE:
-            {
-                String[] strList = mongoData.getUpdateData().stream().map(x -> makeJsonStringFromMap(x)).toArray(String[]::new);
-                return collection.insert(String.join(",",strList)).wasAcknowledged();
-            }
+                return collection.insert(makeJsonStringFromMap(mongoData.getUpdateData())).wasAcknowledged();
             case UPDATE:
                 return collection.update(makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case UPSERT:
@@ -60,6 +57,18 @@ public class MongoRepository {
                 return collection.remove(makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
         }
         return false;
+    }
+
+    /**
+     * 将mapList转换成json字符串格式 例如：{xx:oo},{yy:xx}
+     * @param mapList
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private String makeJsonStringFromMap(List<Map<String, Object>> mapList) throws IllegalArgumentException {
+        if (mapList == null || mapList.isEmpty())
+            throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        return String.join(",",mapList.stream().map(x -> makeJsonStringFromMap(x)).toArray(String[]::new));
     }
 
     /**
