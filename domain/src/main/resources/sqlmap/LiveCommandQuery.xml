@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ ~ /*
+ ~ (C) Copyright 2016 Ymatou (http://www.ymatou.com/).
+ ~ All rights reserved.
+ ~ */
+ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery">
+
+<!--获取直播相关信息-->
+    <select id="getActivityInfo" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1，
+com.ymatou.ordersync.infrastructure.sqldb.UserResultMap.keyValueMap2">
+select iActivityId as 'lid',
+sName as 'name',sTitle as 'title',
+sContent as 'content',
+sPicUrl as 'pic',
+dAddTime as 'add',
+iCountryId ,
+dBeginTime as 'start',
+dEndTime as 'end',
+iSellerId as 'sid',
+sSellerName as 'sname',
+sPosition as 'addr',
+sVideoCover as 'vcover',
+sVideoUrl as 'vurl',
+iAction as 'action',
+bAppConfirmed as 'confirm',
+sLatlng as 'latlng'
+from Ymt_Activity where iActivityId=#{ActivityId}
+--还有country，brands，flag需要组织
+    </select>
+</mapper>

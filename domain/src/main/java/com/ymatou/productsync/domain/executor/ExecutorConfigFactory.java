@@ -22,7 +22,7 @@ public class ExecutorConfigFactory {
     /**
      * 业务场景指令与对应指令器映射关系的容器
      */
-    private static HashMap<ProductCmdTypeEnum, ExecutorConfig> hashMap = Maps.newHashMap();
+    private static HashMap<CmdTypeEnum, ExecutorConfig> hashMap = Maps.newHashMap();
 
     @Autowired
     private List<ExecutorConfig> executorConfigList;
@@ -35,9 +35,9 @@ public class ExecutorConfigFactory {
     }
 
     public ExecutorConfig getCommand(String command) {
-        ProductCmdTypeEnum cmdTypeEnum = null;
+        CmdTypeEnum cmdTypeEnum = null;
         try {
-            cmdTypeEnum = ProductCmdTypeEnum.valueOf(command.toUpperCase());
+            cmdTypeEnum = CmdTypeEnum.valueOf(command.toUpperCase());
         } catch (Exception ex) {
             logger.error("Unknown sync command:{}", command, ex);
             return null;
