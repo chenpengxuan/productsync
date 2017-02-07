@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhangyifan on 2016/12/14.
@@ -31,6 +28,18 @@ public class Utils {
     public static String uuid() {
         return new ObjectId().toHexString();
     }
+
+    /**
+     * Map转换为list
+     * @param map
+     * @return
+     */
+    public  static List<Map<String,Object>> MapToList(Map<String,Object> map) {
+        List<Map<String,Object>> list = new ArrayList<>();
+        list.add(map);
+        return list;
+    }
+
 
     /**
      * 将maplist中的字符串转换为数组
