@@ -18,14 +18,14 @@ import java.util.Map;
  * 添加直播
  * Created by zhangyong on 2017/2/7.
  */
-@Component("addActivityExecutorConfig")
-public class AddActivityExecutorConfig implements ExecutorConfig {
+@Component("createActivityExecutorConfig")
+public class CreateActivityExecutorConfig implements ExecutorConfig {
     @Autowired
     private LiveCommandQuery commandQuery;
 
     @Override
     public CmdTypeEnum getCommand() {
-        return CmdTypeEnum.AddActivity;
+        return CmdTypeEnum.CreateActivity;
     }
 
     public List<MongoData> loadSourceData(long activityId, String productId) {

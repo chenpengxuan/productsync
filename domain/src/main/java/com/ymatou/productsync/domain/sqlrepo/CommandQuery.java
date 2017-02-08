@@ -34,7 +34,7 @@ public interface CommandQuery {
     List<Map<String,Object>> getLiveProductByActivityId(@Param("activityId") long activityId);
 
     /**
-     * 根据直播id获取商品新品信息-cf
+     * 根据直播id获取商品新品信息
      * @param activityId
      * @return
      */
@@ -52,10 +52,18 @@ public interface CommandQuery {
 
 
     /**
-     * 获取待删除的商品-cf
+     * 获取直播商品时间-cf
      * @param productId
      * @return
      */
     @TargetDataSource("productDataSource")
     List<Map<String,Object>> getLiveProductTime(@Param("productId") String productId,@Param("activityId") long activityId);
+
+    /**
+     * 根据商品id获取商品详情
+     * @param activityId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductDetailInfo(@Param("productId") String activityId);
 }

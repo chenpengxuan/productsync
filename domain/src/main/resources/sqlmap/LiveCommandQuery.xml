@@ -29,7 +29,6 @@ iAction as 'action',
 bAppConfirmed as 'confirm',
 sLatlng as 'latlng'
 from Ymt_Activity where iActivityId=#{ActivityId}
---还有country，brands，flag需要组织
     </select>
 
     <select id="getCountryInfo" parameterType="java.lang.Integer"

@@ -12,7 +12,6 @@
 <!--设置、取消橱窗商品-->
     <select id="setTopProduct" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
         SELECT TOP 1
         isTop AS 'istop'
         FROM dbo.Ymt_Products WITH(NOLOCK)
@@ -22,7 +21,6 @@
     <!--获取商品详细信息-->
     <select id="getProductBaseInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
         SELECT TOP 1
         ActionType AS 'ActionType',
         ProductId AS 'ProductId'
@@ -33,7 +31,6 @@
     <!--设置、取消橱窗商品-->
     <select id="setTopProduct3"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
         SELECT TOP 1
         iActivityId AS 'ActivityId',
         sName AS 'Name'
@@ -45,7 +42,6 @@
     <!--关闭直播-直播商品+品牌-->
     <select id="getLiveProductByActivityId"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
         SELECT a.sProductId AS 'spid',
 			   a.iActivityId AS 'lid',
 			   a.iUserId AS 'sid',
@@ -69,7 +65,6 @@
     <!--关闭直播-商品新品时间-->
     <select id="getProductNewTimeByActivityId"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
        SELECT
         p.isNew AS 'isnew',
         p.dListingTime AS 'newstart',
@@ -82,14 +77,102 @@
     <!--获取商品详情-->
     <select id="getProductDetailInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
-        SELECT
-        p.isNew AS 'isnew',
-        p.dListingTime AS 'newstart',
-        p.dNewEndTime AS 'newend'
-        FROM Ymt_ProductsInLive (NOLOCK) a
-        INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
-        WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
+         WITH    pcte
+                  AS ( SELECT   sProductId ,
+                                sOriUrl = STUFF(( SELECT    ',' + sOriUrl
+                                                  FROM      Ymt_ProductPicture (NOLOCK)
+                                                            AS t
+                                                  WHERE     t.sProductId = tb.sProductId
+                                                            AND t.iAction > -1
+                                                            AND t.sProductId = CAST(#{productId} AS VARCHAR(36))
+                                                FOR
+                                                  XML PATH('')
+                                                ), 1, 1, '')
+                       FROM     Ymt_ProductPicture (NOLOCK) tb
+                       WHERE    tb.iAction > -1
+                                AND tb.sProductId = #{productId}
+                       GROUP BY sProductId
+                     ),
+                cataCTE
+                  AS ( SELECT TOP 1
+                                sProductId ,
+                                iAcceptReturn
+                       FROM     Ymt_Catalogs(NOLOCK)
+                       WHERE    iAction > -1
+                                AND sProductId = #{productId}
+                     )
+            SELECT  p.sProductCode AS 'pcode' ,
+                    p.IAction AS 'action' ,
+                    ipid AS 'ipid' ,
+                    P.sProductId AS 'spid' ,
+                    P.iBrandId AS 'bid' ,
+                    P.sProduct AS 'title' ,
+                    P.dAddTime AS 'addtime' ,
+                    p.fFlight AS 'shipping',
+                    cte.sOriUrl AS 'pics' ,--商品主图列表
+                    validStart AS 'start' ,
+                    validEnd AS 'end' ,
+                    P.iCatalogType AS 'ctype' ,--备货方式
+                    P.iCatalogStatus AS 'deliv' ,--发货方式
+                    P.sMobileDescription AS 'intro' ,--商品简介
+                    P.iTariffType AS 'tariffy' ,--是否包税
+                    P.iBondedArea AS 'bonded' ,
+                    ( SELECT    MAX(fQuotePrice)
+                      FROM      Ymt_Catalogs (NOLOCK)
+                      WHERE     sProductId = #{productId}
+                                AND iAction = 0
+                      GROUP BY  sProductId
+                    ) AS 'maxp' ,--最高规格价
+                    ( SELECT    MIN(fQuotePrice)
+                      FROM      Ymt_Catalogs (NOLOCK)
+                      WHERE     sProductId = #{productId}
+                                AND iAction = 0
+                      GROUP BY  sProductId
+                    ) AS 'minp' ,--最低规格价
+                    P.iUserId AS 'sid' ,
+                    P.SellerLoginId AS 'sname' ,
+                    CASE WHEN P.iBrandId = 0 THEN P.sBrand
+                         ELSE B.sBrand
+                    END AS 'brand' ,
+                    B.sBrandEn AS 'ebrand' ,
+                    P.iCategoryId AS 'scatid' ,
+                    ( SELECT    sCategory
+                      FROM      Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iCategoryId
+                    ) AS 'scatname' ,
+                    P.iThirdCategoryId AS 'tcatid' ,
+                    ( SELECT    sCategory
+                      FROM      Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iThirdCategoryId
+                    ) AS 'tcatname' ,
+                    ( SELECT    b.iMasterCategory
+                      FROM      Ymt_ProductCategory (NOLOCK) A
+                                INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
+                      WHERE     B.iCategoryId = P.iCategoryId
+                    ) AS 'mcatid' ,
+                    ( SELECT    A.sCategory
+                      FROM      Ymt_ProductCategory (NOLOCK) A
+                                INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
+                      WHERE     B.iCategoryId = P.iCategoryId
+                    ) AS 'mcatname' ,
+                    P.SellerCountryId AS 'country' ,
+                    P.iLocalReturn AS 'localr' ,--本土退货
+                    P.bNoticeRisk AS 'risk' ,--砍单风险提醒
+                    P.bNoReasonReturn AS 'noreason' ,--7天无理由退货
+                    CASE WHEN pdc.ProductID IS NULL THEN 0
+                         ELSE 1
+                    END AS 'newdesc',--是否新图文描述
+					p.isnew AS 'isnew',--是否新品
+					p.dListingTime AS 'newstart',--新品有效开始时间
+					p.dNewEndTime AS 'newend',--新品有效结束时间
+					p.istop AS 'istop'--是否买手热推商品
+            FROM    Ymt_Products (NOLOCK) P
+                    INNER JOIN cataCTE ON cataCTE.sProductId = P.sProductId
+                    LEFT JOIN Ymt_ProductBrand (NOLOCK) B ON B.iBrandId = P.iBrandId
+                    LEFT JOIN pcte cte ON cte.sProductId = P.sProductId
+                    LEFT JOIN Ymt_ProductDescConfigWord (NOLOCK) pdc ON pdc.ProductID = P.sProductId
+                                                              AND pdc.[Status] > 0
+            WHERE   P.sProductId = #{productId}
     </select>
     <!--获取待删除的商品-->
     <select id="getDeleteProducts"
