@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,10 +34,21 @@ public class CloseActivityExecutorConfig implements ExecutorConfig {
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
-        ///1.直播数据更新--fixme: country，flag需要处理
-
+        ///1.直播数据更新
         List<Map<String, Object>> mapList = liveCommandQuery.getActivityInfo(activityId);
-        MapUtil.MapFieldToStringArray(mapList, "brands", ",");
+        //处理brands,country,flag
+        if(mapList!=null && !mapList.isEmpty()){
+            MapUtil.MapFieldToStringArray(mapList, "brands", ",");
+            Map<String, Object> activity = mapList.get(0);
+            int countryId = Integer.parseInt(activity.get("iCountryId").toString());
+            activity.remove("iCountryId");
+            Optional<Map<String, Object>> country = liveCommandQuery.getCountryInfo(countryId).stream().findFirst();
+            if (country.isPresent()) {
+                Map<String, Object> con = country.get();
+                activity.put("country", con.get("sCountryNameZh"));
+                activity.put("flag", con.get("sFlag"));
+            }
+        }
         //设置要更新的数据
         MongoData liveMongoData = MongoDataCreator.CreateLiveUpdate(MongoParamCreator.CreateLiveId(activityId), mapList);
         mongoDataList.add(liveMongoData);
