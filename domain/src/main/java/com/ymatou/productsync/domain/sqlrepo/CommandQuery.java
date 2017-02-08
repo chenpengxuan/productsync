@@ -40,4 +40,12 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String,Object>> getProductNewTimeByActivityId(@Param("activityId") long activityId);
+
+    /**
+     * 根据商品id获取商品详情
+     * @param activityId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductDetailInfo(@Param("productId") String activityId);
 }

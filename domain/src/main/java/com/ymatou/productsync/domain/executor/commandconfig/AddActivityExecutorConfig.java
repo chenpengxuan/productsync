@@ -1,21 +1,18 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
-import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
+import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
-import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.session.SessionProperties;
-import org.springframework.boot.test.json.ObjectContent;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.stream.Stream;
-
-import static com.ymatou.productsync.infrastructure.Utils.MapFieldToStringArray;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 添加直播

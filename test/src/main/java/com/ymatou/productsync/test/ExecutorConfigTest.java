@@ -2,6 +2,7 @@ package com.ymatou.productsync.test;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.AddActivityExecutorConfig;
+import com.ymatou.productsync.domain.executor.commandconfig.AddProductExecutorConfig;
 import com.ymatou.productsync.domain.executor.commandconfig.SetOnTopExecutorConfig;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.web.ProductSyncApplication;
@@ -27,6 +28,9 @@ public class ExecutorConfigTest {
     private AddActivityExecutorConfig addActivityExecutorConfig;
 
     @Autowired
+    private AddProductExecutorConfig addProductExecutorConfig;
+
+    @Autowired
     private CommandExecutor commandExecutor;
 
     @Test
@@ -40,6 +44,13 @@ public class ExecutorConfigTest {
     public void testAddActivity() {
         long activityId = 157242;
         List<MongoData> updateData = addActivityExecutorConfig.loadSourceData(activityId, "");
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testAddProduct(){
+        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
+        List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
     }
 }

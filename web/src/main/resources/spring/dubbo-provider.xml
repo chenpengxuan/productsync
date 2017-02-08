@@ -46,11 +46,8 @@
     <!-- 用dubbo协议在20880端口暴露服务 -->
     <dubbo:protocol name="dubbo"  port="${dubbo.port}" serialization="kryo"/>
 
-    <dubbo:protocol name="rest" server="tomcat" port="${server.port}" extension="com.ymatou.productsync.infrastructure.serialize.JacksonConfig"/>
+    <dubbo:protocol name="rest" server="tomcat" port="${server.port}" extension="com.ymatou.productsync.infrastructure.config.JacksonConfig"/>
     <!---->
 
     <!--<dubbo:reference id="productSyncFacade" interface="com.ymatou.productsync.facade.SyncCommandFacade"/>-->
-
-
-    <!--<dubbo:protocol name="rest" server="tomcat" port="8080" />-->
 </beans>
