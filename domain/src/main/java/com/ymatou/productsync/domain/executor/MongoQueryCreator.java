@@ -24,6 +24,14 @@ public class MongoQueryCreator {
         return matchConditionInfo;
     }
 
+    public static Map<String,Object> CreateProductIdAndLiveId(String productId,long liveId){
+
+        Map<String,Object> matchConditionInfo = new HashMap();
+        matchConditionInfo.put("spid",productId);
+        matchConditionInfo.put("lid",liveId);
+        return matchConditionInfo;
+    }
+
 
     public static Map<String,Object> CreateByMapKey(String key,Map<String,Object> map){
 
