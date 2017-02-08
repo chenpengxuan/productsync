@@ -57,4 +57,20 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getProductPictureList(@Param("productId") String productId);
+
+    /**
+     * 获取待删除的商品-cf
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getDeleteProducts(@Param("productId") String productId);
+
+    /**
+     * 获取直播商品时间-cf
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getLiveProductTime(@Param("productId") String productId,@Param("activityId") long activityId);
 }
