@@ -40,6 +40,9 @@ public class ExecutorConfigTest {
     @Autowired
     private DeleteProductPicsExecutorConfig deleteProductPicsExecutorConfig;
 
+    @Autowired
+    private SuspendSaleExecutorConfig suspendSaleExecutorConfig;
+
 
     @Autowired
     private CommandExecutor commandExecutor;
@@ -73,7 +76,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testAddProduct(){
+    public void testAddProduct() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
@@ -83,7 +86,7 @@ public class ExecutorConfigTest {
         验证商品主图同步 - AddProductPics
      */
     @Test
-    public void testAddProductPics(){
+    public void testAddProductPics() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         List<MongoData> updateData = addProductPicsExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
@@ -93,6 +96,14 @@ public class ExecutorConfigTest {
     public void testDeleteProductPics() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         List<MongoData> updateData = deleteProductPicsExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testSuspendSale() {
+        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
+        long activityId = 334567;
+        List<MongoData> updateData = suspendSaleExecutorConfig.loadSourceData(activityId, productId);
         commandExecutor.executorCommand(0, updateData);
     }
 }
