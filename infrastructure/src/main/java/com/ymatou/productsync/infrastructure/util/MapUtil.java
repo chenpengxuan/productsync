@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Map Util
@@ -69,9 +70,10 @@ public class MapUtil {
      * @return
      */
     public  static List<Map<String,Object>> MapToList(Map<String,Object> map) {
-        List<Map<String,Object>> list = new ArrayList<>();
-        list.add(map);
-        return list;
+        return Stream.of(map).collect(Collectors.toList());
+//        List<Map<String,Object>> list = new ArrayList<>();
+//        list.add(map);
+//        return list;
     }
 
 
