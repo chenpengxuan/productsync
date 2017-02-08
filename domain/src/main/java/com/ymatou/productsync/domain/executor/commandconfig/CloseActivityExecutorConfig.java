@@ -3,7 +3,7 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataCreator;
-import com.ymatou.productsync.domain.executor.MongoParamCreator;
+import com.ymatou.productsync.domain.executor.MongoQueryCreator;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -50,7 +50,7 @@ public class CloseActivityExecutorConfig implements ExecutorConfig {
             }
         }
         //设置要更新的数据
-        MongoData liveMongoData = MongoDataCreator.CreateLiveUpdate(MongoParamCreator.CreateLiveId(activityId), mapList);
+        MongoData liveMongoData = MongoDataCreator.CreateLiveUpdate(MongoQueryCreator.CreateLiveId(activityId), mapList);
         mongoDataList.add(liveMongoData);
 
         ///2.直播商品数据更新 -- fixme: 123分类需要处理
@@ -59,7 +59,7 @@ public class CloseActivityExecutorConfig implements ExecutorConfig {
         if (liveProductMapList != null) {
             liveProductMapList.stream().forEach(liveProductItem -> {
                 Object pid = liveProductItem.get("spid");
-                Map<String, Object> pidCondition = MongoParamCreator.CreateProductId(pid.toString());
+                Map<String, Object> pidCondition = MongoQueryCreator.CreateProductId(pid.toString());
                 MongoData liveProductMongoData = MongoDataCreator.CreateLiveProductUpdate(pidCondition, MapUtil.MapToList(liveProductItem));
 
                 ///2.商品数据更新

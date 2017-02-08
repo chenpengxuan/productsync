@@ -91,4 +91,27 @@
         INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
         WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
     </select>
+    <!--获取待删除的商品-->
+    <select id="getDeleteProducts"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+       SELECT P.validStart AS 'start'
+        ,P.validEnd AS 'end'
+         ,P.[dListingTime] AS 'newstart'
+        ,P.[dNewEndtime] AS 'newend'
+        ,P.[isNew] AS 'isnew'
+        ,P.iAction as 'action'
+        FROM [dbo].Ymt_Products AS P WITH(NOLOCK)
+    WHERE P.[sProductId] = #{productId,jdbcType=VARCHAR};
+    </select>
+    <!--获取直播商品时间-->
+    <select id="getLiveProductTime"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT  ValidStart as 'start'
+	            ,ValidEnd as 'end'
+        FROM    dbo.Ymt_ProductsInLive
+        WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+                AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
+    </select>
 </mapper>

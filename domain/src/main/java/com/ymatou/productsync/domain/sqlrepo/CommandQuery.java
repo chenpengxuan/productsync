@@ -34,10 +34,28 @@ public interface CommandQuery {
     List<Map<String,Object>> getLiveProductByActivityId(@Param("activityId") long activityId);
 
     /**
-     * 根据直播id获取商品新品信息
+     * 根据直播id获取商品新品信息-cf
      * @param activityId
      * @return
      */
     @TargetDataSource("productDataSource")
     List<Map<String,Object>> getProductNewTimeByActivityId(@Param("activityId") long activityId);
+
+
+    /**
+     * 获取待删除的商品-cf
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getDeleteProducts(@Param("productId") String productId);
+
+
+    /**
+     * 获取待删除的商品-cf
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getLiveProductTime(@Param("productId") String productId,@Param("activityId") long activityId);
 }

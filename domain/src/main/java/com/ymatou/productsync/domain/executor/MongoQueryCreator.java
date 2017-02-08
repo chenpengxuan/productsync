@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by chenfei on 2017/2/7.
  * mongo参数创建
  */
-public class MongoParamCreator {
+public class MongoQueryCreator {
 
     public static Map<String,Object> CreateLiveId(long liveId){
 

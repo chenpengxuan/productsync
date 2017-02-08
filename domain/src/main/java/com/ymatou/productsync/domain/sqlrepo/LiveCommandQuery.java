@@ -37,4 +37,13 @@ public interface LiveCommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getProductInfoByActivityId(@Param("ActivityId") long ActivityId);
+
+    /**
+     * 根据activytid获取商品列表-cf
+     *
+     * @param activityId
+     * @return
+     */
+    @TargetDataSource("liveDataSource")
+    List<Map<String, Object>> getActivityBrand(@Param("activityId") long activityId);
 }

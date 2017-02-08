@@ -43,4 +43,12 @@ SELECT distinct a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   J
 WHERE b.[iActivityId] = #{ActivityId} and isnull(b.iaction,0)>-1
 order by a.dAddTime DESC ,sBrand
     </select>
+
+    <!--获取直播品牌-->
+    <select id="getActivityBrand" parameterType="java.lang.Long"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select top 1
+        sBrand as 'brands
+        from Ymt_Activity where iActivityId=#{ActivityId}
+    </select>
 </mapper>
