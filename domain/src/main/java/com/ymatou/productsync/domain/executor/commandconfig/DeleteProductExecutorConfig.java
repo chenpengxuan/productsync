@@ -9,6 +9,7 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Map;
  * Created by chenfei on 2017/2/8.
  * 删除商品
  */
+@Component("deleteProductExecutorConfig")
 public class DeleteProductExecutorConfig implements ExecutorConfig {
 
     @Autowired
