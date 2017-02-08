@@ -47,7 +47,7 @@ order by a.dAddTime DESC ,sBrand
     <select id="getActivityBrand" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         select top 1
-        sBrand as 'brands
+        sBrand as 'brands'
         from Ymt_Activity where iActivityId=#{ActivityId}
     </select>
 </mapper>

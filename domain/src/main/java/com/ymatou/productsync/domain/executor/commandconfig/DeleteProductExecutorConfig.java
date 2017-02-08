@@ -62,6 +62,7 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             mongoDataList.add(liveProductMd);
             mongoDataList.add(liveMd);
         }
+        //fixme: messagebus notify
         return mongoDataList;
     }
 }

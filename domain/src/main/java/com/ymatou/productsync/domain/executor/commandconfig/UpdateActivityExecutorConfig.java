@@ -4,6 +4,7 @@ import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.model.MongoData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * Created by chenfei on 2017/2/8.
  * 更新直播
  */
+@Component("updateActivityExecutorConfig")
 public class UpdateActivityExecutorConfig implements ExecutorConfig {
 
     @Autowired

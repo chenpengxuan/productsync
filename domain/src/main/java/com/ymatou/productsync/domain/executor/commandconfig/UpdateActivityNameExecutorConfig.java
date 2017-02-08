@@ -10,17 +10,16 @@ import java.util.List;
 
 /**
  * Created by chenfei on 2017/2/8.
- * 保存直播
+ * 更新直播名称
  */
-@Component("saveActivityExecutorConfig")
-public class SaveActivityExecutorConfig implements ExecutorConfig {
-
+@Component("updateActivityNameExecutorConfig")
+public class UpdateActivityNameExecutorConfig implements ExecutorConfig {
     @Autowired
     private ModifyActivityExecutorConfig modifyActivityExecutorConfig;
 
     @Override
     public CmdTypeEnum getCommand() {
-        return CmdTypeEnum.SaveActivity;
+        return CmdTypeEnum.UpdateActivityName;
     }
 
     @Override
