@@ -55,9 +55,6 @@
 			   a.dAddTime AS 'add',
 			   a.dReadyPutawayProductSort AS 'sort',
 			   a.iIsTop AS 'istop',
-			   <!--p.isNew AS IsNew,
-			   p.dListingTime AS NewStartTime,
-			   p.dNewEndTime AS NewEndTime,-->
 			   a.iSellStatus AS 'status',
 			   p.iBrandId AS 'bid',
 			   p.sBrand AS 'bname',
