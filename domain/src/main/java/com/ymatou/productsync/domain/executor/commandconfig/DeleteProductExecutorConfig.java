@@ -48,9 +48,22 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
                 matchConditionInfo.put("spid", productId);
                 //fixme:matchConditionInfo.put("end",now); <
                 MongoData liveProductMd = MongoDataCreator.CreateLiveProductDelete(matchConditionInfo, null);
+                //删规格
+                Map<String, Object> catalogCondition = new HashMap();
+                catalogCondition.put("spid", productId);
+                List<Map<String, Object>> invalidActions = new ArrayList<>();
+                Map<String, Object> actionMap = new HashMap<String,Object>();
+                actionMap.put("action","-1");
+                invalidActions.add(actionMap);
+                MongoData catalogMd = MongoDataCreator.CreateCatalogDelete(catalogCondition,invalidActions);
+
                 mongoDataList.add(productMd);
                 mongoDataList.add(liveProductMd);
+                mongoDataList.add(catalogMd);
             }
+
+
+
         } else { //从直播中删除商品
             //更新直播商品
             List<Map<String, Object>> liveProducts = commandQuery.getLiveProductTime(productId, activityId);

@@ -129,4 +129,16 @@ public  class MongoDataCreator {
                                                     List<Map<String, Object>> updateData){
         return Create(Constants.LiveProudctDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
     }
+
+    /**
+     * 创建规格删除
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+
+    public static MongoData CreateCatalogDelete(Map<String,Object> matchCondition,
+                                                    List<Map<String, Object>> updateData){
+        return Create(Constants.CatalogDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
+    }
 }

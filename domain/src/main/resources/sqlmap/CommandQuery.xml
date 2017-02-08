@@ -165,6 +165,7 @@
                                                               AND pdc.[Status] > 0
             WHERE   P.sProductId = #{productId}
     </select>
+
     <!--获取待删除的商品-->
     <select id="getDeleteProducts"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
@@ -178,6 +179,7 @@
         FROM [dbo].Ymt_Products AS P WITH(NOLOCK)
     WHERE P.[sProductId] = #{productId,jdbcType=VARCHAR};
     </select>
+
     <!--获取直播商品时间-->
     <select id="getLiveProductTime"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
