@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangyifan on 2016/12/14.
@@ -30,31 +33,29 @@ public class Utils {
     }
 
     /**
-     * Map转换为list
-     * @param map
-     * @return
-     */
-    public  static List<Map<String,Object>> MapToList(Map<String,Object> map) {
-        List<Map<String,Object>> list = new ArrayList<>();
-        list.add(map);
-        return list;
-    }
-
-
-    /**
      * 将maplist中的字符串转换为数组
-     * @param mapList
+     *
      * @param field
      * @param seperator
      */
-    public static void MapFieldToStringArray(List<Map<String,Object>> mapList,String field, String seperator) {
-        if (mapList == null) return;
-        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
-        if (map != null) {
-            map.replace(field, map.get(field), map.get(field).toString().split(seperator));
-        }
+    public static void MapFieldToStringArray(Map<String, Object> map, String field, String seperator) throws IllegalArgumentException {
+        if (map == null)
+            throw new IllegalArgumentException("argument can not be empty");
+        map.replace(field, map.get(field), map.get(field).toString().split(seperator));
     }
 
+    /**
+     * 将List<map>中字符串转换为数组
+     * @param mapList
+     * @param field
+     * @param seperator
+     * @throws IllegalArgumentException
+     */
+    public static void MapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) throws IllegalArgumentException {
+        if (mapList == null)
+            throw new IllegalArgumentException("argument can not be empty");
+        mapList.stream().forEach(xx -> MapFieldToStringArray(xx,field,seperator));
+    }
 
     /**
      * 处理null问题

@@ -9,8 +9,8 @@ dependencies {
     compile(project(":domain"))
     compile(project(":job"))
     compile(project(":facade:interface"))
-//    compile "org.apache.tomcat.embed:tomcat-embed-core:${tomcatEmbedVersion}"
-//    compile "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatEmbedVersion}"
+    compile "org.apache.tomcat.embed:tomcat-embed-core:${tomcatEmbedVersion}"
+    compile "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatEmbedVersion}"
 }
 
 

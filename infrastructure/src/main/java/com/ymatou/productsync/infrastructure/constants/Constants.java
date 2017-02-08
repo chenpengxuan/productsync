@@ -15,7 +15,7 @@ public class Constants {
 
 
     /**
-     * 商品库名
+     * Mongo商品库名
      */
     public static final String ProductDb = "Products";
 
@@ -35,12 +35,12 @@ public class Constants {
     public static final String ProductDescriptionDb = "ProductDescriptions";
 
     /**
-     * 直播库名
+     * Mongo直播库名
      */
     public static final String LiveDb = "Lives";
 
     /**
-     * 活动库名
+     * Mongo活动库名
      */
     public static final String ActivityDb = "Activity";
 
