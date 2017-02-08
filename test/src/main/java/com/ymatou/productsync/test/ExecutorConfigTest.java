@@ -1,9 +1,7 @@
 package com.ymatou.productsync.test;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.commandconfig.AddActivityExecutorConfig;
-import com.ymatou.productsync.domain.executor.commandconfig.AddProductExecutorConfig;
-import com.ymatou.productsync.domain.executor.commandconfig.SetOnTopExecutorConfig;
+import com.ymatou.productsync.domain.executor.commandconfig.*;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
@@ -28,6 +26,12 @@ public class ExecutorConfigTest {
     private AddActivityExecutorConfig addActivityExecutorConfig;
 
     @Autowired
+    private ConfirmActivityExecutorConfig confirmActivityExecutorConfig;
+
+    @Autowired
+    private CreateActivityExecutorConfig createActivityExecutorConfig;
+
+    @Autowired
     private AddProductExecutorConfig addProductExecutorConfig;
 
     @Autowired
@@ -44,6 +48,20 @@ public class ExecutorConfigTest {
     public void testAddActivity() {
         long activityId = 157242;
         List<MongoData> updateData = addActivityExecutorConfig.loadSourceData(activityId, "");
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testConfirmActivity() {
+        long activityId = 157242;
+        List<MongoData> updateData = confirmActivityExecutorConfig.loadSourceData(activityId, "");
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testCreateActivity() {
+        long activityId = 157242;
+        List<MongoData> updateData = createActivityExecutorConfig.loadSourceData(activityId, "");
         commandExecutor.executorCommand(0, updateData);
     }
 
