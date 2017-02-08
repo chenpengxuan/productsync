@@ -60,6 +60,17 @@ public  class MongoDataCreator {
     }
 
     /**
+     * 创建更新型
+     * @param tableName
+     * @param matchCondition
+     * @return
+     */
+    public static MongoData CreateDelete(String tableName,
+                                         Map<String,Object> matchCondition){
+        return Create(tableName,MongoOperationTypeEnum.UPDATE,matchCondition,null);
+    }
+
+    /**
      * 创建直播更新型
      * @param matchCondition
      * @param updateData

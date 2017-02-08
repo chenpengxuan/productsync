@@ -12,7 +12,7 @@
     <!--设置、取消橱窗商品-->
     <select id="getLiveProductTop" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT  iIsTop as 'istop'
+        SELECT  iIsTop as 'istop',iSellStatus as 'status'
         FROM    dbo.Ymt_ProductsInLive
         WHERE   sProductId = #{productId,jdbcType=VARCHAR}
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1;
@@ -186,8 +186,6 @@
         ORDER BY iProductPictureId ASC
 
     </select>
-
-
 
     <!--获取待删除的商品-->
     <select id="getDeleteProducts"
