@@ -18,6 +18,7 @@ sContent as 'content',
 sPicUrl as 'pic',
 dAddTime as 'add',
 iCountryId ,
+sBrand as 'brands',
 dBeginTime as 'start',
 dEndTime as 'end',
 iSellerId as 'sid',
@@ -29,7 +30,6 @@ iAction as 'action',
 bAppConfirmed as 'confirm',
 sLatlng as 'latlng'
 from Ymt_Activity where iActivityId=#{ActivityId}
---还有country，brands，flag需要组织
     </select>
 
     <select id="getCountryInfo" parameterType="java.lang.Integer"
@@ -42,5 +42,13 @@ SELECT sFlag,sCountryNameZh FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId =
 SELECT distinct a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
 WHERE b.[iActivityId] = #{ActivityId} and isnull(b.iaction,0)>-1
 order by a.dAddTime DESC ,sBrand
+    </select>
+
+    <!--获取直播品牌-->
+    <select id="getActivityBrand" parameterType="java.lang.Long"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select top 1
+        sBrand as 'brands'
+        from Ymt_Activity where iActivityId=#{ActivityId}
     </select>
 </mapper>

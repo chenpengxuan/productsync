@@ -20,7 +20,7 @@ import java.util.Map;
 @Component("setOnTopExecutorConfig")
 public class SetOnTopExecutorConfig implements ExecutorConfig{
     @Autowired
-    private CommandQuery commandQuery;
+    private SetOffTopExecutorConfig setOffTopExecutorConfig;
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -29,13 +29,6 @@ public class SetOnTopExecutorConfig implements ExecutorConfig{
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
-        List<Map<String,Object>> sqlDataList = commandQuery.setTopProduct(productId);
-        List<MongoData> mongoDataList = new ArrayList<>();
-        MongoData mongoData = new MongoData();
-        Map<String,Object> matchConditionInfo = new HashMap();
-        //设置匹配条件
-        matchConditionInfo.put("spid",productId);
-        mongoDataList.add(MongoDataCreator.CreateProductUpdate(matchConditionInfo,sqlDataList));
-        return mongoDataList;
+            return setOffTopExecutorConfig.loadSourceData(activityId,productId);
     }
 }

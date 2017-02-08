@@ -26,6 +26,12 @@ public class ExecutorConfigTest {
     private AddActivityExecutorConfig addActivityExecutorConfig;
 
     @Autowired
+    private ConfirmActivityExecutorConfig confirmActivityExecutorConfig;
+
+    @Autowired
+    private CreateActivityExecutorConfig createActivityExecutorConfig;
+
+    @Autowired
     private AddProductExecutorConfig addProductExecutorConfig;
 
     @Autowired
@@ -49,6 +55,20 @@ public class ExecutorConfigTest {
     public void testAddActivity() {
         long activityId = 157242;
         List<MongoData> updateData = addActivityExecutorConfig.loadSourceData(activityId, "");
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testConfirmActivity() {
+        long activityId = 157242;
+        List<MongoData> updateData = confirmActivityExecutorConfig.loadSourceData(activityId, "");
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testCreateActivity() {
+        long activityId = 157242;
+        List<MongoData> updateData = createActivityExecutorConfig.loadSourceData(activityId, "");
         commandExecutor.executorCommand(0, updateData);
     }
 
