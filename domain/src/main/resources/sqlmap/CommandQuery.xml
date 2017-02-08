@@ -9,14 +9,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ymatou.productsync.domain.sqlrepo.CommandQuery">
 
-<!--设置、取消橱窗商品-->
-    <select id="setTopProduct" parameterType="java.lang.String"
+    <!--设置、取消橱窗商品-->
+    <select id="getLiveProductTop" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT TOP 1
-        isTop AS 'istop'
-        FROM dbo.Ymt_Products WITH(NOLOCK)
-        WHERE sProductId = #{productId,jdbcType=VARCHAR};
+        SELECT  iIsTop as 'istop'
+        FROM    dbo.Ymt_ProductsInLive
+        WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+        AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1;
     </select>
+
 
     <!--获取商品详细信息-->
     <select id="getProductBaseInfo"

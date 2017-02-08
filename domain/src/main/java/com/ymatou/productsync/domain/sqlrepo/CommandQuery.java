@@ -12,12 +12,12 @@ import java.util.Map;
  */
 public interface CommandQuery {
     /**
-     * 商品设置、取消橱窗商品
+     * 商品设置、取消橱窗商品-cf
      * @param productId
      * @return
      */
     @TargetDataSource("productDataSource")
-    List<Map<String,Object>> setTopProduct(@Param("productId") String productId);
+    List<Map<String,Object>> getLiveProductTop(@Param("productId") String productId, @Param("activityId") long activityId);
 
     @TargetDataSource("apolloLogDataSource")
     List<List<Map<String,Object>>> setTopProduct2(@Param("productId") String productId);

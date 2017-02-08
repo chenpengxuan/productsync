@@ -42,20 +42,23 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
             if (deleteProducts != null && !deleteProducts.isEmpty()) {
                 //更新商品
-               MongoData productMd =  MongoDataCreator.CreateProductUpdate(MongoQueryCreator.CreateProductId(productId), deleteProducts);
+                MongoData productMd = MongoDataCreator.CreateProductUpdate(MongoQueryCreator.CreateProductId(productId), deleteProducts);
                 //删除直播商品
                 Map<String, Object> matchConditionInfo = new HashMap();
                 matchConditionInfo.put("spid", productId);
                 //fixme:matchConditionInfo.put("end",now); <
                 MongoData liveProductMd = MongoDataCreator.CreateLiveProductDelete(matchConditionInfo, null);
                 //删规格
-                Map<String, Object> catalogCondition = new HashMap();
-                catalogCondition.put("spid", productId);
-                List<Map<String, Object>> invalidActions = new ArrayList<>();
-                Map<String, Object> actionMap = new HashMap<String,Object>();
-                actionMap.put("action","-1");
+                Map<String, Object> actionMap = new HashMap<String, Object>() {{
+                    put("action", "-1");
+                }};
+                List<Map<String, Object>> invalidActions = new ArrayList<Map<String, Object>>() {
+                    {
+                        add(actionMap);
+                    }
+                };
                 invalidActions.add(actionMap);
-                MongoData catalogMd = MongoDataCreator.CreateCatalogDelete(catalogCondition,invalidActions);
+                MongoData catalogMd = MongoDataCreator.CreateCatalogDelete(MongoQueryCreator.CreateProductId(productId), invalidActions);
 
                 mongoDataList.add(productMd);
                 mongoDataList.add(liveProductMd);
