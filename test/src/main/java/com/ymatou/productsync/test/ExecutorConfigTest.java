@@ -1,9 +1,7 @@
 package com.ymatou.productsync.test;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.commandconfig.AddActivityExecutorConfig;
-import com.ymatou.productsync.domain.executor.commandconfig.AddProductExecutorConfig;
-import com.ymatou.productsync.domain.executor.commandconfig.SetOnTopExecutorConfig;
+import com.ymatou.productsync.domain.executor.commandconfig.*;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
@@ -31,6 +29,13 @@ public class ExecutorConfigTest {
     private AddProductExecutorConfig addProductExecutorConfig;
 
     @Autowired
+    private AddProductPicsExecutorConfig addProductPicsExecutorConfig;
+
+    @Autowired
+    private DeleteProductPicsExecutorConfig deleteProductPicsExecutorConfig;
+
+
+    @Autowired
     private CommandExecutor commandExecutor;
 
     @Test
@@ -51,6 +56,23 @@ public class ExecutorConfigTest {
     public void testAddProduct(){
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    /*
+        验证商品主图同步 - AddProductPics
+     */
+    @Test
+    public void testAddProductPics(){
+        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
+        List<MongoData> updateData = addProductPicsExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testDeleteProductPics() {
+        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
+        List<MongoData> updateData = deleteProductPicsExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
     }
 }

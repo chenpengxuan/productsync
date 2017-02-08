@@ -174,4 +174,17 @@
                                                               AND pdc.[Status] > 0
             WHERE   P.sProductId = #{productId}
     </select>
+
+    <!-- 获取商品有效的图片列表，ActionType: -> AddProductPics & DeleteProductPics -->
+    <select id="getProductPictureList" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+          sOriUrl AS 'pics'
+        FROM dbo.Ymt_ProductPicture WITH(nolock)
+        WHERE sProductId = #{productId,jdbcType=VARCHAR} AND iAction > -1
+        ORDER BY iProductPictureId ASC
+
+    </select>
+
+
 </mapper>
