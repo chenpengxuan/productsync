@@ -16,9 +16,11 @@ import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
 import org.jetbrains.annotations.NotNull;
+import org.jongo.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -31,7 +33,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
 
-    @Autowired
+    @Resource
     private OrderProductInfoFacade orderProductInfoFacade;
 
     @Override
