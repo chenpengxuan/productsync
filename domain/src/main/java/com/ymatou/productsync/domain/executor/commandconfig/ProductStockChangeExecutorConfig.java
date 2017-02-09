@@ -2,11 +2,10 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataCreator;
-import com.ymatou.productsync.domain.executor.MongoQueryCreator;
+import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
-import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by chenfei on 2017/2/9.
@@ -38,9 +36,9 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> catalogList =  commandQuery.getProductCatalogs(productId);
         if(catalogList!=null && !catalogList.isEmpty()){
             catalogList.parallelStream().forEach(catalog->{
-                Map<String,Object> conditions = MongoQueryCreator.CreateProductId(catalog.get("spid").toString());
+                Map<String,Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid").toString());
                 conditions.put("cid",catalog.get("cid"));
-                mongoDataList.add(MongoDataCreator.CreateUpdate(Constants.CatalogDb,conditions, MapUtil.MapToList(catalog)));
+                mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb,conditions, MapUtil.MapToList(catalog)));
 
             });
         }

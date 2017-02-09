@@ -2,8 +2,8 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataCreator;
-import com.ymatou.productsync.domain.executor.MongoQueryCreator;
+import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -40,13 +40,13 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
             if (deleteProducts != null && !deleteProducts.isEmpty()) {
                 //更新商品
-                MongoData productMd = MongoDataCreator.CreateProductUpdate(MongoQueryCreator.CreateProductId(productId), deleteProducts);
+                MongoData productMd = MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), deleteProducts);
                 mongoDataList.add(productMd);
                 //删除直播商品
                 Map<String, Object> matchConditionInfo = new HashMap();
                 matchConditionInfo.put("spid", productId);
                 //fixme:matchConditionInfo.put("end",now); <
-                MongoData liveProductMd = MongoDataCreator.CreateLiveProductDelete(matchConditionInfo, null);
+                MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
                 mongoDataList.add(liveProductMd);
             }
         } else {
@@ -57,18 +57,17 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             if (productOrderCount > 0) {
                 //直播商品更新-istop,status
                 List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
-                mongoDataList.add(MongoDataCreator.CreateLiveProductUpdate(MongoQueryCreator.CreateProductIdAndLiveId(productId, activityId), productTop));
+                mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
             } else {
                 //删除商品相关Mongo数据
-                mongoDataList.add(MongoDataCreator.CreateDelete(Constants.ProductDb, MongoQueryCreator.CreateProductId(productId)));
-                mongoDataList.add(MongoDataCreator.CreateDelete(Constants.LiveProudctDb, MongoQueryCreator.CreateProductId(productId)));
-                mongoDataList.add(MongoDataCreator.CreateDelete(Constants.ProductDescriptionDb, MongoQueryCreator.CreateProductId(productId)));
-                mongoDataList.add(MongoDataCreator.CreateDelete(Constants.CatalogDb, MongoQueryCreator.CreateProductId(productId)));
+                mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDb, MongoQueryBuilder.queryProductId(productId)));
+                mongoDataList.add(MongoDataBuilder.createDelete(Constants.LiveProudctDb, MongoQueryBuilder.queryProductId(productId)));
+                mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDescriptionDb, MongoQueryBuilder.queryProductId(productId)));
+                mongoDataList.add(MongoDataBuilder.createDelete(Constants.CatalogDb, MongoQueryBuilder.queryProductId(productId)));
             }
         }
         //fixme: messagebus notify
         //SnapshotService.NotifyMessageBus(productId, "ProductPutout");
-
         return mongoDataList;
     }
 }

@@ -2,8 +2,8 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataCreator;
-import com.ymatou.productsync.domain.executor.MongoQueryCreator;
+import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -53,7 +53,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
             }
         }
         //设置要更新的数据
-        MongoData liveMongoData = MongoDataCreator.CreateLiveUpdate(MongoQueryCreator.CreateLiveId(activityId), mapList);
+        MongoData liveMongoData = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), mapList);
         mongoDataList.add(liveMongoData);
 
         ///2.直播商品数据更新 -- fixme: 123级分类需要处理
@@ -62,16 +62,14 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         if (liveProductMapList != null) {
             liveProductMapList.parallelStream().forEach(liveProductItem -> {
                 Object pid = liveProductItem.get("spid");
-                Map<String, Object> pidCondition = MongoQueryCreator.CreateProductId(pid.toString());
-                MongoData liveProductMongoData = MongoDataCreator.CreateLiveProductUpdate(pidCondition, MapUtil.MapToList(liveProductItem));
-
+                Map<String, Object> pidCondition = MongoQueryBuilder.queryProductId(pid.toString());
+                MongoData liveProductMongoData = MongoDataBuilder.createLiveProductUpdate(pidCondition, MapUtil.MapToList(liveProductItem));
                 ///2.商品数据更新
                 if (productMapList != null && productMapList.parallelStream().anyMatch(p -> p.containsValue(pid))) {
                     List<Map<String, Object>> productData = productMapList.parallelStream().filter(p -> p.containsValue(pid)).collect(Collectors.toList());
-                    MongoData productMongoData = MongoDataCreator.CreateProductUpdate(pidCondition, productData);
+                    MongoData productMongoData = MongoDataBuilder.createProductUpdate(pidCondition, productData);
                     mongoDataList.add(productMongoData);
                 }
-
                 mongoDataList.add(liveProductMongoData);
             });
         }

@@ -49,7 +49,6 @@ public class Constants {
      */
     public static final String ActivityTemplateDb = "ActivityTemplate";
 
-
     /**
      * 直播商品库名
      */

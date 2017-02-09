@@ -7,36 +7,43 @@ import java.util.Map;
  * Created by chenfei on 2017/2/7.
  * mongo参数创建
  */
-public class MongoQueryCreator {
+public class MongoQueryBuilder {
 
-    public static Map<String,Object> CreateLiveId(long liveId){
+    /**
+     * 根据直播id查询
+     * @param liveId
+     * @return
+     */
+    public static Map<String,Object> queryLiveId(long liveId){
 
         Map<String,Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("lid",liveId);
         return matchConditionInfo;
     }
 
-
-    public static Map<String,Object> CreateProductId(String productId){
+    /**
+     * 根据商品id查询
+     * @param productId
+     * @return
+     */
+    public static Map<String,Object> queryProductId(String productId){
 
         Map<String,Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("spid",productId);
         return matchConditionInfo;
     }
 
-    public static Map<String,Object> CreateProductIdAndLiveId(String productId,long liveId){
+    /**
+     * 根据商品与直播id查询
+     * @param productId
+     * @param liveId
+     * @return
+     */
+    public static Map<String,Object> queryProductIdAndLiveId(String productId,long liveId){
 
         Map<String,Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("spid",productId);
         matchConditionInfo.put("lid",liveId);
-        return matchConditionInfo;
-    }
-
-
-    public static Map<String,Object> CreateByMapKey(String key,Map<String,Object> map){
-
-        Map<String,Object> matchConditionInfo = new HashMap();
-        matchConditionInfo.put(key,map.get(key));
         return matchConditionInfo;
     }
 }

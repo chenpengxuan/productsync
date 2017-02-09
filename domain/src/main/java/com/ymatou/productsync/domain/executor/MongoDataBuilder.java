@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by chenfei on 2017/2/7.
  * mongo数据指令包装器
  */
-public  class MongoDataCreator {
+public  class MongoDataBuilder {
 
     /**
      * 指令创建
@@ -21,7 +21,7 @@ public  class MongoDataCreator {
      * @param updateData
      * @return
      */
-    public static MongoData Create(String tableName,
+    public static MongoData buildMongoData(String tableName,
                                    MongoOperationTypeEnum operationType,
                                    Map<String,Object> matchCondition,
                                    List<Map<String, Object>> updateData) {
@@ -36,14 +36,12 @@ public  class MongoDataCreator {
     /**
      * 创建添加型
      * @param tableName
-     * @param matchCondition
      * @param updateData
      * @return
      */
-    public static MongoData CreateAdd(String tableName,
-                                         Map<String,Object> matchCondition,
+    public static MongoData createAdd(String tableName,
                                          List<Map<String, Object>> updateData){
-        return Create(tableName,MongoOperationTypeEnum.CREATE,matchCondition,updateData);
+        return buildMongoData(tableName,MongoOperationTypeEnum.CREATE,null,updateData);
     }
 
     /**
@@ -53,10 +51,10 @@ public  class MongoDataCreator {
      * @param updateData
      * @return
      */
-    public static MongoData CreateUpdate(String tableName,
+    public static MongoData createUpdate(String tableName,
                                          Map<String,Object> matchCondition,
                                          List<Map<String, Object>> updateData){
-        return Create(tableName,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+        return buildMongoData(tableName,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
     }
 
     /**
@@ -65,9 +63,9 @@ public  class MongoDataCreator {
      * @param matchCondition
      * @return
      */
-    public static MongoData CreateDelete(String tableName,
+    public static MongoData createDelete(String tableName,
                                          Map<String,Object> matchCondition){
-        return Create(tableName,MongoOperationTypeEnum.DELETE,matchCondition,null);
+        return buildMongoData(tableName,MongoOperationTypeEnum.DELETE,matchCondition,null);
     }
 
     /**
@@ -77,9 +75,21 @@ public  class MongoDataCreator {
      * @return
      */
 
-    public static MongoData CreateLiveUpdate(Map<String,Object> matchCondition,
+    public static MongoData createLiveUpdate(Map<String,Object> matchCondition,
                                          List<Map<String, Object>> updateData){
-        return Create(Constants.LiveDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+        return buildMongoData(Constants.LiveDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+    }
+
+    /**
+     * 创建直播更新型
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+
+    public static MongoData createLiveUpsert(Map<String,Object> matchCondition,
+                                             List<Map<String, Object>> updateData){
+        return buildMongoData(Constants.LiveDb,MongoOperationTypeEnum.UPSERT,matchCondition,updateData);
     }
 
     /**
@@ -88,33 +98,30 @@ public  class MongoDataCreator {
      * @param updateData
      * @return
      */
-    public static MongoData CreateProductUpdate(Map<String,Object> matchCondition,
+    public static MongoData createProductUpdate(Map<String,Object> matchCondition,
                                              List<Map<String, Object>> updateData){
-        return Create(Constants.ProductDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+        return buildMongoData(Constants.ProductDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
     }
 
     /**
      * 创建直播添加型
-     * @param matchCondition
      * @param updateData
      * @return
      */
-    public static MongoData CreateLiveAdd(Map<String,Object> matchCondition,
+    public static MongoData createLiveAdd(
                                              List<Map<String, Object>> updateData){
-        return Create(Constants.LiveDb,MongoOperationTypeEnum.CREATE,matchCondition,updateData);
+        return buildMongoData(Constants.LiveDb,MongoOperationTypeEnum.CREATE,null,updateData);
     }
 
     /**
      * 创建商品添加型
-     * @param matchCondition
      * @param updateData
      * @return
      */
-    public static MongoData CreateProductAdd(Map<String,Object> matchCondition,
+    public static MongoData createProductAdd(
                                           List<Map<String, Object>> updateData){
-        return Create(Constants.ProductDb,MongoOperationTypeEnum.CREATE,matchCondition,updateData);
+        return buildMongoData(Constants.ProductDb,MongoOperationTypeEnum.CREATE,null,updateData);
     }
-
 
     /**
      * 创建直播商品更新型
@@ -123,9 +130,28 @@ public  class MongoDataCreator {
      * @return
      */
 
-    public static MongoData CreateLiveProductUpdate(Map<String,Object> matchCondition,
+    public static MongoData createLiveProductUpdate(Map<String,Object> matchCondition,
                                              List<Map<String, Object>> updateData){
-        return Create(Constants.LiveProudctDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPDATE,matchCondition,updateData);
+    }
+
+    /**
+     * 创建商品规格添加型
+     * @param updateData
+     * @return
+     */
+    public static MongoData createCatalogAdd(
+                                             List<Map<String, Object>> updateData){
+        return buildMongoData(Constants.CatalogDb,MongoOperationTypeEnum.CREATE,null,updateData);
+    }
+
+    /**
+     * 创建商品描述图文信息
+     * @param updateData
+     * @return
+     */
+    public static MongoData createProductDescAdd(List<Map<String, Object>> updateData){
+        return buildMongoData(Constants.ProductDescriptionDb,MongoOperationTypeEnum.CREATE,null,updateData);
     }
 
 
@@ -136,9 +162,9 @@ public  class MongoDataCreator {
      * @return
      */
 
-    public static MongoData CreateLiveProductDelete(Map<String,Object> matchCondition,
+    public static MongoData createLiveProductDelete(Map<String,Object> matchCondition,
                                                     List<Map<String, Object>> updateData){
-        return Create(Constants.LiveProudctDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
+        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
     }
 
     /**
@@ -148,8 +174,8 @@ public  class MongoDataCreator {
      * @return
      */
 
-    public static MongoData CreateCatalogDelete(Map<String,Object> matchCondition,
+    public static MongoData createCatalogDelete(Map<String,Object> matchCondition,
                                                     List<Map<String, Object>> updateData){
-        return Create(Constants.CatalogDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
+        return buildMongoData(Constants.CatalogDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
     }
 }

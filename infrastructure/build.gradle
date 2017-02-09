@@ -7,6 +7,7 @@ jar {
 dependencies {
 	compile(project(":facade:model"))
 	compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+	compile("joda-time:joda-time:$jodatimeVersion")
 	compile("org.springframework.boot:spring-boot-starter-data-mongodb:$springBootVersion")
 	compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:$springBootMybatisVersion")
 	compile("org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion")
@@ -47,7 +48,8 @@ dependencies {
 	compile "com.ymatou.disconf:disconf-client:${disconfVersion}"
 
 	//cf-orderApi
-	compile "com.ymatou:sellerquery-facade:${ymatouOrderApiVersion}"
+//	compile "com.ymatou:sellerquery-facade:${ymatouOrderApiVersion}"
+//	compile "com.ymatou:sellerquery-model:${ymatouOrderApiVersion}"
 }
 
 

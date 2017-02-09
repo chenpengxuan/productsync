@@ -2,7 +2,6 @@ package com.ymatou.productsync.domain.sqlrepo;
 
 import com.ymatou.productsync.infrastructure.config.datasource.TargetDataSource;
 import org.apache.ibatis.annotations.Param;
-import org.apache.tomcat.util.digester.ObjectCreateRule;
 
 import java.util.List;
 import java.util.Map;
@@ -44,10 +43,27 @@ public interface CommandQuery {
 
     /**
      * 根据商品id获取商品详情
-     * @param activityId
+     * @param productId
      * @return
      */
     @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductDetailInfo(@Param("productId") String productId);
+
+    /**
+     * 根据商品id获取商品规格详情
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductCatalogInfo(@Param("productId") String productId);
+
+    /**
+     * 根据商品id获取商品描述
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductDescInfo(@Param("productId") String productId);
     List<Map<String, Object>> getProductDetailInfo(@Param("productId") String activityId);
 
     /**
