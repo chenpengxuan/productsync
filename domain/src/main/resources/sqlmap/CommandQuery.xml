@@ -234,7 +234,8 @@
     </select>
 
     <!--获取商品的品牌品类信息-->
-    <select id="getValidLiveByProductId" parameterType="java.lang.String">
+    <select id="getValidLiveByProductId" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
             SELECT
             iActivityId
             FROM [dbo].[Ymt_ProductsInLive] WITH(NOLOCK) WHERE [sProductId] = #{productId}  AND dEndTime>GETDATE() and isnull(iaction,0)>-1
