@@ -48,8 +48,8 @@ dependencies {
 	compile "com.ymatou.disconf:disconf-client:${disconfVersion}"
 
 	//cf-orderApi
-	compile "com.ymatou:sellerquery-facade:${ymatouOrderApiVersion}"
-	compile "com.ymatou:sellerquery-facade-model:${ymatouOrderApiVersion}"
+	compile "com.ymatou.sellerquery:sellerquery-facade-model:${ymatouOrderApiVersion}"
+	compile "com.ymatou.sellerquery:sellerquery-facade-interface:${ymatouOrderApiVersion}"
 	compile "com.ymatou.messagebus:messagebus-client:${messagebusVersion}"
 	compile "com.ymatou.messagebus:messagebus-facade:${messagebusVersion}"
 	compile "com.ymatou.messagebus:messagebus-facade-model:${messagebusVersion}"

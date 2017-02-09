@@ -4,9 +4,6 @@ import com.ymatou.messagebus.client.KafkaBusClient;
 import com.ymatou.messagebus.client.Message;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.infrastructure.constants.Constants;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.UUID;
@@ -40,6 +37,5 @@ public  class MessageBusDispatcher {
         }});
         kafkaBusClient.sendMessage(req);
     }
-
 }
 

@@ -1,11 +1,11 @@
 package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.ExecutorConfigFactory;
 import com.ymatou.productsync.domain.executor.SyncStatusEnum;
-import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +38,6 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
     @Autowired
     private CommandExecutor executor;
 
-    @Autowired
-    private MongoRepository mongoRepository;
-
     /**
      * 根据业务场景指令同步相关信息
      * @param req 基于业务场景的请求
@@ -58,7 +55,11 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
             return BaseResponse.newSuccessInstance();
         }
-        executor.executorCommand(req.getTransactionId(),config.loadSourceData(req.getActivityId(),req.getProductId()));
+        try {
+            executor.executorCommand(req.getTransactionId(), config.loadSourceData(req.getActivityId(), req.getProductId()));
+        }catch (MessageBusException e){
+            ////// FIXME: 2017/2/9 mq 异常处理
+        }
         return BaseResponse.newSuccessInstance();
     }
 }

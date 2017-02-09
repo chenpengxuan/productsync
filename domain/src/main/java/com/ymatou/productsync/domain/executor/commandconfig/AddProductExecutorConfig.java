@@ -39,16 +39,16 @@ public class AddProductExecutorConfig implements ExecutorConfig{
         //创建商品信息
         if(sqlProductDataList != null && !sqlProductDataList.isEmpty()){
             MapUtil.MapFieldToStringArray(sqlProductDataList,"pics",",");
-            sqlProductDataList.get(0).put("ver","1.001");
-            sqlProductDataList.get(0).put("verupdate",new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver","1.001");
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate",new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
             mongoDataList.add(MongoDataBuilder.createProductAdd(sqlProductDataList));
         }
         //创建规格信息
         if(sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()){
             List<Map<String,Object>> tempSqlCatalogDataList = new ArrayList<>();
             List<Map<String,Object>> sqlCatalogPropertyDataList = new ArrayList<>();
-            sqlCatalogDataList.parallelStream().forEach(data ->{
-                if(!tempSqlCatalogDataList.parallelStream().anyMatch(x -> x.containsValue(data.get("cid")))) {
+            sqlCatalogDataList.stream().forEach(data ->{
+                if(!tempSqlCatalogDataList.stream().anyMatch(x -> x.containsValue(data.get("cid")))) {
                     sqlCatalogPropertyDataList.clear();
                     Map<String, Object> tempMap = new HashMap<>();
                     tempMap.putAll(data);
@@ -81,7 +81,7 @@ public class AddProductExecutorConfig implements ExecutorConfig{
             Map<String,Object> tempMap = new HashMap<>();
             tempMap.putAll(sqlProductDescDataList.parallelStream().findFirst().orElse(Collections.emptyMap()));
             tempMap.remove("pic");
-            tempMap.put("pics",sqlProductDescDataList.parallelStream().map(x -> x.get("pic")));
+            tempMap.put("pics",sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
             sqlProductDescDataList.clear();
             sqlProductDescDataList.add(tempMap);
             mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));

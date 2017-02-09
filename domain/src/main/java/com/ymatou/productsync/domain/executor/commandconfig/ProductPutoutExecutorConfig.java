@@ -10,13 +10,18 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
+import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
+import com.ymatou.sellerquery.facade.model.ErrorCode;
+import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
+import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
+import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jongo.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * Created by chenfei on 2017/2/8.
@@ -27,8 +32,9 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
 
     @Autowired
     private CommandQuery commandQuery;
-    @Autowired
-    private LiveCommandQuery liveCommandQuery;
+
+    @Resource
+    private OrderProductInfoFacade orderProductInfoFacade;
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -52,9 +58,17 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 mongoDataList.add(liveProductMd);
             }
         } else {
-            //fixme: 是否下过单，调订单接口
-            //Ymatou.API.Order.Model.Response.YmtAppResponse.GetOrderCountOfProductIdListResponse
+            //是否下过单，调订单接口
             int productOrderCount = 0;
+            GetOrderProductAmountInfosResp respOrderAmount =  orderProductInfoFacade.getOrderProductAmountInfos(                   new GetOrderProductAmountInfosReq(){{
+                setProductIds(new ArrayList<String>(){{ add(productId); }});
+            }});
+            if(respOrderAmount!=null && respOrderAmount.isSuccess()) {
+                HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
+                if (orderAmountMap.get(productId) != null)
+                    productOrderCount = orderAmountMap.get(productId).getPaid();
+            }
+
             //商品下过单更新状态，否则下架后删除Mongo数据
             if (productOrderCount > 0) {
                 //直播商品更新-istop,status
