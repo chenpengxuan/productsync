@@ -3,6 +3,7 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
             }
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("lid", activityId);
-            mongoDataList.add(MongoDataBuilder.createLiveUpsert(matchConditionInfo,sqlDataList));
+            mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId),sqlDataList));
         }
         return mongoDataList;
     }
