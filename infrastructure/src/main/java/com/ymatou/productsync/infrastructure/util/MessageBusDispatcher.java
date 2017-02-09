@@ -3,7 +3,9 @@ package com.ymatou.productsync.infrastructure.util;
 import com.ymatou.messagebus.client.KafkaBusClient;
 import com.ymatou.messagebus.client.Message;
 import com.ymatou.messagebus.client.MessageBusException;
+import com.ymatou.messagebus.facade.PublishKafkaFacade;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.UUID;
@@ -12,10 +14,14 @@ import java.util.UUID;
  * Created by chenfei on 2017/2/9.
  * 消息总线分发
  */
+@Component("messageBusDispatcher")
 public  class MessageBusDispatcher {
 
     @Resource
-    private static KafkaBusClient kafkaBusClient;
+    private  KafkaBusClient kafkaBusClient;
+
+    @Resource
+    private  PublishKafkaFacade publishKafkaClient;
 
     /**
      * 发送消息
@@ -24,7 +30,7 @@ public  class MessageBusDispatcher {
      * @param actionType
      * @throws MessageBusException
      */
-    public static void PublishAsync(String productId, String actionType) throws MessageBusException {
+    public   void PublishAsync(String productId, String actionType) throws MessageBusException {
 
         Message req = new Message();
         req.setAppId(Constants.SNAPSHOP_MQ_ID);
@@ -36,6 +42,7 @@ public  class MessageBusDispatcher {
             setActionType(actionType);
         }});
         kafkaBusClient.sendMessage(req);
+
     }
 }
 

@@ -25,7 +25,8 @@ import java.util.Map;
 public class ProductStockChangeExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
-
+    @Autowired
+    private MessageBusDispatcher messageBusDispatcher;
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.ProductStockChange;
@@ -45,7 +46,7 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
             });
         }
         //messagebus
-        MessageBusDispatcher.PublishAsync(productId,"ProductStockChange");
+        messageBusDispatcher.PublishAsync(productId,"ProductStockChange");
         return mongoDataList;
     }
 }

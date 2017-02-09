@@ -89,7 +89,7 @@ public class MapUtil {
     public static void MapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
         if (mapList == null) return;
         Map<String, Object> map = mapList.parallelStream().findFirst().orElse(Collections.emptyMap());
-        if (map != null) {
+        if (map != null && map.containsKey(field)) {
             map.replace(field, map.get(field), map.get(field).toString().split(seperator));
         }
     }

@@ -28,17 +28,6 @@
         WHERE TransactionId = 1;
     </select>
 
-    <!--设置、取消橱窗商品-->
-    <select id="setTopProduct3"
-            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT TOP 1
-        iActivityId AS 'ActivityId',
-        sName AS 'Name'
-        FROM dbo.Ymt_Activity WITH(NOLOCK)
-        WHERE iActivityId = #{liveId};
-    </select>
-
-
     <!--关闭直播-直播商品+品牌-->
     <select id="getLiveProductByActivityId"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
@@ -68,7 +57,8 @@
        SELECT
         p.isNew AS 'isnew',
         p.dListingTime AS 'newstart',
-        p.dNewEndTime AS 'newend'
+        p.dNewEndTime AS 'newend',
+        p.sProductId as 'spid'
         FROM Ymt_ProductsInLive (NOLOCK) a
         INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
         WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
@@ -280,8 +270,8 @@ SELECT  DISTINCT
     <select id="getLiveProductTime"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 
-        SELECT  ValidStart as 'start'
-        ,ValidEnd as 'end'
+        SELECT  dStartTime as 'start'
+        ,dEndTime as 'end'
         FROM    dbo.Ymt_ProductsInLive
         WHERE   sProductId = #{productId,jdbcType=VARCHAR}
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
@@ -308,6 +298,22 @@ SELECT  DISTINCT
                     ,iAction as 'action'
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
+
+    <!--获取直播商品表信息-->
+    <select id="getProductLiveInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+    SELECT  sProductId AS 'spid'
+            ,iActivityId AS 'lid'
+            ,dStartTime AS 'start'
+            ,dEndTime AS 'end'
+            ,dAddTime AS 'add'
+            ,iSellStatus AS 'status'
+            ,iIsTop AS 'istop'
+            ,dReadyPutawayProductSort AS 'sort'
+    FROM    dbo.Ymt_ProductsInLive
+    WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+    AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 
     <!--根据productid获取规格信息-->
