@@ -99,4 +99,14 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String,Object>> getProductInfoByActivityIdForBrandAndCategory(@Param("activityId") long activityId);
+
+
+    /**
+     * 获取商品规格列表
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductCatalogs(@Param("productId") String productId);
+
 }

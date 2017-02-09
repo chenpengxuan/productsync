@@ -258,4 +258,20 @@
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
     </select>
+
+    <!--获取商品规格列表-->
+    <select id="getProductCatalogs"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        select sProductId as 'spid'
+                    ,sCatalogId as 'cid'
+                    ,fQuotePrice as 'price'
+					,fNewCustomerPrice as 'newp'
+					,fVipPrice as 'vip'
+                    ,fEarnestPrice as 'earnest'
+                    ,iNum as 'stock'
+                    ,iAction as 'action'
+                    from Ymt_Catalogs
+                    WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
 </mapper>
