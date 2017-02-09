@@ -163,9 +163,13 @@ public enum CmdTypeEnum {
     UpdateActivityName,
 
     /**
-     * 修改活动排序
+     * 修改直播商品排序
      */
     UpdateActivitySort,
 
+    /**
+     * 同步活动商品
+     */
+    SyncActivityProduct
     ;
 }
