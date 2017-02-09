@@ -63,7 +63,7 @@ public class MapUtil {
         if (mapList == null || mapList.isEmpty())
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
-        return mapList.stream().map(x -> JSON.toJSON(x)).toArray();
+        return mapList.parallelStream().map(x -> JSON.toJSON(x)).toArray();
     }
 
     /**
@@ -73,7 +73,7 @@ public class MapUtil {
      * @return
      */
     public static List<Map<String, Object>> MapToList(Map<String, Object> map) {
-        return Stream.of(map).collect(Collectors.toList());
+        return Stream.of(map).parallel().collect(Collectors.toList());
     }
 
 
@@ -86,7 +86,7 @@ public class MapUtil {
      */
     public static void MapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
         if (mapList == null) return;
-        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
+        Map<String, Object> map = mapList.parallelStream().findFirst().orElse(Collections.emptyMap());
         if (map != null) {
             map.replace(field, map.get(field), map.get(field).toString().split(seperator));
         }

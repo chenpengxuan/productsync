@@ -35,7 +35,7 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
         {
             Object[] pics =  sqlDataList.parallelStream().map(t->t.get("pics")).toArray();
             sqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics",pics);
-            mongoDataList.add( MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),sqlDataList));
+            mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),sqlDataList));
         }
         return mongoDataList;
     }
