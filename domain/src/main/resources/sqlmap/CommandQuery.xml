@@ -309,4 +309,41 @@ SELECT  DISTINCT
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
+    <!--取待同步的活动商品 -->
+    <select id="getActivityProducts" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+            a.sProductId			AS 'spid',
+            a.iActivityId			AS 'aid',
+            b.SaleSideName			AS 'aname',
+            a.iProductInActivityId	AS 'inaid',
+            a.dBeginTime			AS 'start',
+            a.dEndTime				AS 'end',
+            a.sMarketPrice			AS 'market',
+            CASE WHEN b.LimitNumType = 0 THEN b.iLimitNum ELSE 0 END AS 'alimit',
+            CASE WHEN b.LimitNumType = 1 THEN b.iLimitNum ELSE 0 END AS 'plimit',
+            c.IsTradeIsolation      AS 'isolation',
+            c.IsPartCatalog			AS 'part'
+        FROM dbo.Ymt_ProductsInActivity a WITH(NOLOCK)
+            INNER JOIN dbo.Ymt_Activity b WITH(NOLOCK) ON a.iActivityId = b.iActivityId
+            INNER JOIN dbo.Ymt_ActivityTemplate c WITH(NOLOCK) ON b.iActivityTemplateId = c.iActivityTemplateId
+        WHERE iStatus = 2
+            AND GETDATE() BETWEEN a.dBeginTime AND a.dEndTime
+            AND a.iActivityId = ${activityId}
+            AND a.sProductId = #{productId,jdbcType=VARCHAR}
+
+    </select>
+
+    <!-- 取待同步的活动商品的规格（库存&价格） -->
+    <select id="getActivityProductCatalogs" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+            sCatalogID		AS 'cid',
+            iStockNum		AS 'stock',
+            fActivityPrice	AS 'price'
+        FROM dbo.Ymt_ProductActivityStock WITH(NOLOCK)
+        WHERE GETDATE() BETWEEN dBeginTime AND dEndTime
+            AND sProductID = #{productId,jdbcType=VARCHAR} AND iActivityID = ${activityId}
+
+    </select>
 </mapper>

@@ -46,6 +46,10 @@ public class ExecutorConfigTest {
     @Autowired
     private SuspendSaleExecutorConfig suspendSaleExecutorConfig;
 
+    @Autowired
+    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
+
+
 
     @Autowired
     private CommandExecutor commandExecutor;
@@ -114,6 +118,15 @@ public class ExecutorConfigTest {
     public void testModifyBrandAndCategory(){
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         List<MongoData> updateData = modifyBrandAndCategoryExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testSyncActivityProduct() {
+        String productId = "edc21ac6-5fc9-494c-9f36-110b841f75a0";
+        long activityId = 18946;
+
+        List<MongoData> updateData = syncActivityProductExecutorConfig.loadSourceData(activityId, productId);
         commandExecutor.executorCommand(0, updateData);
     }
 

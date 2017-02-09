@@ -178,4 +178,16 @@ public  class MongoDataBuilder {
                                                     List<Map<String, Object>> updateData){
         return buildMongoData(Constants.CatalogDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
     }
+
+    /**
+     * 同步活动商品数据
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+    public static MongoData syncActivityProducts(Map<String,Object> matchCondition,
+                                                 List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.ActivityProductDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
 }
