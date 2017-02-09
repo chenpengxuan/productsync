@@ -33,7 +33,7 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlDataList = commandQuery.getProductPictureList(productId);
         if(sqlDataList != null && !sqlDataList.isEmpty())
         {
-            Object[] pics =  sqlDataList.stream().map(t->t.get("pics")).toArray();
+            Object[] pics =  sqlDataList.parallelStream().map(t->t.get("pics")).toArray();
             sqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics",pics);
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);

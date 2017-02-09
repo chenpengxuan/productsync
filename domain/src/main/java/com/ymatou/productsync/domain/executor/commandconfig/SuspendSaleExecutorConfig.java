@@ -19,8 +19,7 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
     public CmdTypeEnum getCommand(){ return CmdTypeEnum.SuspendSale; }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId)
-    {
+    public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sourceData = new ArrayList<Map<String, Object>>();
 
@@ -32,9 +31,9 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
         Map<String, Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("spid", productId);
         matchConditionInfo.put("lid", activityId);
-        mongoDataList.add( MongoDataCreator.CreateLiveProductUpdate(matchConditionInfo,sourceData));
+        mongoDataList.add(MongoDataCreator.CreateLiveProductUpdate(matchConditionInfo, sourceData));
 
-        return null;
+        return mongoDataList;
     }
 
 }
