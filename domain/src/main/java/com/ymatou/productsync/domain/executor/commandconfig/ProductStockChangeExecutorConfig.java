@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/9.
- * 库存价格更新
+ * 商品库存增减,价格修改
  */
 @Component("productStockChangeExecutorConfig")
 public class ProductStockChangeExecutorConfig implements ExecutorConfig {
