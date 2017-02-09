@@ -77,14 +77,6 @@ public interface CommandQuery {
     List<Map<String,Object>> getLiveProductTime(@Param("productId") String productId,@Param("activityId") long activityId);
 
     /**
-     * 根据商品id获取商品详情
-     * @param activityId
-     * @return
-     */
-    @TargetDataSource("productDataSource")
-    List<Map<String,Object>> getProductDetailInfo(@Param("productId") String activityId);
-
-    /**
      * 获取商品的品牌品类信息
      * @param productId
      * @return
