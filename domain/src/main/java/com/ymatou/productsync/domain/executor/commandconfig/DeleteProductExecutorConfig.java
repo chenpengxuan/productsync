@@ -29,6 +29,8 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
     private CommandQuery commandQuery;
     @Autowired
     private LiveCommandQuery liveCommandQuery;
+    @Autowired
+    private MessageBusDispatcher messageBusDispatcher;
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -68,24 +70,23 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> liveProducts = commandQuery.getLiveProductTime(productId, activityId);
             MongoData liveProductMd = MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductId(productId), liveProducts);
             //更新直播品牌
-            List<Map<String, Object>> lives = liveCommandQuery.getActivityBrand(activityId);
-            if (lives != null && !lives.isEmpty()) {
-                //MapUtil.MapFieldToStringArray(mapList, "brands", ",");
-                Map<String, Object> activity = lives.get(0);
-                List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
-                if (products != null && !products.isEmpty()) {
-                    products.stream().forEach(t -> t.remove("dAddTime"));
-                    Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
-                    activity.put("brands", brands);
-                }
+            Map<String, Object> lives = new HashMap();
+            List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
+            if (products != null && !products.isEmpty()) {
+                products.stream().forEach(t -> t.remove("dAddTime"));
+                Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+                lives.put("brands", brands);
             }
-            MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), lives);
+            if (!lives.isEmpty()) {
+                MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.MapToList(lives));
+                mongoDataList.add(liveMd);
+            }
             mongoDataList.add(liveProductMd);
-            mongoDataList.add(liveMd);
+
         }
 
         // messagebus notify
-        MessageBusDispatcher.PublishAsync(productId,"DeleteProduct");
+        messageBusDispatcher.PublishAsync(productId,"DeleteProduct");
         return mongoDataList;
     }
 }

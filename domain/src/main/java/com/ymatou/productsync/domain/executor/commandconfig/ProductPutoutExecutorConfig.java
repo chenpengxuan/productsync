@@ -36,6 +36,9 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
     @Resource
     private OrderProductInfoFacade orderProductInfoFacade;
 
+    @Autowired
+    private MessageBusDispatcher messageBusDispatcher;
+
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.ProductPutout;
@@ -83,7 +86,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             }
         }
         // messagebus notify
-         MessageBusDispatcher.PublishAsync(productId,"ProductPutout");
+        messageBusDispatcher.PublishAsync(productId,"ProductPutout");
         return mongoDataList;
     }
 }

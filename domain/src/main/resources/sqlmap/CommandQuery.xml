@@ -68,7 +68,8 @@
        SELECT
         p.isNew AS 'isnew',
         p.dListingTime AS 'newstart',
-        p.dNewEndTime AS 'newend'
+        p.dNewEndTime AS 'newend',
+        p.sProductId as 'spid'
         FROM Ymt_ProductsInLive (NOLOCK) a
         INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
         WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
@@ -280,8 +281,8 @@ SELECT  DISTINCT
     <select id="getLiveProductTime"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 
-        SELECT  ValidStart as 'start'
-        ,ValidEnd as 'end'
+        SELECT  dStartTime as 'start'
+        ,dEndTime as 'end'
         FROM    dbo.Ymt_ProductsInLive
         WHERE   sProductId = #{productId,jdbcType=VARCHAR}
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
