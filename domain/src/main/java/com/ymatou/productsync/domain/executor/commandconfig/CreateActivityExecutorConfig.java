@@ -43,7 +43,7 @@ public class CreateActivityExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> products = commandQuery.getProductInfoByActivityId(activityId);
             if (products != null && !products.isEmpty()) {
                 products.parallelStream().forEach(t -> t.remove("dAddTime"));
-                Object[] brands= products.parallelStream().map(t->t.get("sBrand")).toArray();
+                Object[] brands= products.parallelStream().distinct().map(t->t.get("sBrand")).toArray();
                 activity.put("brands", brands);
             }
             mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId),sqlDataList));
