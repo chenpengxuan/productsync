@@ -100,7 +100,7 @@ allprojects {
         version = "1.0.0"
 
         //ymatou
-        ymatouOrderApiVersion = "1.0.0.20161209"
+        ymatouOrderApiVersion = "1.0.0.2017020901"
 
 //        !--对外暴露的API，需发布到maven私服，供客户端引用。版本会不断升级。 --
 //        !--开发联调，API还未稳定，需要频繁发布时，版本号变更为1.0.0.SNAPSHOT。 --
