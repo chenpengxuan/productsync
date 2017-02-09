@@ -129,6 +129,7 @@ public class ExecutorConfigTest {
         commandExecutor.executorCommand(0, updateData);
     }
 
+    @Test
     public void testCatalogStockChange() {
         String productid = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         List<MongoData> updateData = catalogStockChangeExecutorConfig.loadSourceData(0, productid);

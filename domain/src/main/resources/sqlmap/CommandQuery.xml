@@ -313,7 +313,7 @@ SELECT  DISTINCT
     <!--根据productid获取规格信息-->
     <select id="getProductStockInfo" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        select      ,sCatalogId as 'cid'
+        select      sCatalogId as 'cid'
                     ,iNum as 'stock'
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId}
