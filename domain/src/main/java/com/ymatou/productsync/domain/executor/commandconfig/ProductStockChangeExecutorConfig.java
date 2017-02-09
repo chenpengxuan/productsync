@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -8,6 +9,7 @@ import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
+import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +32,7 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
     }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException {
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.规格价格及库存更新
         List<Map<String, Object>> catalogList =  commandQuery.getProductCatalogs(productId);
@@ -42,7 +44,8 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
 
             });
         }
-        //fixme: messagebus  SnapshotService.NotifyMessageBus(productId, "ProductStockChange");
+        //messagebus
+        MessageBusDispatcher.PublishAsync(productId,"ProductStockChange");
         return mongoDataList;
     }
 }

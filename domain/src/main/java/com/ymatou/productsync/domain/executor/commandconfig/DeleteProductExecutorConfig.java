@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -8,6 +9,7 @@ import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
+import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +36,7 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
     }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException {
         List<MongoData> mongoDataList = new ArrayList<>();
 
         //pc上删除商品
@@ -72,7 +74,9 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             mongoDataList.add(liveProductMd);
             mongoDataList.add(liveMd);
         }
-        //fixme: messagebus notify
+
+        // messagebus notify
+        MessageBusDispatcher.PublishAsync(productId,"DeleteProduct");
         return mongoDataList;
     }
 }
