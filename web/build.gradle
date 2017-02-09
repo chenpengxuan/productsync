@@ -16,6 +16,7 @@ jar {
 
 dependencies {
     compile(project(":facade:impl"))
+    compile(project(":infrastructure"))
     compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:$springBootMybatisVersion")
 }
 

@@ -2,11 +2,15 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataCreator;
+import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 暂停销售
@@ -21,18 +25,12 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
-        List<Map<String, Object>> sourceData = new ArrayList<Map<String, Object>>();
-
+        List<Map<String, Object>> sourceData = new ArrayList<>();
         Map<String, Object> map = new HashMap();
         map.put("status", 0);
         map.put("istop", false);
         sourceData.add(map);
-
-        Map<String, Object> matchConditionInfo = new HashMap();
-        matchConditionInfo.put("spid", productId);
-        matchConditionInfo.put("lid", activityId);
-        mongoDataList.add(MongoDataCreator.CreateLiveProductUpdate(matchConditionInfo, sourceData));
-
+        mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId,activityId), sourceData));
         return mongoDataList;
     }
 

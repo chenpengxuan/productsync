@@ -46,11 +46,11 @@ public class MongoRepository {
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
         switch (mongoData.getOperationType()) {
             case CREATE:
-                return collection.insert(MapUtil.makeJsonStringFromMap(mongoData.getUpdateData())).wasAcknowledged();
+                return collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
             case UPDATE:
-                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
+                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case UPSERT:
-                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().stream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
+                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
             case DELETE:
                 return collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
         }

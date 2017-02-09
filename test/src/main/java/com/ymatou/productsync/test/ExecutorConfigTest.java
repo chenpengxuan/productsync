@@ -79,8 +79,8 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testAddProduct() {
-        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
+    public void testAddProduct(){
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
     }

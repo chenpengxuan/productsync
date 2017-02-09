@@ -2,8 +2,8 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataCreator;
-import com.ymatou.productsync.domain.executor.MongoQueryCreator;
+import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -37,12 +37,12 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         //直播商品更新-istop
         List<Map<String,Object>> productTop = commandQuery.getLiveProductTop(productId,activityId);
-        mongoDataList.add(MongoDataCreator.CreateLiveProductUpdate(MongoQueryCreator.CreateProductIdAndLiveId(productId,activityId),productTop));
+        mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId,activityId),productTop));
 
         //更新直播品牌-brands
         List<Map<String, Object>> lives = liveCommandQuery.getActivityBrand(activityId);
         MapUtil.MapFieldToStringArray(lives, "brands", ",");
-        MongoData liveMd = MongoDataCreator.CreateLiveUpdate(MongoQueryCreator.CreateLiveId(activityId), lives);
+        MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), lives);
         mongoDataList.add(liveMd);
         return mongoDataList;
     }

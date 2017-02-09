@@ -1,13 +1,15 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataCreator;
-import com.ymatou.productsync.domain.executor.MongoQueryCreator;
+import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
+import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +36,7 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
     }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException {
         List<MongoData> mongoDataList = new ArrayList<>();
 
         //pc上删除商品
@@ -42,12 +44,12 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
             if (deleteProducts != null && !deleteProducts.isEmpty()) {
                 //更新商品
-                MongoData productMd = MongoDataCreator.CreateProductUpdate(MongoQueryCreator.CreateProductId(productId), deleteProducts);
+                MongoData productMd = MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), deleteProducts);
                 //删除直播商品
                 Map<String, Object> matchConditionInfo = new HashMap();
                 matchConditionInfo.put("spid", productId);
                 //fixme:matchConditionInfo.put("end",now); <
-                MongoData liveProductMd = MongoDataCreator.CreateLiveProductDelete(matchConditionInfo, null);
+                MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
                 //删规格
                 Map<String, Object> actionMap = new HashMap<String, Object>() {{
                     put("action", "-1");
@@ -56,27 +58,25 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
                     add(actionMap);
                 }};
                 invalidActions.add(actionMap);
-                MongoData catalogMd = MongoDataCreator.CreateCatalogDelete(MongoQueryCreator.CreateProductId(productId), invalidActions);
-
+                MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), invalidActions);
                 mongoDataList.add(productMd);
                 mongoDataList.add(liveProductMd);
                 mongoDataList.add(catalogMd);
             }
-
-
-
         } else { //从直播中删除商品
             //更新直播商品
             List<Map<String, Object>> liveProducts = commandQuery.getLiveProductTime(productId, activityId);
-            MongoData liveProductMd = MongoDataCreator.CreateLiveProductUpdate(MongoQueryCreator.CreateProductId(productId), liveProducts);
+            MongoData liveProductMd = MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductId(productId), liveProducts);
             //更新直播品牌
             List<Map<String, Object>> lives = liveCommandQuery.getActivityBrand(activityId);
             MapUtil.MapFieldToStringArray(lives, "brands", ",");
-            MongoData liveMd = MongoDataCreator.CreateLiveUpdate(MongoQueryCreator.CreateLiveId(activityId), lives);
+            MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), lives);
             mongoDataList.add(liveProductMd);
             mongoDataList.add(liveMd);
         }
-        //fixme: messagebus notify
+
+        // messagebus notify
+        MessageBusDispatcher.PublishAsync(productId,"DeleteProduct");
         return mongoDataList;
     }
 }

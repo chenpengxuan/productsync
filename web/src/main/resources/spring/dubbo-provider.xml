@@ -48,6 +48,16 @@
 
     <dubbo:protocol name="rest" server="tomcat" port="${server.port}" extension="com.ymatou.productsync.infrastructure.config.JacksonConfig"/>
     <!---->
-
+    <!-- 消息总线API生成远程服务代理 -->
+    <dubbo:reference id="publishKafkaClient" interface="com.ymatou.messagebus.facade.PublishKafkaFacade" retries="1" timeout="10000" />
+    <!-- 消息总线客户端 -->
+    <bean id="kafkaBusClient" class="com.ymatou.messagebus.client.KafkaBusClient">
+        <!-- 消息异常消息本地缓存 -->
+        <property name="messageDbPath" value="/data/messagebus/${appId}" />
+        <!-- 异步发送消息线程数，推荐2，可根据发送量及机器性能进行配置 -->
+        <property name="asyncSendMaxThreadNum" value="2" />
+        <!-- 异步发送消息队列长度，推荐10000，可根据发送量及机器性能进行配置 -->
+        <property name="asyncSendMaxQueueNum" value="10000" />
+    </bean>
     <!--<dubbo:reference id="productSyncFacade" interface="com.ymatou.productsync.facade.SyncCommandFacade"/>-->
 </beans>

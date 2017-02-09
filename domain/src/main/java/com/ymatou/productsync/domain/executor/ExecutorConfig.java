@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor;
 
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.model.MongoData;
 
 import java.util.List;
@@ -21,5 +22,5 @@ public interface ExecutorConfig {
      * @param productId
      * @return
      */
-    List<MongoData> loadSourceData(long activityId, String productId);
+    List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException;
 }

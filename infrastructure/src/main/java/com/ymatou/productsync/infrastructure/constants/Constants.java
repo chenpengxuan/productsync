@@ -1,6 +1,7 @@
 package com.ymatou.productsync.infrastructure.constants;
 
 
+import com.alibaba.druid.support.spring.stat.annotation.Stat;
 import com.ymatou.productsync.infrastructure.config.TomcatConfig;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -12,7 +13,8 @@ public class Constants {
     public static final String LOG_PREFIX = "logPrefix";
     public static ConfigurableApplicationContext ctx;
     public static TomcatConfig TOMCAT_CONFIG;
-
+    public static final String SNAPSHOP_MQ_ID = "product";
+    public static final String SNAPSHOP_MQ_CODE = "snapshotmq_from_apollo";
 
     /**
      * Mongo商品库名
@@ -48,7 +50,6 @@ public class Constants {
      * 活动模板库名
      */
     public static final String ActivityTemplateDb = "ActivityTemplate";
-
 
     /**
      * 直播商品库名

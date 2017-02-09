@@ -18,7 +18,6 @@
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1;
     </select>
 
-
     <!--获取商品详细信息-->
     <select id="getProductBaseInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
@@ -54,8 +53,8 @@
 			   a.iIsTop AS 'istop',
 			   a.iSellStatus AS 'status',
 			   p.iBrandId AS 'bid',
-			   p.sBrand AS 'brand',
-			   b.sBrandEn AS 'ebrand',
+			   p.sBrand AS 'bname',
+			   b.sBrandEn AS 'benname',
 			   p.iThirdCategoryId AS 'tcatid'
 		FROM Ymt_ProductsInLive (NOLOCK) a
 		INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
@@ -164,6 +163,7 @@
                          ELSE 1
                     END AS 'newdesc',--是否新图文描述
 					p.isnew AS 'isnew',--是否新品
+					p.IsPspProduct AS 'ispsp',--是否psp商品
 					p.dListingTime AS 'newstart',--新品有效开始时间
 					p.dNewEndTime AS 'newend',--新品有效结束时间
 					p.istop AS 'istop'--是否买手热推商品
@@ -174,6 +174,42 @@
                     LEFT JOIN Ymt_ProductDescConfigWord (NOLOCK) pdc ON pdc.ProductID = P.sProductId
                                                               AND pdc.[Status] > 0
             WHERE   P.sProductId = #{productId}
+    </select>
+
+    <!--获取商品规格详情-->
+    <select id="getProductCatalogInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+SELECT  DISTINCT
+                p.sProductId AS 'spid' ,
+                c.sCatalogId AS 'cid' ,--规格编号
+                fQuotePrice AS 'price',--原价
+                c.fNewCustomerPrice AS 'newp',--新客价
+                c.fEarnestPrice AS 'earnest' ,--定金
+                c.fVipPrice AS 'vip',--VIP价
+                c.iNum AS 'stock',--规格库存
+                c.sSKU AS 'sku',--单品编号
+                cp.sProductProperty AS 'name' ,--属性名称
+                cs.sCategoryAttribute AS 'value' ,--属性值
+                cs.sPicUrl AS 'pic',--属性图
+				ISNULL(c.IsPreSale,0) AS 'presale'--是否预售规格
+        FROM    Ymt_Products (NOLOCK) p
+                LEFT JOIN Ymt_Catalogs (NOLOCK) c ON p.sProductId = c.sProductId
+                LEFT JOIN Ymt_CatalogProperty (NOLOCK) cp ON c.sCatalogId = cp.sCatalogId
+                LEFT JOIN Ymt_CatalogSetAttributes (NOLOCK) cs ON cp.sCatalogPropertyId = cs.sCatalogPropertyId
+  WHERE   p.iAction > -1
+                AND c.iAction > -1
+                AND p.sProductId = #{productId}
+    </select>
+
+    <!--获取商品图文描述-->
+    <select id="getProductDescInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+       SELECT  a.WordContent AS 'content',
+                b.[PictureUrl] AS 'pic',
+                b.ProductID AS 'spid'
+        FROM    Ymt_ProductDescConfigWord (NOLOCK)a
+                JOIN Ymt_ProductDescConfigPicture (NOLOCK)b ON b.ProductID = a.ProductID
+        WHERE   a.ProductID = #{productId} AND b.iAction >-1
     </select>
 
     <!-- 获取商品有效的图片列表，ActionType: -> AddProductPics & DeleteProductPics -->
@@ -251,11 +287,26 @@
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 
-
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         SELECT c.sBrand,c.sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
+    </select>
+
+    <!--获取商品规格列表-->
+    <select id="getProductCatalogs"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        select sProductId as 'spid'
+                    ,sCatalogId as 'cid'
+                    ,fQuotePrice as 'price'
+					,fNewCustomerPrice as 'newp'
+					,fVipPrice as 'vip'
+                    ,fEarnestPrice as 'earnest'
+                    ,iNum as 'stock'
+                    ,iAction as 'action'
+                    from Ymt_Catalogs
+                    WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
 </mapper>

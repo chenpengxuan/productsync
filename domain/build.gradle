@@ -1,4 +1,4 @@
-description = "this is a repository jar"
+description = "this is a domain jar"
 
 jar {
     baseName = 'productsync-domain'
