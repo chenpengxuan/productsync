@@ -2,6 +2,7 @@ package com.ymatou.productsync.domain.sqlrepo;
 
 import com.ymatou.productsync.infrastructure.config.datasource.TargetDataSource;
 import org.apache.ibatis.annotations.Param;
+import org.apache.tomcat.util.digester.ObjectCreateRule;
 
 import java.util.List;
 import java.util.Map;
@@ -66,4 +67,28 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String,Object>> getProductDetailInfo(@Param("productId") String activityId);
+
+    /**
+     * 获取商品的品牌品类信息
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductBrandAndCategory(@Param("productId") String productId);
+
+    /**
+     * 获取有效的和即将开始的Ymt_ProductsInLive
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getValidLiveByProductId(@Param("productId") String productId);
+
+    /**
+     * 根据activityid获取商品品牌和品类
+     * @param activityId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductInfoByActivityIdForBrandAndCategory(@Param("activityId") long activityId);
 }

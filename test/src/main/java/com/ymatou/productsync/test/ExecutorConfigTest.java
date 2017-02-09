@@ -32,6 +32,9 @@ public class ExecutorConfigTest {
     private CreateActivityExecutorConfig createActivityExecutorConfig;
 
     @Autowired
+    private ModifyBrandAndCategoryExecutorConfig modifyBrandAndCategoryExecutorConfig;
+
+    @Autowired
     private AddProductExecutorConfig addProductExecutorConfig;
 
     @Autowired
@@ -71,4 +74,12 @@ public class ExecutorConfigTest {
         List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
     }
+
+    @Test
+    public void testModifyBrandAndCategory(){
+        String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
+        List<MongoData> updateData = modifyBrandAndCategoryExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
 }
