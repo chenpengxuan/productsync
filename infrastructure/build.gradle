@@ -47,7 +47,7 @@ dependencies {
 	compile "com.ymatou.disconf:disconf-client:${disconfVersion}"
 
 	//cf-orderApi
-	compile "com.ymatou:sellerquery-facade:1.0.0.20161209"
+	compile "com.ymatou:sellerquery-facade:${ymatouOrderApiVersion}"
 }
 
 
