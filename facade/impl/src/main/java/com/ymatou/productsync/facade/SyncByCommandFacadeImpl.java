@@ -1,6 +1,8 @@
 package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.ymatou.messagebus.client.Message;
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.ExecutorConfigFactory;
@@ -51,14 +53,18 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
     @Override
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public BaseResponse syncByCommand(SyncByCommandReq req) {
+    public BaseResponse syncByCommand(SyncByCommandReq req)   {
         ExecutorConfig config = executorConfigFactory.getCommand(req.getActionType());
         if ( config == null ) {
             //参数错误，无需MQ重试
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
             return BaseResponse.newSuccessInstance();
         }
-        executor.executorCommand(req.getTransactionId(),config.loadSourceData(req.getActivityId(),req.getProductId()));
+        try {
+            executor.executorCommand(req.getTransactionId(), config.loadSourceData(req.getActivityId(), req.getProductId()));
+        }catch (MessageBusException e){
+            // FIXME: 2017/2/9 
+        }
         return BaseResponse.newSuccessInstance();
     }
 }
