@@ -8,6 +8,7 @@
 package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.BaseRequest;
@@ -91,7 +92,12 @@ public class FacadeAspect {
             resp = buildErrorResponse(joinPoint, e.getErrorCode(), e.getLocalizedMessage());
             logger.error("Failed to execute request: {}, Error:{}", req.getRequestId(),
                     e.getErrorCode() + "|" + e.getErrorCode().getMessage(), e);
-        } catch (Throwable e) {
+        }catch (MessageBusException e) {
+            //前端可能将错误msg直接抛给用户
+            resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
+            logger.error("Unknown error in executing request:{}", req, e);
+        }
+        catch (Throwable e) {
             //前端可能将错误msg直接抛给用户
             resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
             logger.error("Unknown error in executing request:{}", req, e);

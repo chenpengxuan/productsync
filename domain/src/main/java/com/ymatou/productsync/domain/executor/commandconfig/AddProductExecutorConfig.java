@@ -39,8 +39,8 @@ public class AddProductExecutorConfig implements ExecutorConfig{
         //创建商品信息
         if(sqlProductDataList != null && !sqlProductDataList.isEmpty()){
             MapUtil.MapFieldToStringArray(sqlProductDataList,"pics",",");
-            sqlProductDataList.get(0).put("ver","1.001");
-            sqlProductDataList.get(0).put("verupdate",new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver","1.001");
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate",new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
             mongoDataList.add(MongoDataBuilder.createProductAdd(sqlProductDataList));
         }
         //创建规格信息
