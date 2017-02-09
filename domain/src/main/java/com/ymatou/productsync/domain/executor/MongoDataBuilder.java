@@ -154,6 +154,15 @@ public  class MongoDataBuilder {
         return buildMongoData(Constants.ProductDescriptionDb,MongoOperationTypeEnum.CREATE,null,updateData);
     }
 
+    /**
+     * 创建商品直播信息
+     * @param updateData
+     * @return
+     */
+    public static MongoData createProductLiveAdd(List<Map<String, Object>> updateData){
+        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.CREATE,null,updateData);
+    }
+
 
     /**
      * 创建直播商品删除

@@ -28,17 +28,6 @@
         WHERE TransactionId = 1;
     </select>
 
-    <!--设置、取消橱窗商品-->
-    <select id="setTopProduct3"
-            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT TOP 1
-        iActivityId AS 'ActivityId',
-        sName AS 'Name'
-        FROM dbo.Ymt_Activity WITH(NOLOCK)
-        WHERE iActivityId = #{liveId};
-    </select>
-
-
     <!--关闭直播-直播商品+品牌-->
     <select id="getLiveProductByActivityId"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
@@ -308,5 +297,21 @@ SELECT  DISTINCT
                     ,iAction as 'action'
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
+
+    <!--获取直播商品表信息-->
+    <select id="getProductLiveInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+    SELECT  sProductId AS 'spid'
+            ,iActivityId AS 'lid'
+            ,dStartTime AS 'start'
+            ,dEndTime AS 'end'
+            ,dAddTime AS 'add'
+            ,iSellStatus AS 'status'
+            ,iIsTop AS 'istop'
+            ,dReadyPutawayProductSort AS 'sort'
+    FROM    dbo.Ymt_ProductsInLive
+    WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+    AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 </mapper>

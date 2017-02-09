@@ -116,5 +116,4 @@ public class ExecutorConfigTest {
         List<MongoData> updateData = modifyBrandAndCategoryExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
     }
-
 }
