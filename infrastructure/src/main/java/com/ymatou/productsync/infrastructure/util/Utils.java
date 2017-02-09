@@ -10,9 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by zhangyifan on 2016/12/14.
@@ -175,4 +174,16 @@ public class Utils {
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
         return JSON.toJSONString(object, SerializerFeature.WriteDateUseDateFormat, SerializerFeature.SortField);
     }
+
+
+    /**
+     * 得到现在时间
+     *
+     * @return
+     */
+    public static Date getNow() {
+        Date currentTime = new Date();
+        return currentTime;
+    }
+
 }
