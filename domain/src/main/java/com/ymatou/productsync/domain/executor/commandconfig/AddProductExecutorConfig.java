@@ -47,8 +47,8 @@ public class AddProductExecutorConfig implements ExecutorConfig{
         if(sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()){
             List<Map<String,Object>> tempSqlCatalogDataList = new ArrayList<>();
             List<Map<String,Object>> sqlCatalogPropertyDataList = new ArrayList<>();
-            sqlCatalogDataList.parallelStream().forEach(data ->{
-                if(!tempSqlCatalogDataList.parallelStream().anyMatch(x -> x.containsValue(data.get("cid")))) {
+            sqlCatalogDataList.stream().forEach(data ->{
+                if(!tempSqlCatalogDataList.stream().anyMatch(x -> x.containsValue(data.get("cid")))) {
                     sqlCatalogPropertyDataList.clear();
                     Map<String, Object> tempMap = new HashMap<>();
                     tempMap.putAll(data);
@@ -81,7 +81,7 @@ public class AddProductExecutorConfig implements ExecutorConfig{
             Map<String,Object> tempMap = new HashMap<>();
             tempMap.putAll(sqlProductDescDataList.parallelStream().findFirst().orElse(Collections.emptyMap()));
             tempMap.remove("pic");
-            tempMap.put("pics",sqlProductDescDataList.parallelStream().map(x -> x.get("pic")));
+            tempMap.put("pics",sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
             sqlProductDescDataList.clear();
             sqlProductDescDataList.add(tempMap);
             mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));

@@ -36,6 +36,7 @@ public class MapUtil {
     public static String makeJsonStringFromMap(Map<String, Object> map) throws IllegalArgumentException {
         if (map == null || map.isEmpty())
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
         return JSON.toJSONString(map);
     }
 
@@ -49,6 +50,7 @@ public class MapUtil {
     public static Object makeObjFromMap(Map<String, Object> map) throws IllegalArgumentException {
         if (map == null || map.isEmpty())
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
         return JSON.toJSON(map);
     }
 

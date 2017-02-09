@@ -1,11 +1,11 @@
 package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.ExecutorConfigFactory;
 import com.ymatou.productsync.domain.executor.SyncStatusEnum;
-import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
