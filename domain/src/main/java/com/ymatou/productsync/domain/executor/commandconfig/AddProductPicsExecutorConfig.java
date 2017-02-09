@@ -3,6 +3,7 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,7 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
         {
             Object[] pics =  sqlDataList.parallelStream().map(t->t.get("pics")).toArray();
             sqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics",pics);
-            Map<String, Object> matchConditionInfo = new HashMap();
-            matchConditionInfo.put("spid", productId);
-            mongoDataList.add( MongoDataBuilder.createProductUpdate(matchConditionInfo,sqlDataList));
+            mongoDataList.add( MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),sqlDataList));
         }
         return mongoDataList;
     }
