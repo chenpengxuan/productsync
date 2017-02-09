@@ -67,7 +67,7 @@ public  class MongoDataCreator {
      */
     public static MongoData CreateDelete(String tableName,
                                          Map<String,Object> matchCondition){
-        return Create(tableName,MongoOperationTypeEnum.UPDATE,matchCondition,null);
+        return Create(tableName,MongoOperationTypeEnum.DELETE,matchCondition,null);
     }
 
     /**
