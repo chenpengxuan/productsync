@@ -60,6 +60,17 @@ public  class MongoDataCreator {
     }
 
     /**
+     * 创建更新型
+     * @param tableName
+     * @param matchCondition
+     * @return
+     */
+    public static MongoData CreateDelete(String tableName,
+                                         Map<String,Object> matchCondition){
+        return Create(tableName,MongoOperationTypeEnum.DELETE,matchCondition,null);
+    }
+
+    /**
      * 创建直播更新型
      * @param matchCondition
      * @param updateData
@@ -128,5 +139,17 @@ public  class MongoDataCreator {
     public static MongoData CreateLiveProductDelete(Map<String,Object> matchCondition,
                                                     List<Map<String, Object>> updateData){
         return Create(Constants.LiveProudctDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
+    }
+
+    /**
+     * 创建规格删除
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+
+    public static MongoData CreateCatalogDelete(Map<String,Object> matchCondition,
+                                                    List<Map<String, Object>> updateData){
+        return Create(Constants.CatalogDb,MongoOperationTypeEnum.DELETE,matchCondition,updateData);
     }
 }
