@@ -50,6 +50,11 @@ public class ExecutorConfigTest {
     private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
 
 
+    @Autowired
+    private AutoOnShelfProductExecutorConfig autoOnShelfProductExecutorConfig;
+
+    @Autowired
+    private CatalogStockChangeExecutorConfig catalogStockChangeExecutorConfig;
 
     @Autowired
     private CommandExecutor commandExecutor;
@@ -127,6 +132,19 @@ public class ExecutorConfigTest {
         long activityId = 18946;
 
         List<MongoData> updateData = syncActivityProductExecutorConfig.loadSourceData(activityId, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testAutoRefreshProduct() {
+        String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
+        List<MongoData> updateData = autoOnShelfProductExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    public void testCatalogStockChange() {
+        String productid = "acf23898-c735-4f70-adc2-f8e09e60d19f";
+        List<MongoData> updateData = catalogStockChangeExecutorConfig.loadSourceData(0, productid);
         commandExecutor.executorCommand(0, updateData);
     }
 
