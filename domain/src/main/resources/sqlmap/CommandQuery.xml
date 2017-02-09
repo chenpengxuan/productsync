@@ -319,5 +319,11 @@ SELECT  DISTINCT
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId}
     </select>
-
+    <!--根据productid获取商品用户id-->
+    <select id="getProductUser" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select  iUserId as 'userId'
+        from Ymt_Products
+        WHERE iAction =0 and  sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
 </mapper>

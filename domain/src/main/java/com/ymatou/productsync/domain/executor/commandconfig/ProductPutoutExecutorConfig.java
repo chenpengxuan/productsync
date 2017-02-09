@@ -63,26 +63,37 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
         } else {
             //是否下过单，调订单接口
             int productOrderCount = 0;
-            GetOrderProductAmountInfosResp respOrderAmount =  orderProductInfoFacade.getOrderProductAmountInfos(                   new GetOrderProductAmountInfosReq(){{
-                setProductIds(new ArrayList<String>(){{ add(productId); }});
-            }});
-            if(respOrderAmount!=null && respOrderAmount.isSuccess()) {
-                HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
-                if (orderAmountMap.get(productId) != null)
-                    productOrderCount = orderAmountMap.get(productId).getPaid();
-            }
+            List<Map<String, Object>> userIdSource = commandQuery.getProductUser(productId);
+            if (userIdSource != null && !userIdSource.isEmpty()) {
+                Optional<Map<String, Object>> sellerMap = userIdSource.stream().findFirst();
+                if(sellerMap==null || !sellerMap.isPresent())
+                    return mongoDataList;
+                //fixme:error
+                GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(new GetOrderProductAmountInfosReq() {{
+                    setProductIds(new ArrayList<String>() {{
+                        add(productId);
+                    }});
+                    setSellerId(Long.parseLong(sellerMap.get().toString()));
+                    //setBeginTime();
+                }});
+                if (respOrderAmount != null && respOrderAmount.isSuccess()) {
+                    HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
+                    if (orderAmountMap.get(productId) != null)
+                        productOrderCount = orderAmountMap.get(productId).getPaid();
+                }
 
-            //商品下过单更新状态，否则下架后删除Mongo数据
-            if (productOrderCount > 0) {
-                //直播商品更新-istop,status
-                List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
-                mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
-            } else {
-                //删除商品相关Mongo数据
-                mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDb, MongoQueryBuilder.queryProductId(productId)));
-                mongoDataList.add(MongoDataBuilder.createDelete(Constants.LiveProudctDb, MongoQueryBuilder.queryProductId(productId)));
-                mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDescriptionDb, MongoQueryBuilder.queryProductId(productId)));
-                mongoDataList.add(MongoDataBuilder.createDelete(Constants.CatalogDb, MongoQueryBuilder.queryProductId(productId)));
+                //商品下过单更新状态，否则下架后删除Mongo数据
+                if (productOrderCount > 0) {
+                    //直播商品更新-istop,status
+                    List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
+                    mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
+                } else {
+                    //删除商品相关Mongo数据
+                    mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDb, MongoQueryBuilder.queryProductId(productId)));
+                    mongoDataList.add(MongoDataBuilder.createDelete(Constants.LiveProudctDb, MongoQueryBuilder.queryProductId(productId)));
+                    mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDescriptionDb, MongoQueryBuilder.queryProductId(productId)));
+                    mongoDataList.add(MongoDataBuilder.createDelete(Constants.CatalogDb, MongoQueryBuilder.queryProductId(productId)));
+                }
             }
         }
         // messagebus notify

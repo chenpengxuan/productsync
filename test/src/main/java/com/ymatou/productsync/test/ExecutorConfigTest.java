@@ -63,6 +63,12 @@ public class ExecutorConfigTest {
     private  DeleteProductExecutorConfig deleteProductExecutorConfig ;
 
     @Autowired
+    private  ProductPutoutExecutorConfig productPutoutExecutorConfig ;
+
+    @Autowired
+    private  ProductStockChangeExecutorConfig productStockChangeExecutorConfig ;
+
+    @Autowired
     private CommandExecutor commandExecutor;
 
     @Test
@@ -176,6 +182,29 @@ public class ExecutorConfigTest {
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
 
         List<MongoData> update= deleteProductExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(0, update);
+    }
+
+
+    /**
+     * 有错误 Error
+     */
+    @Test
+    public void testProductPutout() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(0, update);
+    }
+
+
+    @Test
+    public void testProductStockChange() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(activityId,productId);
         commandExecutor.executorCommand(0, update);
     }
 

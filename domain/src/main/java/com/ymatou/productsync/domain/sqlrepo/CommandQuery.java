@@ -145,5 +145,13 @@ public interface CommandQuery {
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getProductStockInfo(@Param("productId") String productId);
 
+    /**
+     * 获取商品规格列表
+     *
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductUser(@Param("productId") String productId);
 
 }
