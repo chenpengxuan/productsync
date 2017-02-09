@@ -9,7 +9,6 @@ import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
-import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,10 +26,10 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
 
     @Autowired
     private CommandQuery commandQuery;
+
     @Autowired
     private LiveCommandQuery liveCommandQuery;
-    @Autowired
-    private MessageBusDispatcher messageBusDispatcher;
+
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -40,7 +39,6 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException {
         List<MongoData> mongoDataList = new ArrayList<>();
-
         //pc上删除商品
         if (activityId <= 0) {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
@@ -78,15 +76,11 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
                 lives.put("brands", brands);
             }
             if (!lives.isEmpty()) {
-                MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.MapToList(lives));
+                MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
                 mongoDataList.add(liveMd);
             }
             mongoDataList.add(liveProductMd);
-
         }
-
-        // messagebus notify
-        messageBusDispatcher.PublishAsync(productId,"DeleteProduct");
         return mongoDataList;
     }
 }

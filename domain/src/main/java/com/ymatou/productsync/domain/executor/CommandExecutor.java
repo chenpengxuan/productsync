@@ -1,13 +1,13 @@
 package com.ymatou.productsync.domain.executor;
 
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
+import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
+import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * 业务指令执行器
@@ -31,17 +31,20 @@ public class CommandExecutor {
 
     /**
      * 执行业务场景指令
-     * @param transactionId
-     * @param mongoDataList
+     * @param req
+     * @param config
      */
-    public void executorCommand(int transactionId, List<MongoData> mongoDataList){
+    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config){
         try{
-           boolean isSuccess = mongoRepository.excuteMongo(mongoDataList);
-            updateTransactionInfo(transactionId,isSuccess ? SyncStatusEnum.SUCCESS:SyncStatusEnum.FAILED);
+           boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(),req.getProductId()));
+            updateTransactionInfo(req.getTransactionId(),isSuccess ? SyncStatusEnum.SUCCESS:SyncStatusEnum.FAILED);
+            Asserts.check(isSuccess,"");
+            return isSuccess;
         }catch (IllegalArgumentException argExceptin){
-            updateTransactionInfo(transactionId,SyncStatusEnum.IllegalArgEXCEPTION);
-        }catch (Exception ex){
-            updateTransactionInfo(transactionId,SyncStatusEnum.FAILED);
+            updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.IllegalArgEXCEPTION);
+        }catch (MessageBusException ex){
+            updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.FAILED);
         }
+        return false;
     }
 }

@@ -2,9 +2,7 @@ package com.ymatou.productsync.infrastructure.util;
 
 import com.alibaba.fastjson.JSON;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,7 +72,7 @@ public class MapUtil {
      * @param map
      * @return
      */
-    public static List<Map<String, Object>> MapToList(Map<String, Object> map) {
+    public static List<Map<String, Object>> mapToList(Map<String, Object> map) {
         return Stream.of(map).parallel().collect(Collectors.toList());
     }
 
@@ -86,11 +84,47 @@ public class MapUtil {
      * @param field
      * @param seperator
      */
-    public static void MapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
+    public static void mapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
         if (mapList == null) return;
         Map<String, Object> map = mapList.parallelStream().findFirst().orElse(Collections.emptyMap());
         if (map != null && map.containsKey(field)) {
             map.replace(field, map.get(field), map.get(field).toString().split(seperator));
         }
+    }
+
+    /**
+     * 将选定键数组转换成嵌套子对象
+     * @param mapList
+     * @param fieldList 要转换的key数组
+     * @param nestedObjKey 嵌套对象的key名
+     * @param checkKey 嵌套聚合依据的key
+     * @return
+     *
+     */
+    public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList, String[] fieldList, String nestedObjKey,String checkKey) {
+        if (mapList == null) return null;
+        List<Map<String, Object>> tempDataList = new ArrayList<>();
+        List<Map<String, Object>> nestedDataList = new ArrayList<>();
+        mapList.forEach(data -> {
+            if (!tempDataList.stream().anyMatch(x -> x.containsValue(data.get(checkKey)))) {
+                nestedDataList.clear();
+                Map<String, Object> tempMap = new HashMap<>();
+                tempMap.putAll(data);
+                Arrays.stream(fieldList).forEach(key -> tempMap.remove(key));
+                Map<String, Object> tempPropertyMap = new HashMap<>();
+                Arrays.stream(fieldList).forEach(key -> tempPropertyMap.put(key,data.get(key)));
+                nestedDataList.add(tempPropertyMap);
+                tempMap.put(nestedObjKey, nestedDataList);
+                tempDataList.add(tempMap);
+            } else {
+                List<Map<String, Object>> tempNestedDataList = (List<Map<String, Object>>) tempDataList.parallelStream()
+                        .filter(x -> x.containsValue(data.get(checkKey))).findFirst()
+                        .orElse(Collections.emptyMap()).get(nestedObjKey);
+                Map<String, Object> tempPropertyMap = new HashMap<>();
+                Arrays.stream(fieldList).forEach(key -> tempPropertyMap.put(key,data.get(key)));
+                tempNestedDataList.add(tempPropertyMap);
+            }
+        });
+        return tempDataList;
     }
 }

@@ -3,15 +3,13 @@ package com.ymatou.productsync.test;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
 
 /**
  * 场景业务指令器test
@@ -68,36 +66,41 @@ public class ExecutorConfigTest {
     @Test
     public void testSetOnTopExecutorConfig() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
-        List<MongoData> updateData = setOnTopExecutorConfig.loadSourceData(0, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(null, setOnTopExecutorConfig);
     }
 
     @Test
     public void testAddActivity() {
         long activityId = 157242;
-        List<MongoData> updateData = addActivityExecutorConfig.loadSourceData(activityId, "");
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, addActivityExecutorConfig);
     }
 
     @Test
     public void testConfirmActivity() {
         long activityId = 157242;
-        List<MongoData> updateData = confirmActivityExecutorConfig.loadSourceData(activityId, "");
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, confirmActivityExecutorConfig);
     }
 
     @Test
     public void testCreateActivity() {
         long activityId = 157242;
-        List<MongoData> updateData = createActivityExecutorConfig.loadSourceData(activityId, "");
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, createActivityExecutorConfig);
     }
 
     @Test
     public void testAddProduct(){
-        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
-        List<MongoData> updateData = addProductExecutorConfig.loadSourceData(3152, productId);
-        commandExecutor.executorCommand(25, updateData);
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, addProductExecutorConfig);
     }
 
     /*
@@ -106,43 +109,50 @@ public class ExecutorConfigTest {
     @Test
     public void testAddProductPics() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
-        List<MongoData> updateData = addProductPicsExecutorConfig.loadSourceData(0, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, addProductPicsExecutorConfig);
     }
 
     @Test
     public void testDeleteProductPics() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
-        List<MongoData> updateData = deleteProductPicsExecutorConfig.loadSourceData(0, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, deleteProductPicsExecutorConfig);
     }
 
     @Test
     public void testSuspendSale() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         long activityId = 334567;
-        List<MongoData> updateData = suspendSaleExecutorConfig.loadSourceData(activityId, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, suspendSaleExecutorConfig);
     }
 
     @Test
     public void testModifyBrandAndCategory(){
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
-        List<MongoData> updateData = modifyBrandAndCategoryExecutorConfig.loadSourceData(0, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, modifyBrandAndCategoryExecutorConfig);
     }
 
     @Test
     public void testAutoRefreshProduct() {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
-        List<MongoData> updateData = autoOnShelfProductExecutorConfig.loadSourceData(0, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, autoOnShelfProductExecutorConfig);
     }
 
     public void testCatalogStockChange() {
-        String productid = "acf23898-c735-4f70-adc2-f8e09e60d19f";
-        List<MongoData> updateData = catalogStockChangeExecutorConfig.loadSourceData(0, productid);
-        commandExecutor.executorCommand(0, updateData);
+        String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, catalogStockChangeExecutorConfig);
     }
 
 //
@@ -150,9 +160,10 @@ public class ExecutorConfigTest {
     public void testModifyActivity(){
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
-
-        List<MongoData> update= modifyActivityExecutorConfig.loadSourceData(activityId,"");
-        commandExecutor.executorCommand(0, update);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, modifyActivityExecutorConfig);
     }
 
     /**
@@ -162,9 +173,10 @@ public class ExecutorConfigTest {
     public void testSetOffTop(){
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
-
-        List<MongoData> update= setOffTopExecutorConfig.loadSourceData(activityId,productId);
-        commandExecutor.executorCommand(0, update);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, setOffTopExecutorConfig);
     }
 
     /**
@@ -174,9 +186,9 @@ public class ExecutorConfigTest {
     public void testDeleteProduct() throws MessageBusException {
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
-
-        List<MongoData> update= deleteProductExecutorConfig.loadSourceData(activityId,productId);
-        commandExecutor.executorCommand(0, update);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, deleteProductExecutorConfig);
     }
-
 }

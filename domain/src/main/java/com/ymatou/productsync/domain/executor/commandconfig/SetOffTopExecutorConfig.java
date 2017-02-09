@@ -49,7 +49,7 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
             lives.put("brands", brands);
         }
         if (!lives.isEmpty()) {
-            MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.MapToList(lives));
+            MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
             mongoDataList.add(liveMd);
         }
         return mongoDataList;

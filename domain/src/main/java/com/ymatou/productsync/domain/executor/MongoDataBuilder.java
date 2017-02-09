@@ -111,6 +111,18 @@ public class MongoDataBuilder {
     }
 
     /**
+     * 创建商品更新型
+     *
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+    public static MongoData createProductUpsert(Map<String, Object> matchCondition,
+                                                List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.ProductDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
+    /**
      * 创建直播添加型
      *
      * @param updateData
@@ -157,6 +169,17 @@ public class MongoDataBuilder {
     }
 
     /**
+     * 创建商品规格更新型
+     *
+     * @param updateData
+     * @return
+     */
+    public static MongoData createCatalogUpsert(Map<String, Object> matchCondition,
+            List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.CatalogDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
+    /**
      * 更新商品规格库存
      *
      * @param updateData
@@ -178,12 +201,31 @@ public class MongoDataBuilder {
     }
 
     /**
+     * 更新商品描述图文信息
+     *
+     * @param updateData
+     * @return
+     */
+    public static MongoData createProductDescUpsert(List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.ProductDescriptionDb, MongoOperationTypeEnum.UPSERT, null, updateData);
+    }
+
+    /**
      * 创建商品直播信息
      * @param updateData
      * @return
      */
     public static MongoData createProductLiveAdd(List<Map<String, Object>> updateData){
         return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.CREATE,null,updateData);
+    }
+
+    /**
+     * 更新商品直播信息
+     * @param updateData
+     * @return
+     */
+    public static MongoData createProductLiveUpert(List<Map<String, Object>> updateData){
+        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPSERT,null,updateData);
     }
 
 

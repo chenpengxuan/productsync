@@ -34,7 +34,7 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
                 String cid = t.get("cid").toString();
                 Map<String, Object> conditions = MongoQueryBuilder.queryProductId(productId);
                 conditions.put("cid", cid);
-                mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.MapToList(t)));
+                mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(t)));
             });
         }
         return mongoDataList;
