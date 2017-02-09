@@ -41,8 +41,18 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
 
         //更新直播品牌-brands
         List<Map<String, Object>> lives = liveCommandQuery.getActivityBrand(activityId);
-        MapUtil.MapFieldToStringArray(lives, "brands", ",");
+//        MapUtil.MapFieldToStringArray(lives, "brands", ",");
+        if (lives != null && !lives.isEmpty()) {
+            Map<String, Object> activity = lives.get(0);
+            List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
+            if (products != null && !products.isEmpty()) {
+                products.stream().forEach(t -> t.remove("dAddTime"));
+                Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+                activity.put("brands", brands);
+            }
+        }
         MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), lives);
+
         mongoDataList.add(liveMd);
         return mongoDataList;
     }

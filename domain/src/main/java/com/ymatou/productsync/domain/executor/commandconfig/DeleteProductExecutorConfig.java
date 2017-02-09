@@ -69,7 +69,16 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             MongoData liveProductMd = MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductId(productId), liveProducts);
             //更新直播品牌
             List<Map<String, Object>> lives = liveCommandQuery.getActivityBrand(activityId);
-            MapUtil.MapFieldToStringArray(lives, "brands", ",");
+            if (lives != null && !lives.isEmpty()) {
+                //MapUtil.MapFieldToStringArray(mapList, "brands", ",");
+                Map<String, Object> activity = lives.get(0);
+                List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
+                if (products != null && !products.isEmpty()) {
+                    products.stream().forEach(t -> t.remove("dAddTime"));
+                    Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+                    activity.put("brands", brands);
+                }
+            }
             MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), lives);
             mongoDataList.add(liveProductMd);
             mongoDataList.add(liveMd);

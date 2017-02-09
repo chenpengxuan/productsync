@@ -18,7 +18,7 @@ sContent as 'content',
 sPicUrl as 'pic',
 dAddTime as 'add',
 iCountryId ,
-sBrand as 'brands',
+sBrands as 'brands',
 dBeginTime as 'start',
 dEndTime as 'end',
 iSellerId as 'sid',
@@ -48,7 +48,7 @@ order by a.dAddTime DESC ,sBrand
     <select id="getActivityBrand" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         select top 1
-        sBrand as 'brand'
+        sBrands as 'brand'
         from Ymt_Activity where iActivityId=#{ActivityId}
     </select>
 </mapper>
