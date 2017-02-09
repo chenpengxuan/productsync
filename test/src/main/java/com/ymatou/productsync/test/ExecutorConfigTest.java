@@ -46,6 +46,11 @@ public class ExecutorConfigTest {
     @Autowired
     private SuspendSaleExecutorConfig suspendSaleExecutorConfig;
 
+    @Autowired
+    private AutoOnShelfProductExecutorConfig autoOnShelfProductExecutorConfig;
+
+    @Autowired
+    private CatalogStockChangeExecutorConfig catalogStockChangeExecutorConfig;
 
     @Autowired
     private CommandExecutor commandExecutor;
@@ -79,7 +84,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testAddProduct(){
+    public void testAddProduct() {
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
@@ -111,9 +116,22 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testModifyBrandAndCategory(){
+    public void testModifyBrandAndCategory() {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         List<MongoData> updateData = modifyBrandAndCategoryExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    @Test
+    public void testAutoRefreshProduct() {
+        String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
+        List<MongoData> updateData = autoOnShelfProductExecutorConfig.loadSourceData(0, productId);
+        commandExecutor.executorCommand(0, updateData);
+    }
+
+    public void testCatalogStockChange() {
+        String productid = "acf23898-c735-4f70-adc2-f8e09e60d19f";
+        List<MongoData> updateData = catalogStockChangeExecutorConfig.loadSourceData(0, productid);
         commandExecutor.executorCommand(0, updateData);
     }
 

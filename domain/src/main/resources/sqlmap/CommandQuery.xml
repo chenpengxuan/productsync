@@ -287,6 +287,7 @@ SELECT  DISTINCT
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 
+    <!--获取直播商品的品牌品类-->
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         SELECT c.sBrand,c.sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
@@ -297,7 +298,6 @@ SELECT  DISTINCT
     <!--获取商品规格列表-->
     <select id="getProductCatalogs"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-
         select sProductId as 'spid'
                     ,sCatalogId as 'cid'
                     ,fQuotePrice as 'price'
@@ -309,4 +309,14 @@ SELECT  DISTINCT
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
+
+    <!--根据productid获取规格信息-->
+    <select id="getProductStockInfo" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select      ,sCatalogId as 'cid'
+                    ,iNum as 'stock'
+                    from Ymt_Catalogs
+                    WHERE iAction >-1 and  sProductId = #{productId}
+    </select>
+
 </mapper>

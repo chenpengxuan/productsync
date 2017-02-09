@@ -42,16 +42,6 @@ public class Constants {
     public static final String LiveDb = "Lives";
 
     /**
-     * Mongo活动库名
-     */
-    public static final String ActivityDb = "Activity";
-
-    /**
-     * 活动模板库名
-     */
-    public static final String ActivityTemplateDb = "ActivityTemplate";
-
-    /**
      * 直播商品库名
      */
     public static final String LiveProudctDb = "LiveProducts";
