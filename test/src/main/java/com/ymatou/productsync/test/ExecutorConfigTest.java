@@ -149,11 +149,9 @@ public class ExecutorConfigTest {
      */
     @Test
     public void testSyncActivityProduct() {
-        String productId = "8956e7ad-bf9a-4ed6-bac9-526dd6c026f4";
-        long activityId = 19436;
+        long productInActivityId = 286006;
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(productId);
-        req.setActivityId(activityId);
+        req.setActivityId(productInActivityId);
 
         commandExecutor.executorCommand(req, syncActivityProductExecutorConfig);
     }
@@ -173,7 +171,7 @@ public class ExecutorConfigTest {
         commandExecutor.executorCommand(req, catalogStockChangeExecutorConfig);
     }
 
-//
+
     @Test
     public void testModifyActivity(){
         long activityId = 157242;

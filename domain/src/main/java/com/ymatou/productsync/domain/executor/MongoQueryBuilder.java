@@ -54,14 +54,12 @@ public class MongoQueryBuilder {
     /**
      * 根据商品编号与活动编号查询
      *
-     * @param productId
-     * @param activityId
+     * @param productInactivityId
      * @return
      */
-    public static Map<String, Object> queryProductIdAndActivityId(String productId, long activityId) {
+    public static Map<String, Object> queryProductIdAndActivityId(long productInactivityId) {
         Map<String, Object> matchConditionInfo = new HashMap();
-        matchConditionInfo.put("spid", productId);
-        matchConditionInfo.put("aid", activityId);
+        matchConditionInfo.put("inaid", productInactivityId);
         return matchConditionInfo;
     }
 }

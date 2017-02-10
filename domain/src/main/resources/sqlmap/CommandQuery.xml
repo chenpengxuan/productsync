@@ -317,10 +317,7 @@ SELECT  DISTINCT
         FROM dbo.Ymt_ProductsInActivity a WITH(NOLOCK)
             INNER JOIN dbo.Ymt_Activity b WITH(NOLOCK) ON a.iActivityId = b.iActivityId
             INNER JOIN dbo.Ymt_ActivityTemplate c WITH(NOLOCK) ON b.iActivityTemplateId = c.iActivityTemplateId
-        WHERE iStatus = 2
-            AND GETDATE() BETWEEN a.dBeginTime AND a.dEndTime
-            AND a.iActivityId = ${activityId}
-            AND a.sProductId = #{productId,jdbcType=VARCHAR}
+        WHERE iProductInActivityId = ${productInactivityId}
 
     </select>
 
@@ -332,8 +329,7 @@ SELECT  DISTINCT
             iStockNum		AS 'stock',
             fActivityPrice	AS 'price'
         FROM dbo.Ymt_ProductActivityStock WITH(NOLOCK)
-        WHERE GETDATE() BETWEEN dBeginTime AND dEndTime
-            AND sProductID = #{productId,jdbcType=VARCHAR} AND iActivityID = ${activityId}
+        WHERE iProductInActivityId = ${productInactivityId}
 
     </select>
 

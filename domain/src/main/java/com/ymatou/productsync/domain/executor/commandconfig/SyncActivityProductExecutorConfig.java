@@ -26,15 +26,15 @@ public class SyncActivityProductExecutorConfig implements ExecutorConfig {
     public CmdTypeEnum getCommand(){ return CmdTypeEnum.SyncActivityProduct; }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long productInactivityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
 
-        List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productId, activityId);
-        List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productId, activityId);
+        List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productInactivityId);
+        List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productInactivityId);
 
         if(sqlProducts != null && !sqlProducts.isEmpty() && sqlCatalogs != null && !sqlCatalogs.isEmpty()) {
             sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", sqlCatalogs);
-            mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productId, activityId), sqlProducts));
+            mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productInactivityId), sqlProducts));
         }
         return mongoDataList;
     }
