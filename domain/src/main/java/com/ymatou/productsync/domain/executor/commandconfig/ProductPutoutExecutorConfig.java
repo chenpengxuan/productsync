@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.google.common.collect.Lists;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
@@ -61,14 +62,10 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 if (sellerMap.isEmpty())
                     return mongoDataList;
                 long sellerId = Long.parseLong(sellerMap.get("userId").toString());
-                GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq() {{
-                    setProductIds(new ArrayList<String>() {{
-                        add(productId);
-                    }});
-                    setSellerId(sellerId);
-                    setBeginTime(Utils.addDate(-90));
-                    setEndTime(Utils.getNow());
-                }};
+                GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq();
+                getOrderAmountInfosReqequest.setProductIds(Lists.newArrayList(productId));
+                getOrderAmountInfosReqequest.setSellerId(sellerId);
+
                 GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
                 if (respOrderAmount != null && respOrderAmount.isSuccess()) {
                     HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();

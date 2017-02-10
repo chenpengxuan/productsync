@@ -217,7 +217,7 @@ public class ExecutorConfigTest {
 
 
     /**
-     * 有错误 Error
+     *
      */
     @Test
     public void testProductPutout() throws MessageBusException {
@@ -226,7 +226,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(0,productId);
+        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
         commandExecutor.executorCommand(req, productPutoutExecutorConfig);
     }
 
