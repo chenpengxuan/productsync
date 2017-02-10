@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
 
 /**
  * Created by zhangyifan on 2016/12/14.
@@ -28,31 +28,6 @@ public class Utils {
 
     public static String uuid() {
         return new ObjectId().toHexString();
-    }
-
-    /**
-     * 将maplist中的字符串转换为数组
-     *
-     * @param field
-     * @param seperator
-     */
-    public static void MapFieldToStringArray(Map<String, Object> map, String field, String seperator) throws IllegalArgumentException {
-        if (map == null)
-            throw new IllegalArgumentException("argument can not be empty");
-        map.replace(field, map.get(field), map.get(field).toString().split(seperator));
-    }
-
-    /**
-     * 将List<map>中字符串转换为数组
-     * @param mapList
-     * @param field
-     * @param seperator
-     * @throws IllegalArgumentException
-     */
-    public static void MapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) throws IllegalArgumentException {
-        if (mapList == null)
-            throw new IllegalArgumentException("argument can not be empty");
-        mapList.stream().forEach(xx -> MapFieldToStringArray(xx,field,seperator));
     }
 
     /**
@@ -184,6 +159,12 @@ public class Utils {
     public static Date getNow() {
         Date currentTime = new Date();
         return currentTime;
+    }
+
+    public static Date addDate(int day){
+        Calendar calendar  = Calendar.getInstance();
+        calendar.add(Calendar.DATE,day);
+        return calendar.getTime();
     }
 
 }

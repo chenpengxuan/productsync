@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
 /**
- * @author luoshiqian 2016/8/30 19:17
+ * dubbox config
  */
 @Configuration
 @ImportResource("classpath:spring/dubbo-provider.xml")

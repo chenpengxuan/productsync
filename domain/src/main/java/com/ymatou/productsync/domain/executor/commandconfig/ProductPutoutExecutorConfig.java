@@ -8,10 +8,12 @@ import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import com.ymatou.productsync.infrastructure.util.Utils;
 import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +50,9 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 //删除直播商品
                 Map<String, Object> matchConditionInfo = new HashMap();
                 matchConditionInfo.put("spid", productId);
-                //fixme:matchConditionInfo.put("end",now); <
+                Map<String,Object> tempMap = new HashMap<>();
+                tempMap.put("$lt",new DateTime().toString(com.ymatou.productsync.infrastructure.util.Utils.DEFAULT_DATE_FORMAT));
+                matchConditionInfo.put("end", tempMap);
                 MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
                 mongoDataList.add(liveProductMd);
             }
@@ -60,14 +64,16 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 Map<String, Object> sellerMap = userIdSource.stream().findFirst().orElse(Collections.emptyMap());
                 if (sellerMap.isEmpty())
                     return mongoDataList;
-                //fixme:error
-                GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(new GetOrderProductAmountInfosReq() {{
+                long sellerId = Long.parseLong(sellerMap.get("userId").toString());
+                GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq() {{
                     setProductIds(new ArrayList<String>() {{
                         add(productId);
                     }});
-                    setSellerId(Long.parseLong(sellerMap.get(0).toString()));
-                    //setBeginTime();
-                }});
+                    setSellerId(sellerId);
+                    setBeginTime(Utils.addDate(-90));
+                    setEndTime(Utils.getNow());
+                }};
+                GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
                 if (respOrderAmount != null && respOrderAmount.isSuccess()) {
                     HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
                     if (orderAmountMap.get(productId) != null)

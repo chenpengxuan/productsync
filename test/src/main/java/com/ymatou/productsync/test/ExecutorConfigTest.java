@@ -3,6 +3,7 @@ package com.ymatou.productsync.test;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
+import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * 场景业务指令器test
@@ -61,10 +64,26 @@ public class ExecutorConfigTest {
     private  DeleteProductExecutorConfig deleteProductExecutorConfig ;
 
     @Autowired
-    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
+    private  ProductPutoutExecutorConfig productPutoutExecutorConfig ;
+
+    @Autowired
+    private  ProductStockChangeExecutorConfig productStockChangeExecutorConfig ;
+
 
     @Autowired
     private CommandExecutor commandExecutor;
+
+    @Autowired
+    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
+
+    @Autowired
+    private BatchSetOnShelfExecutorConfig batchSetOnShelfExecutorConfig;
+
+    @Autowired
+    private SetOnShelfUpdateStockNumExecutorConfig setOnShelfUpdateStockNumExecutorConfig;
+
+    @Autowired
+    private ModifyActivityPriceExecutorConfig modifyActivityPriceExecutorConfig;
 
     @Test
     public void testSetOnTopExecutorConfig() {
@@ -99,7 +118,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testAddProduct(){
+    public void testAddProduct() {
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
@@ -136,7 +155,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testModifyBrandAndCategory(){
+    public void testModifyBrandAndCategory() {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
@@ -186,7 +205,7 @@ public class ExecutorConfigTest {
      *
      */
     @Test
-    public void testSetOffTop(){
+    public void testSetOffTop() {
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
@@ -206,5 +225,62 @@ public class ExecutorConfigTest {
         req.setProductId(productId);
         req.setActivityId(activityId);
         commandExecutor.executorCommand(req, deleteProductExecutorConfig);
+    }
+
+
+    /**
+     * 有错误 Error
+     */
+    @Test
+    public void testProductPutout() throws MessageBusException {
+//        long activityId = 157242;
+        long activityId = 0;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, productPutoutExecutorConfig);
+    }
+
+
+    @Test
+    public void testProductStockChange() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(req, productPutoutExecutorConfig);
+    }
+
+    @Test
+    public void testBatchSetOnShelf() {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, batchSetOnShelfExecutorConfig);
+    }
+
+    @Test
+    public void testSetOnShelfUpdateStockNum() {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        req.setProductId(productId);
+        commandExecutor.executorCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+    }
+
+    @Test
+    public void testModifyActivityPrice() {
+        String productId = "edc21ac6-5fc9-494c-9f36-110b841f75a0";
+        long activityId = 18946;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, modifyActivityPriceExecutorConfig);
     }
 }

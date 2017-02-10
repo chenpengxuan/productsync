@@ -42,8 +42,8 @@ public class PerformanceConfig {
 
         aspectJExpressionPointcut.setExpression(
                 "execution(* com.ymatou.productsync.facade.*Facade.*(..))"
-                        + "|| execution(* com.ymatou.productsync.infrastructure.mongodb.*Template.*(..))"
-                        + "|| execution(* com.ymatou.productsync.infrastructure.sqldb.*Query.*(..))"
+                        + "|| execution(* com.ymatou.productsync.domain.mongorepo.MongoRepository.excuteMongo(..))"
+                        + "|| execution(* com.ymatou.productsync.domain.sqlrepo.*Query.*(..))"
         );
 
         return aspectJExpressionPointcut;
