@@ -63,12 +63,15 @@ public class ExecutorConfigTest {
     @Autowired
     private CommandExecutor commandExecutor;
 
+    @Autowired
+    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
+
     @Test
     public void testSetOnTopExecutorConfig() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(null, setOnTopExecutorConfig);
+        commandExecutor.executorCommand(req, setOnTopExecutorConfig);
     }
 
     @Test
@@ -144,9 +147,10 @@ public class ExecutorConfigTest {
     public void testSyncActivityProduct() {
         String productId = "edc21ac6-5fc9-494c-9f36-110b841f75a0";
         long activityId = 18946;
-
-        List<MongoData> updateData = syncActivityProductExecutorConfig.loadSourceData(activityId, productId);
-        commandExecutor.executorCommand(0, updateData);
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executorCommand(req, syncActivityProductExecutorConfig);
     }
 
     @Test
