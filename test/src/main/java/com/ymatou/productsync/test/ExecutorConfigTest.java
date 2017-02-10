@@ -3,6 +3,7 @@ package com.ymatou.productsync.test;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
+import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * 场景业务指令器test
@@ -52,13 +55,20 @@ public class ExecutorConfigTest {
     private CatalogStockChangeExecutorConfig catalogStockChangeExecutorConfig;
 
     @Autowired
-    private ModifyActivityExecutorConfig modifyActivityExecutorConfig;
+    private  ModifyActivityExecutorConfig modifyActivityExecutorConfig ;
 
     @Autowired
-    private SetOffTopExecutorConfig setOffTopExecutorConfig;
+    private  SetOffTopExecutorConfig setOffTopExecutorConfig ;
 
     @Autowired
-    private DeleteProductExecutorConfig deleteProductExecutorConfig;
+    private  DeleteProductExecutorConfig deleteProductExecutorConfig ;
+
+    @Autowired
+    private  ProductPutoutExecutorConfig productPutoutExecutorConfig ;
+
+    @Autowired
+    private  ProductStockChangeExecutorConfig productStockChangeExecutorConfig ;
+
 
     @Autowired
     private CommandExecutor commandExecutor;
@@ -212,6 +222,33 @@ public class ExecutorConfigTest {
         req.setProductId(productId);
         req.setActivityId(activityId);
         commandExecutor.executorCommand(req, deleteProductExecutorConfig);
+    }
+
+
+    /**
+     * 有错误 Error
+     */
+    @Test
+    public void testProductPutout() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(0,productId);
+        commandExecutor.executorCommand(req, productPutoutExecutorConfig);
+    }
+
+
+    @Test
+    public void testProductStockChange() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(req, productPutoutExecutorConfig);
     }
 
     @Test

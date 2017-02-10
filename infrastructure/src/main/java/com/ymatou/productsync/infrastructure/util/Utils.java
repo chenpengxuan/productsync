@@ -186,4 +186,10 @@ public class Utils {
         return currentTime;
     }
 
+    public static Date addDate(int day){
+        Calendar calendar  = Calendar.getInstance();
+        calendar.add(Calendar.DATE,day);
+        return calendar.getTime();
+    }
+
 }
