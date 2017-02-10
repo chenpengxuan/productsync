@@ -145,7 +145,22 @@ public interface CommandQuery {
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getProductStockInfo(@Param("productId") String productId);
 
+    /**
+     * 获取商品规格列表
+     *
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductUser(@Param("productId") String productId);
 
+    /**
+     * 获取直播商品信息
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String,Object>> getProductLiveInfo(@Param("activityId") long activityId,@Param("productId") String productId);
 
     /**
      * 获取待同步的活动商品信息

@@ -57,6 +57,21 @@ public class ExecutorConfigTest {
     private CatalogStockChangeExecutorConfig catalogStockChangeExecutorConfig;
 
     @Autowired
+    private  ModifyActivityExecutorConfig modifyActivityExecutorConfig ;
+
+    @Autowired
+    private  SetOffTopExecutorConfig setOffTopExecutorConfig ;
+
+    @Autowired
+    private  DeleteProductExecutorConfig deleteProductExecutorConfig ;
+
+    @Autowired
+    private  ProductPutoutExecutorConfig productPutoutExecutorConfig ;
+
+    @Autowired
+    private  ProductStockChangeExecutorConfig productStockChangeExecutorConfig ;
+
+    @Autowired
     private CommandExecutor commandExecutor;
 
     @Test
@@ -88,10 +103,10 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testAddProduct(){
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
-        List<MongoData> updateData = addProductExecutorConfig.loadSourceData(0, productId);
-        commandExecutor.executorCommand(0, updateData);
+       public void testAddProduct(){
+        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
+        List<MongoData> updateData = addProductExecutorConfig.loadSourceData(3152, productId);
+        commandExecutor.executorCommand(25, updateData);
     }
 
     /*
@@ -120,7 +135,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testModifyBrandAndCategory(){
+    public void testModifyBrandAndCategory() {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         List<MongoData> updateData = modifyBrandAndCategoryExecutorConfig.loadSourceData(0, productId);
         commandExecutor.executorCommand(0, updateData);
@@ -142,10 +157,68 @@ public class ExecutorConfigTest {
         commandExecutor.executorCommand(0, updateData);
     }
 
+    @Test
     public void testCatalogStockChange() {
         String productid = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         List<MongoData> updateData = catalogStockChangeExecutorConfig.loadSourceData(0, productid);
         commandExecutor.executorCommand(0, updateData);
+    }
+
+//
+    @Test
+    public void testModifyActivity(){
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= modifyActivityExecutorConfig.loadSourceData(activityId,"");
+        commandExecutor.executorCommand(0, update);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void testSetOffTop(){
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= setOffTopExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(0, update);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void testDeleteProduct() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= deleteProductExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(0, update);
+    }
+
+
+    /**
+     * 有错误 Error
+     */
+    @Test
+    public void testProductPutout() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(0, update);
+    }
+
+
+    @Test
+    public void testProductStockChange() throws MessageBusException {
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+
+        List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(activityId,productId);
+        commandExecutor.executorCommand(0, update);
     }
 
 }

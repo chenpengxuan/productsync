@@ -41,7 +41,7 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> products = commandQuery.getProductInfoByActivityId(activityId);
             if (products != null && !products.isEmpty()) {
                 products.stream().forEach(t -> t.remove("dAddTime"));
-                Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).toArray();
+                Object[] brands = products.parallelStream().distinct().map(t -> t.get("sBrand")).toArray();
                 activity.put("brands", brands);
             }
             Map<String, Object> matchConditionInfo = new HashMap();

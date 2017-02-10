@@ -19,13 +19,14 @@ import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/9.
- * 库存价格更新
+ * 商品库存增减,价格修改
  */
 @Component("productStockChangeExecutorConfig")
 public class ProductStockChangeExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
-
+    @Autowired
+    private MessageBusDispatcher messageBusDispatcher;
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.ProductStockChange;
@@ -45,7 +46,7 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
             });
         }
         //messagebus
-        MessageBusDispatcher.PublishAsync(productId,"ProductStockChange");
+        messageBusDispatcher.PublishAsync(productId,"ProductStockChange");
         return mongoDataList;
     }
 }

@@ -18,7 +18,7 @@ sContent as 'content',
 sPicUrl as 'pic',
 dAddTime as 'add',
 iCountryId ,
-sBrand as 'brands',
+sBrands as 'brands',
 dBeginTime as 'start',
 dEndTime as 'end',
 iSellerId as 'sid',
@@ -39,16 +39,16 @@ SELECT sFlag,sCountryNameZh FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId =
 
     <select id="getProductInfoByActivityId" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-SELECT distinct a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+SELECT  a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
 WHERE b.[iActivityId] = #{ActivityId} and isnull(b.iaction,0)>-1
-order by a.dAddTime DESC ,sBrand
+order by a.dAddTime DESC
     </select>
 
     <!--获取直播品牌-->
     <select id="getActivityBrand" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         select top 1
-        sBrand as 'brand'
-        from Ymt_Activity where iActivityId=#{ActivityId}
+        sBrands as 'brand'
+        from Ymt_Activity where iActivityId=#{activityId}
     </select>
 </mapper>

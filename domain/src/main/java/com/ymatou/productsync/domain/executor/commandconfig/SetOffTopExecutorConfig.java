@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,14 +37,21 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
 
         List<MongoData> mongoDataList = new ArrayList<>();
         //直播商品更新-istop
-        List<Map<String,Object>> productTop = commandQuery.getLiveProductTop(productId,activityId);
-        mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId,activityId),productTop));
+        List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
+        mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
 
         //更新直播品牌-brands
-        List<Map<String, Object>> lives = liveCommandQuery.getActivityBrand(activityId);
-        MapUtil.MapFieldToStringArray(lives, "brands", ",");
-        MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), lives);
-        mongoDataList.add(liveMd);
+        Map<String, Object> lives = new HashMap();
+        List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
+        if (products != null && !products.isEmpty()) {
+            products.stream().forEach(t -> t.remove("dAddTime"));
+            Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+            lives.put("brands", brands);
+        }
+        if (!lives.isEmpty()) {
+            MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.MapToList(lives));
+            mongoDataList.add(liveMd);
+        }
         return mongoDataList;
     }
 }
