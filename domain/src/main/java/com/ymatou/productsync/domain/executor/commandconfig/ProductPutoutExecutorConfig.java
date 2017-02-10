@@ -57,15 +57,15 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             int productOrderCount = 0;
             List<Map<String, Object>> userIdSource = commandQuery.getProductUser(productId);
             if (userIdSource != null && !userIdSource.isEmpty()) {
-                Optional<Map<String, Object>> sellerMap = userIdSource.stream().findFirst();
-                if(sellerMap==null || !sellerMap.isPresent())
+                Map<String, Object> sellerMap = userIdSource.stream().findFirst().orElse(Collections.emptyMap());
+                if (sellerMap.isEmpty())
                     return mongoDataList;
                 //fixme:error
                 GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(new GetOrderProductAmountInfosReq() {{
                     setProductIds(new ArrayList<String>() {{
                         add(productId);
                     }});
-                    setSellerId(Long.parseLong(sellerMap.get().toString()));
+                    setSellerId(Long.parseLong(sellerMap.get(0).toString()));
                     //setBeginTime();
                 }});
                 if (respOrderAmount != null && respOrderAmount.isSuccess()) {

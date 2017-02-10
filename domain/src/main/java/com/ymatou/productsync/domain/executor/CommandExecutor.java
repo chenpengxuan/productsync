@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommandExecutor {
     private static final Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
-    
+
     @Autowired
     private MongoRepository mongoRepository;
 
@@ -25,25 +25,26 @@ public class CommandExecutor {
      *
      * @param transactionId 业务凭据id
      */
-    public void updateTransactionInfo(int transactionId,SyncStatusEnum status) {
+    public void updateTransactionInfo(int transactionId, SyncStatusEnum status) {
         ////// FIXME: 2017/2/6 添加操作业务凭据操作
     }
 
     /**
      * 执行业务场景指令
+     *
      * @param req
      * @param config
      */
-    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config){
-        try{
-           boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(),req.getProductId()));
-            updateTransactionInfo(req.getTransactionId(),isSuccess ? SyncStatusEnum.SUCCESS:SyncStatusEnum.FAILED);
-            Asserts.check(isSuccess,"");
+    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config) {
+        try {
+            boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
+            updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
+            Asserts.check(isSuccess, "");
             return isSuccess;
-        }catch (IllegalArgumentException argExceptin){
-            updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.IllegalArgEXCEPTION);
-        }catch (MessageBusException ex){
-            updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.FAILED);
+        } catch (IllegalArgumentException argExceptin) {
+            updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
+        } catch (MessageBusException ex) {
+            updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
         }
         return false;
     }

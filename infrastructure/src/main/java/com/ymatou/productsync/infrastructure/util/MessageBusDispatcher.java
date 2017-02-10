@@ -23,7 +23,7 @@ public class MessageBusDispatcher {
     private KafkaBusClient kafkaBusClient;
 
     /**
-     *
+     *异步发送消息总线
      * @param activityId
      * @param productId
      * @param actionType
@@ -39,7 +39,7 @@ public class MessageBusDispatcher {
             setProductId(productId);
             setActionType(actionType);
         }});
-        kafkaBusClient.sendMessage(req);
+        kafkaBusClient.sendMessageAsync(req);
     }
 
     /**

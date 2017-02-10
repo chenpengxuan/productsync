@@ -71,7 +71,7 @@ public class ExecutorConfigTest {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(null, setOnTopExecutorConfig);
+        commandExecutor.executorCommand(req, setOnTopExecutorConfig);
     }
 
     @Test
