@@ -46,10 +46,6 @@ public class ExecutorConfigTest {
     private SuspendSaleExecutorConfig suspendSaleExecutorConfig;
 
     @Autowired
-    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
-
-
-    @Autowired
     private AutoOnShelfProductExecutorConfig autoOnShelfProductExecutorConfig;
 
     @Autowired
@@ -137,7 +133,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testModifyBrandAndCategory() {
+    public void testModifyBrandAndCategory(){
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
