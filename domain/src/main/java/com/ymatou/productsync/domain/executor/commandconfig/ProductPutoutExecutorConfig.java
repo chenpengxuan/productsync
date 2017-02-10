@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 
 /**
  * Created by chenfei on 2017/2/8.
@@ -61,7 +62,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             List<Map<String, Object>> userIdSource = commandQuery.getProductUser(productId);
             if (userIdSource != null && !userIdSource.isEmpty()) {
                 Optional<Map<String, Object>> sellerMap = userIdSource.stream().findFirst();
-                if(sellerMap==null || !sellerMap.isPresent())
+                if (sellerMap == null || !sellerMap.isPresent())
                     return mongoDataList;
                 //fixme:error
                 GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(new GetOrderProductAmountInfosReq() {{
