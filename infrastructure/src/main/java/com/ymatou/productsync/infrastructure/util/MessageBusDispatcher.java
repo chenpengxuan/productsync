@@ -23,23 +23,23 @@ public class MessageBusDispatcher {
     private KafkaBusClient kafkaBusClient;
 
     /**
-     *异步发送消息总线
-     * @param activityId
+     * 异步发送消息总线
+     *
      * @param productId
      * @param actionType
      * @throws MessageBusException
      */
-    public void PublishAsync(long activityId,String productId, String actionType) throws MessageBusException {
-        Message req = new Message();
-        req.setAppId(Constants.SNAPSHOP_MQ_ID);
-        req.setCode(Constants.SNAPSHOP_MQ_CODE);
-        req.setMessageId(UUID.randomUUID().toString());
-        req.setBody(new MessageBusInfo() {{
+    public void PublishAsync(String productId, String actionType) throws MessageBusException {
+        Message publishMessage = new Message();
+        publishMessage.setAppId(Constants.SNAPSHOP_MQ_ID);
+        publishMessage.setCode(Constants.SNAPSHOP_MQ_CODE);
+        publishMessage.setMessageId(UUID.randomUUID().toString());
+        publishMessage.setBody(new MessageBusInfo() {{
             setAppId(Constants.APP_ID);
             setProductId(productId);
             setActionType(actionType);
         }});
-        kafkaBusClient.sendMessageAsync(req);
+        kafkaBusClient.sendMessageAsync(publishMessage);
     }
 
     /**

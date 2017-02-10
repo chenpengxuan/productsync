@@ -14,6 +14,7 @@ import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,8 +49,11 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 MongoData productMd = MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), deleteProducts);
                 mongoDataList.add(productMd);
                 //删除直播商品
-                Map<String, Object> matchConditionInfo = MongoQueryBuilder.queryProductId(productId);
-                //fixme:matchConditionInfo.put("end",now); <
+                Map<String, Object> matchConditionInfo = new HashMap();
+                matchConditionInfo.put("spid", productId);
+                Map<String,Object> tempMap = new HashMap<>();
+                tempMap.put("$lt",new DateTime().toString(com.ymatou.productsync.infrastructure.util.Utils.DEFAULT_DATE_FORMAT));
+                matchConditionInfo.put("end", tempMap);
                 MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
                 mongoDataList.add(liveProductMd);
             }
