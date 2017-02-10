@@ -33,18 +33,7 @@ public class SyncActivityProductExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productId, activityId);
 
         if(sqlProducts != null && !sqlProducts.isEmpty() && sqlCatalogs != null && !sqlCatalogs.isEmpty()) {
-
-            List<Map<String, Object>> tmpCatalogList = new ArrayList<>();
-            sqlCatalogs.parallelStream().forEach(data-> {
-                Map<String, Object> tmpCatalogMap = new HashMap<>();
-                tmpCatalogMap.put("cid", data.get("cid"));
-                tmpCatalogMap.put("stock", data.get("stock"));
-                tmpCatalogMap.put("price", data.get("price"));
-
-                tmpCatalogList.add(tmpCatalogMap);
-            });
-
-            sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", tmpCatalogList);
+            sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", sqlCatalogs);
             mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productId, activityId), sqlProducts));
         }
         return mongoDataList;

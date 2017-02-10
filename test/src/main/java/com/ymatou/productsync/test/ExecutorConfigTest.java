@@ -61,6 +61,9 @@ public class ExecutorConfigTest {
     private  DeleteProductExecutorConfig deleteProductExecutorConfig ;
 
     @Autowired
+    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
+
+    @Autowired
     private CommandExecutor commandExecutor;
 
     @Test
@@ -140,13 +143,19 @@ public class ExecutorConfigTest {
         commandExecutor.executorCommand(req, modifyBrandAndCategoryExecutorConfig);
     }
 
+    /**
+     * 同步活动商品数据
+     *
+     */
     @Test
     public void testSyncActivityProduct() {
-        String productId = "edc21ac6-5fc9-494c-9f36-110b841f75a0";
-        long activityId = 18946;
+        String productId = "8956e7ad-bf9a-4ed6-bac9-526dd6c026f4";
+        long activityId = 19436;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
 
-        List<MongoData> updateData = syncActivityProductExecutorConfig.loadSourceData(activityId, productId);
-        commandExecutor.executorCommand(0, updateData);
+        commandExecutor.executorCommand(req, syncActivityProductExecutorConfig);
     }
 
     @Test
