@@ -23,8 +23,8 @@ public class MessageBusDispatcher {
     private KafkaBusClient kafkaBusClient;
 
     /**
-     *异步发送消息总线
-     * @param activityId
+     * 异步发送消息总线
+     *
      * @param productId
      * @param actionType
      * @throws MessageBusException

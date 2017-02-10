@@ -63,7 +63,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
         //执行成功的并且是商品相关操作
         if (executor.executorCommand(req, config) && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
             try {
-                messageBusDispatcher.PublishAsync(req.getActivityId(), req.getProductId(), req.getActionType());
+                messageBusDispatcher.PublishAsync(req.getProductId(), req.getActionType());
             } catch (MessageBusException e) {
                 executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
             }
