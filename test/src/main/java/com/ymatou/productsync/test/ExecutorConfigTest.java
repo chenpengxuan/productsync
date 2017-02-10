@@ -221,12 +221,12 @@ public class ExecutorConfigTest {
      */
     @Test
     public void testProductPutout() throws MessageBusException {
-        long activityId = 157242;
+//        long activityId = 157242;
+        long activityId = 0;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
         commandExecutor.executorCommand(req, productPutoutExecutorConfig);
     }
 

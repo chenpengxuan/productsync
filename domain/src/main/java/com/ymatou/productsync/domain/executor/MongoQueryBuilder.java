@@ -16,7 +16,6 @@ public class MongoQueryBuilder {
      * @return
      */
     public static Map<String, Object> queryLiveId(long liveId) {
-
         Map<String, Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("lid", liveId);
         return matchConditionInfo;
@@ -29,7 +28,6 @@ public class MongoQueryBuilder {
      * @return
      */
     public static Map<String, Object> queryProductId(String productId) {
-
         Map<String, Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("spid", productId);
         return matchConditionInfo;
@@ -43,7 +41,6 @@ public class MongoQueryBuilder {
      * @return
      */
     public static Map<String, Object> queryProductIdAndLiveId(String productId, long liveId) {
-
         Map<String, Object> matchConditionInfo = new HashMap();
         matchConditionInfo.put("spid", productId);
         matchConditionInfo.put("lid", liveId);

@@ -30,16 +30,16 @@ public class MessageBusDispatcher {
      * @throws MessageBusException
      */
     public void PublishAsync(long activityId,String productId, String actionType) throws MessageBusException {
-        Message req = new Message();
-        req.setAppId(Constants.SNAPSHOP_MQ_ID);
-        req.setCode(Constants.SNAPSHOP_MQ_CODE);
-        req.setMessageId(UUID.randomUUID().toString());
-        req.setBody(new MessageBusInfo() {{
+        Message message = new Message();
+        message.setAppId(Constants.SNAPSHOP_MQ_ID);
+        message.setCode(Constants.SNAPSHOP_MQ_CODE);
+        message.setMessageId(UUID.randomUUID().toString());
+        message.setBody(new MessageBusInfo() {{
             setAppId(Constants.APP_ID);
             setProductId(productId);
             setActionType(actionType);
         }});
-        kafkaBusClient.sendMessageAsync(req);
+        kafkaBusClient.sendMessageAsync(message);
     }
 
     /**
