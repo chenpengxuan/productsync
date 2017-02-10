@@ -226,7 +226,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
+        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(0,productId);
         commandExecutor.executorCommand(req, productPutoutExecutorConfig);
     }
 
