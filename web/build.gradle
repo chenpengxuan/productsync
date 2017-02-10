@@ -8,11 +8,9 @@ mainClassName = "com.ymatou.productsync.web.ProductSyncApplication"
 
 jar {
     baseName = 'productsync-web'
-
     exclude('logback-test.xml')
     exclude { it.name.endsWith('.properties'); }
 }
-
 
 dependencies {
     compile(project(":facade:impl"))
@@ -36,6 +34,7 @@ task copyJars(type: Copy, dependsOn: jar) {
 //复制配置
 task copyConfig(type: Copy) {
     from "$projectDir/src/main/resources/disconf.properties"
+    from "$projectDir/src/main/resources/application.properties"
     into "$buildDir/dist/conf"
 }
 
