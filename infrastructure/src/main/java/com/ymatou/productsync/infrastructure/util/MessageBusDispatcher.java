@@ -29,17 +29,17 @@ public class MessageBusDispatcher {
      * @param actionType
      * @throws MessageBusException
      */
-    public void PublishAsync(long activityId,String productId, String actionType) throws MessageBusException {
-        Message message = new Message();
-        message.setAppId(Constants.SNAPSHOP_MQ_ID);
-        message.setCode(Constants.SNAPSHOP_MQ_CODE);
-        message.setMessageId(UUID.randomUUID().toString());
-        message.setBody(new MessageBusInfo() {{
+    public void PublishAsync(String productId, String actionType) throws MessageBusException {
+        Message publishMessage = new Message();
+        publishMessage.setAppId(Constants.SNAPSHOP_MQ_ID);
+        publishMessage.setCode(Constants.SNAPSHOP_MQ_CODE);
+        publishMessage.setMessageId(UUID.randomUUID().toString());
+        publishMessage.setBody(new MessageBusInfo() {{
             setAppId(Constants.APP_ID);
             setProductId(productId);
             setActionType(actionType);
         }});
-        kafkaBusClient.sendMessageAsync(message);
+        kafkaBusClient.sendMessageAsync(publishMessage);
     }
 
     /**
