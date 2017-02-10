@@ -81,9 +81,7 @@ public class FacadeAspect {
         try {
 
             req.validate();
-
             resp = joinPoint.proceed(new Object[]{req});
-
         } catch (IllegalArgumentException e) {
             resp = buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, e.getLocalizedMessage());
             logger.error("Invalid request: {}", req, e);

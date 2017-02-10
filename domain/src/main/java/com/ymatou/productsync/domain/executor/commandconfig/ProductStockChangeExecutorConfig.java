@@ -9,7 +9,6 @@ import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
-import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +24,7 @@ import java.util.Map;
 public class ProductStockChangeExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
-    @Autowired
-    private MessageBusDispatcher messageBusDispatcher;
+
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.ProductStockChange;
@@ -41,12 +39,10 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
             catalogList.parallelStream().forEach(catalog->{
                 Map<String,Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid").toString());
                 conditions.put("cid",catalog.get("cid"));
-                mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb,conditions, MapUtil.MapToList(catalog)));
+                mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb,conditions, MapUtil.mapToList(catalog)));
 
             });
         }
-        //messagebus
-        messageBusDispatcher.PublishAsync(productId,"ProductStockChange");
         return mongoDataList;
     }
 }

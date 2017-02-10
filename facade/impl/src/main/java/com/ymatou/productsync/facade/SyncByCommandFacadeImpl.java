@@ -8,6 +8,7 @@ import com.ymatou.productsync.domain.executor.ExecutorConfigFactory;
 import com.ymatou.productsync.domain.executor.SyncStatusEnum;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
+import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,12 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
     private CommandExecutor executor;
 
     /**
+     * 消息总线客户端
+     */
+    @Autowired
+    private MessageBusDispatcher messageBusDispatcher;
+
+    /**
      * 根据业务场景指令同步相关信息
      * @param req 基于业务场景的请求
      * @return
@@ -55,10 +62,13 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade{
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
             return BaseResponse.newSuccessInstance();
         }
-        try {
-            executor.executorCommand(req.getTransactionId(), config.loadSourceData(req.getActivityId(), req.getProductId()));
-        }catch (MessageBusException e){
-            ////// FIXME: 2017/2/9 mq 异常处理
+        //如果同步数据成功才发送消息给到商品快照进行处理，否则没有意义
+        if (executor.executorCommand(req, config)){
+            try {
+                messageBusDispatcher.PublishAsync(req.getActivityId(),req.getProductId(),req.getActionType());
+            } catch (MessageBusException e) {
+                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
+            }
         }
         return BaseResponse.newSuccessInstance();
     }

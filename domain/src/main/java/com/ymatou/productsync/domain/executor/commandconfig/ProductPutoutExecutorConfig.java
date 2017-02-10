@@ -7,21 +7,19 @@ import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
-import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
-import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
-import com.ymatou.sellerquery.facade.model.ErrorCode;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
-import org.jetbrains.annotations.NotNull;
-import org.jongo.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/8.
@@ -35,9 +33,6 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
 
     @Resource
     private OrderProductInfoFacade orderProductInfoFacade;
-
-    @Autowired
-    private MessageBusDispatcher messageBusDispatcher;
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -96,8 +91,6 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 }
             }
         }
-        // messagebus notify
-        messageBusDispatcher.PublishAsync(productId,"ProductPutout");
         return mongoDataList;
     }
 }

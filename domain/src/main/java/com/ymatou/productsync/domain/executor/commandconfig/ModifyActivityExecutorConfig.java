@@ -70,7 +70,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
             liveProductMapList.parallelStream().forEach(liveProductItem -> {
                 Object pid = liveProductItem.get("spid");
                 Map<String, Object> pidCondition = MongoQueryBuilder.queryProductId(pid.toString());
-                MongoData liveProductMongoData = MongoDataBuilder.createLiveProductUpdate(pidCondition, MapUtil.MapToList(liveProductItem));
+                MongoData liveProductMongoData = MongoDataBuilder.createLiveProductUpdate(pidCondition, MapUtil.mapToList(liveProductItem));
                 ///2.商品数据更新
                 if (productMapList != null && productMapList.parallelStream().anyMatch(p -> p.containsValue(pid))) {
                     List<Map<String, Object>> productData = productMapList.parallelStream().filter(p -> p.containsValue(pid)).collect(Collectors.toList());

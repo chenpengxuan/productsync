@@ -3,6 +3,7 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -15,11 +16,11 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
- * 添加商品
+ * 修改上架商品信息
  * Created by chenpengxuan on 2017/2/8.
  */
-@Component("addProductExecutorConfig")
-public class AddProductExecutorConfig implements ExecutorConfig {
+@Component("modifyPutawayProductInfoExecutorConfig")
+public class ModifyPutawayProductInfoExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
 
@@ -28,7 +29,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
 
     @Override
     public CmdTypeEnum getCommand() {
-        return CmdTypeEnum.AddProduct;
+        return CmdTypeEnum.ModifyPutawayProductInfo;
     }
 
     @Override
@@ -44,16 +45,17 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //直播信息
         List<Map<String, Object>> sqlLiveDataList = liveCommandQuery.getProductInfoByActivityId(activityId);
         List<MongoData> mongoDataList = new ArrayList<>();
-        //创建商品信息
+        //更新商品信息
         if (sqlProductDataList != null && !sqlProductDataList.isEmpty()) {
             MapUtil.mapFieldToStringArray(sqlProductDataList, "pics", ",");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
-            mongoDataList.add(MongoDataBuilder.createProductAdd(sqlProductDataList));
+            mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId),sqlProductDataList));
         }
-        //创建规格信息
+        //更新规格信息
         if (sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()) {
-            mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));
+
+            mongoDataList.add(MongoDataBuilder.createCatalogUpsert(MongoQueryBuilder.queryProductId(productId),MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));
         }
         //创建商品图文描述信息
         if (sqlProductDescDataList != null && !sqlProductDescDataList.isEmpty()) {
@@ -63,7 +65,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempMap.put("pics", sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
             sqlProductDescDataList.clear();
             sqlProductDescDataList.add(tempMap);
-            mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));
+            mongoDataList.add(MongoDataBuilder.createProductDescUpsert(sqlProductDescDataList));
         }
         //创建直播商品信息
         if(sqlProductInLiveDataList != null && !sqlProductInLiveDataList.isEmpty()){
@@ -80,7 +82,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempMap.put("ebrand",productMap.get("ebrand"));
             tempMap.put("comments",0);
             tempMap.put("lname","");
-            mongoDataList.add(MongoDataBuilder.createProductLiveAdd(sqlProductInLiveDataList));
+            mongoDataList.add(MongoDataBuilder.createProductLiveUpert(sqlProductInLiveDataList));
         }
         //更新直播信息
         if (sqlLiveDataList != null && !sqlLiveDataList.isEmpty()) {
@@ -89,8 +91,8 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             Map<String,Object> tempMap = new HashMap<>();
             tempMap.put("brands",brands);
             sqlLiveDataList.add(tempMap);
-            mongoDataList.add(MongoDataBuilder.createLiveAdd(sqlLiveDataList));
         }
+        mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId),sqlLiveDataList));
         return mongoDataList;
     }
 }
