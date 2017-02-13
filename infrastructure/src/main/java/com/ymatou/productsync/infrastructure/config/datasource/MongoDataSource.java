@@ -20,6 +20,7 @@ public class MongoDataSource {
     @Bean
     public Jongo jongoClient(){
         MongoClientURI uri = new MongoClientURI(mongoProps.getMongoProductUrl());
+        //Todo getDB deprecated,please use getDatabase
         DB db =new MongoClient(uri).getDB(uri.getDatabase());
         return new Jongo(db);
     }
