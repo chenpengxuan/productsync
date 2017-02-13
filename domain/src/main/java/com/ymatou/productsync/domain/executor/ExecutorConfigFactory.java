@@ -37,7 +37,7 @@ public class ExecutorConfigFactory {
     public ExecutorConfig getCommand(String command) {
         CmdTypeEnum cmdTypeEnum = null;
         try {
-            cmdTypeEnum = CmdTypeEnum.valueOf(command.toUpperCase());
+            cmdTypeEnum = CmdTypeEnum.valueOf(command);
         } catch (Exception ex) {
             logger.error("Unknown sync command:{}", command, ex);
             return null;
