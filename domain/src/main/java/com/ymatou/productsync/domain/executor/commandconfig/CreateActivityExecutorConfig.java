@@ -29,7 +29,7 @@ public class CreateActivityExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getActivityInfo(activityId);
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
-            Map<String, Object> activity = sqlDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
+            Map<String, Object> activity = sqlDataList.stream().findFirst().orElse(Collections.emptyMap());
             int countryId = Integer.parseInt(activity.get("iCountryId").toString());
             activity.remove("iCountryId");
             List<Map<String, Object>> country = commandQuery.getCountryInfo(countryId);

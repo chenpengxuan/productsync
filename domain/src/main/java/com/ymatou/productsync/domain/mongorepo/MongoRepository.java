@@ -30,6 +30,7 @@ public class MongoRepository {
         if (mongoDataList == null || mongoDataList.isEmpty())
             throw new IllegalArgumentException("mongoDataList 不能为空");
         List<Boolean> resultList = new ArrayList();
+        //TODO 单笔异常会引起整个列表失败，需要一层异常处理
         mongoDataList.stream().forEach(x -> resultList.add(processMongoData(x)));
         return !resultList.contains(false);
     }
@@ -44,6 +45,7 @@ public class MongoRepository {
         if (mongoData.getTableName().isEmpty())
             throw new IllegalArgumentException("mongo table name 不能为空");
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
+        //TODO 需要把操作类型，条件和参数数据打个debug日志
         switch (mongoData.getOperationType()) {
             case CREATE:
                 return collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
