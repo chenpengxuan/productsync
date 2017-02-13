@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 public class DynamicDataSourceAspect {
 
     private final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
+    //TODO 有没有多线程问题?
     private final StopWatch sw = new StopWatch();
     @Pointcut("execution(* com.ymatou.productsync.domain.sqlrepo.*Query.*(..))")
     public void executeRepository() {
@@ -42,6 +43,7 @@ public class DynamicDataSourceAspect {
             if (m != null && m.isAnnotationPresent(TargetDataSource.class)) {
                 TargetDataSource data = m.getAnnotation(TargetDataSource.class);
                 DynamicDataSourceContextHolder.setDataSourceType(data.value());
+               //TODO using DEBUG mode
                 logger.info("DataSource：" + data.value());
                 sw.reset();
                 sw.start();
