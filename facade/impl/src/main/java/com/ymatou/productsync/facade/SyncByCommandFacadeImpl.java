@@ -65,6 +65,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             try {
                 messageBusDispatcher.PublishAsync(req.getProductId(), req.getActionType());
             } catch (MessageBusException e) {
+                //TODO 总线有自己客户端的补偿机制，你这里可以不用补偿了，打个异常日志
                 executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
             }
         }
