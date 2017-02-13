@@ -61,13 +61,15 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             return BaseResponse.newSuccessInstance();
         }
         //执行成功的并且是商品相关操作
-        if (executor.executorCommand(req, config) && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
-            try {
-                messageBusDispatcher.PublishAsync(req.getProductId(), req.getActionType());
-            } catch (MessageBusException e) {
-                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
+        if (executor.executorCommand(req, config))
+            if (CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) { //TODO 这行代码好晦涩，需要加点注释说明下
+                try {
+                    messageBusDispatcher.PublishAsync(req.getProductId(), req.getActionType());
+                } catch (MessageBusException e) {
+                    //TODO 总线有自己客户端的补偿机制，你这里可以不用补偿了，打个异常日志
+                    executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
+                }
             }
-        }
         return BaseResponse.newSuccessInstance();
     }
 }

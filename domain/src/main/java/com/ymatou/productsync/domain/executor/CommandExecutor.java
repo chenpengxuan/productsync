@@ -42,10 +42,13 @@ public class CommandExecutor {
             Asserts.check(isSuccess, "");
             return isSuccess;
         } catch (IllegalArgumentException argExceptin) {
+            //TODO 加上异常监控
             updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
         } catch (MessageBusException ex) {
+            //TODO 这里有总线操作吗？ lzh
             updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
         }
+        //TODO 其他的异常不需要捕获吗？ lzh
         return false;
     }
 }
