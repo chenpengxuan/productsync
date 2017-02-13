@@ -1,12 +1,9 @@
 package com.ymatou.productsync.domain.executor;
 
+import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
-import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
-import com.ymatou.productsync.domain.sqlrepo.TransactionInfo;
-import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
-import com.ymatou.productsync.infrastructure.util.Utils;
-import org.joda.time.DateTime;
+import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
