@@ -1,6 +1,6 @@
 package com.ymatou.productsync.domain.mongorepo;
 
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
@@ -50,9 +50,15 @@ public class MongoRepository {
             case CREATE:
                 return collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
             case UPDATE:
-                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).multi().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
+                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                        .multi()
+                        .with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap())))
+                        .getN() > 0;
             case UPSERT:
-                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).upsert().with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap()))).getN() > 0;
+                return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                        .upsert()
+                        .with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap())))
+                        .getN() > 0;
             case DELETE:
                 return collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
         }

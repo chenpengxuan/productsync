@@ -3,11 +3,8 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.model.MongoData;
-import net.sourceforge.jtds.jdbc.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import org.springframework.stereotype.Component;
-import com.ymatou.productsync.domain.executor.*;
 
 import java.sql.Timestamp;
 import java.util.*;
