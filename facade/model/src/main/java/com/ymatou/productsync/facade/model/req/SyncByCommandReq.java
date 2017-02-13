@@ -4,7 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 
 /**
- * Created by zhangyifan on 2016/12/9.
+ * Created by chenpengxuan on 2016/12/9.
  */
 public class SyncByCommandReq extends BaseRequest {
 

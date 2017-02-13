@@ -3,7 +3,6 @@ package com.ymatou.productsync.domain.sqlrepo;
 import com.ymatou.productsync.infrastructure.config.datasource.TargetDataSource;
 import org.apache.ibatis.annotations.Param;
 
-import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Map;
 
@@ -181,4 +180,19 @@ public interface CommandQuery {
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getActivityProductCatalogs(@Param("productId") String productId,@Param("activityId") long activityId);
 
+    /**
+     * 更新商品业务凭据
+     * @param transactionInfo
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    int updateTransactionInfo(TransactionInfo transactionInfo);
+
+    /**
+     * 根据transactionId获取业务凭据信息
+     * @param transactionId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    TransactionInfo getTransactionInfo(@Param("transactionId") long transactionId);
 }
