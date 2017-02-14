@@ -339,6 +339,7 @@ SELECT  DISTINCT
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
     SELECT  sProductId AS 'spid'
             ,iActivityId AS 'lid'
+            ,iUserId AS 'sid'
             ,dStartTime AS 'start'
             ,dEndTime AS 'end'
             ,dAddTime AS 'add'
@@ -369,7 +370,7 @@ SELECT  DISTINCT
 
     <!--根据transactionId获取业务凭据信息-->
     <select id="getTransactionInfo"
-            resultMap="com.ymatou.productsync.domain.sqlrepo.TransactionInfo">
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.transactionInfo">
              SELECT [TransactionId]
                 ,[NewTranStatus]
                 ,[NewRetryTimes]
@@ -379,7 +380,7 @@ SELECT  DISTINCT
     </select>
 
     <!--更新商品业务凭据信息-->
-    <update id="updateTransactionInfo" parameterType="com.ymatou.productsync.domain.sqlrepo.TransactionInfo">
+    <update id="updateTransactionInfo" parameterType="com.ymatou.productsync.domain.model.sql.TransactionInfo">
         UPDATE [dbo].[BusinessCredentialInfo]
        SET
            [NewTranStatus] = #{newTranStatus}

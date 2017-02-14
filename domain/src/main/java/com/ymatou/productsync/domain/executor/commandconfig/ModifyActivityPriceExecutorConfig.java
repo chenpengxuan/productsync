@@ -29,8 +29,8 @@ public class ModifyActivityPriceExecutorConfig implements ExecutorConfig {
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
 
-        List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productId, activityId);
-        List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productId, activityId);
+        List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(activityId);
+        List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(activityId);
 
         if (sqlProducts != null && !sqlProducts.isEmpty() && sqlCatalogs != null && !sqlCatalogs.isEmpty()) {
 
@@ -45,7 +45,7 @@ public class ModifyActivityPriceExecutorConfig implements ExecutorConfig {
             });
 
             sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", tmpCatalogList);
-            mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productId, activityId), sqlProducts));
+            mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(activityId), sqlProducts));
         }
         return mongoDataList;
     }

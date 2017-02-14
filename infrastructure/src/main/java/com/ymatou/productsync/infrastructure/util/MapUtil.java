@@ -21,8 +21,9 @@ public class MapUtil {
      * @throws IllegalArgumentException
      */
     public static String makeJsonStringFromMap(List<Map<String, Object>> mapList) throws IllegalArgumentException {
-        if (mapList == null || mapList.isEmpty())
+        if (mapList == null || mapList.isEmpty()) {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        }
         return String.join(",", mapList.stream().map(x -> makeJsonStringFromMap(x)).toArray(String[]::new));
     }
 
@@ -32,8 +33,9 @@ public class MapUtil {
      * @return
      */
     public static String makeJsonStringFromMap(Map<String, Object> map) throws IllegalArgumentException {
-        if (map == null || map.isEmpty())
+        if (map == null || map.isEmpty()) {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        }
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
         return JSON.toJSONString(map);
     }
@@ -46,8 +48,9 @@ public class MapUtil {
      * @throws IllegalArgumentException
      */
     public static Object makeObjFromMap(Map<String, Object> map) throws IllegalArgumentException {
-        if (map == null || map.isEmpty())
+        if (map == null || map.isEmpty()) {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        }
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
         return JSON.toJSON(map);
     }
@@ -60,8 +63,9 @@ public class MapUtil {
      * @throws IllegalArgumentException
      */
     public static Object[] makeObjFromMap(List<Map<String, Object>> mapList) throws IllegalArgumentException {
-        if (mapList == null || mapList.isEmpty())
+        if (mapList == null || mapList.isEmpty()) {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        }
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
         return mapList.parallelStream().map(x -> JSON.toJSON(x)).toArray();
     }
@@ -85,7 +89,7 @@ public class MapUtil {
      * @param seperator
      */
     public static void mapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
-        if (mapList == null) return;
+        if (mapList == null) {return;}
         Map<String, Object> map = mapList.parallelStream().findFirst().orElse(Collections.emptyMap());
         if (map != null && map.containsKey(field)) {
             map.replace(field, map.get(field), map.get(field).toString().split(seperator));
@@ -102,7 +106,7 @@ public class MapUtil {
      *
      */
     public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList, String[] fieldList, String nestedObjKey,String checkKey) {
-        if (mapList == null) return null;
+        if (mapList == null) {return null;}
         List<Map<String, Object>> tempDataList = new ArrayList<>();
         List<Map<String, Object>> nestedDataList = new ArrayList<>();
         mapList.forEach(data -> {

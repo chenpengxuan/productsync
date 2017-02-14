@@ -16,4 +16,5 @@
     <resultMap id="keyValueMap6" type="java.util.Map"/>
     <resultMap id="keyValueMap7" type="java.util.Map"/>
     <resultMap id="keyValueMap8" type="java.util.Map"/>
+    <resultMap id="transactionInfo" type="com.ymatou.productsync.domain.model.sql.TransactionInfo"/>
 </mapper>

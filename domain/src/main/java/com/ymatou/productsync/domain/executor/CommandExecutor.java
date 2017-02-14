@@ -1,13 +1,12 @@
 package com.ymatou.productsync.domain.executor;
 
-import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
-import com.ymatou.productsync.domain.sqlrepo.TransactionInfo;
+import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.infrastructure.util.Utils;
-import org.apache.http.util.Asserts;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,20 +32,38 @@ public class CommandExecutor {
      *
      * @param transactionId 业务凭据id
      */
-    public void updateTransactionInfo(int transactionId, SyncStatusEnum status) {
+    public void updateTransactionInfo(int transactionId, SyncStatusEnum status) throws BizException{
         TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
         if(transactionInfo == null){
-            logger.error(String.format("没有找到对应的业务凭据信息，transsactionId为%d,",transactionId));
+            logger.error("没有找到对应的业务凭据信息，transsactionId为{},",transactionId);
+            throw new BizException(ErrorCode.BIZFAIL,String.format("没有找到对应的业务凭据信息,transactionId为%d",transactionId));
         }
+        //针对是失败状态
         transactionInfo.setNewRetryTimes(
-        transactionInfo.getNewTranStatus() != SyncStatusEnum.BizEXCEPTION.ordinal()
-        && transactionInfo.getNewTranStatus() != SyncStatusEnum.FAILED.ordinal()
-        ? transactionInfo.getNewRetryTimes():transactionInfo.getNewRetryTimes() + 1);
+        transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()//业务异常
+        || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode()//系统异常
+        ? transactionInfo.getNewRetryTimes() + 1:transactionInfo.getNewRetryTimes());
         transactionInfo.setNewTranStatus(status.ordinal());
         transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
         if(commandQuery.updateTransactionInfo(transactionInfo) <= 0){
-            logger.error(String.format("更新商品业务凭据发生异常，transsactionId为%d,",transactionId));
+            logger.error("更新商品业务凭据发生异常，transsactionId为{},",transactionId);
         }
+    }
+
+    /**
+     * 检查业务凭据信息合法性
+     * @param transactionId
+     * @return
+     */
+    public boolean checkNeedProcessCommand(int transactionId) throws BizException{
+        TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
+        if(transactionInfo == null){
+            logger.error("没有找到对应的业务凭据信息，transsactionId为{},",transactionId);
+            throw new BizException(ErrorCode.BIZFAIL,String.format("没有找到对应的业务凭据信息,transactionId为%d",transactionId));
+        }
+        return transactionInfo.getNewTranStatus() == SyncStatusEnum.INIT.getCode()
+                ||transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()
+                || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode();
     }
 
     /**
@@ -55,7 +72,8 @@ public class CommandExecutor {
      * @param req
      * @param config
      */
-    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException {
+    public boolean executeCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException{
+            updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.PROCESSING);
             boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
             updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
             return isSuccess;

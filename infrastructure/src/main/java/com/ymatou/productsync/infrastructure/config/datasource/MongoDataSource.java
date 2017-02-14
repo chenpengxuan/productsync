@@ -8,11 +8,13 @@ import org.jongo.Jongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /** mongo data source
  * Created by chenpengxuan on 2017/2/6.
  */
 @Configuration
+@DependsOn({"disconfMgrBean2"})
 public class MongoDataSource {
     @Autowired
     private MongoProps mongoProps;

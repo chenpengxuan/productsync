@@ -1,4 +1,4 @@
-package com.ymatou.productsync.domain.sqlrepo;
+package com.ymatou.productsync.domain.model.sql;
 
 /**
  * 业务凭据信息

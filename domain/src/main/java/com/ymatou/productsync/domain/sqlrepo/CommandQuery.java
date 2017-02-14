@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.sqlrepo;
 
+import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.infrastructure.config.datasource.TargetDataSource;
 import org.apache.ibatis.annotations.Param;
 

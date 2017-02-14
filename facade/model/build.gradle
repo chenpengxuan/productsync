@@ -8,7 +8,7 @@ jar {
 
 dependencies {
 
-//    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    compile("org.springframework.boot:spring-boot-starter:$springBootVersion")
     compile("org.springframework.boot:spring-boot-starter-data-mongodb:$springBootVersion")
     compile "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
     compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonVersion}"

@@ -1,9 +1,13 @@
 package com.ymatou.productsync.domain.mongorepo;
 
+import com.mongodb.DuplicateKeyException;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.infrastructure.config.datasource.DynamicDataSourceAspect;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +23,8 @@ import java.util.List;
 public class MongoRepository {
     @Autowired
     private Jongo jongoClient;
+
+    private final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
 
     /**
      * mongo excutor
@@ -48,7 +54,11 @@ public class MongoRepository {
         //TODO 需要把操作类型，条件和参数数据打个debug日志
         switch (mongoData.getOperationType()) {
             case CREATE:
-                return collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
+                try {
+                    return collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
+                }catch (DuplicateKeyException ex){
+                    logger.info("{}mongo插入操作发生重复键异常",mongoData.getUpdateData());
+                }
             case UPDATE:
                 return collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                         .multi()
@@ -61,7 +71,8 @@ public class MongoRepository {
                         .getN() > 0;
             case DELETE:
                 return collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
+            default:
+                throw new IllegalArgumentException("mongo 操作类型不正确");
         }
-        return false;
     }
 }

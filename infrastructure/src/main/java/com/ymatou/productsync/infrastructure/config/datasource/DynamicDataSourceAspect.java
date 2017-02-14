@@ -1,6 +1,5 @@
 package com.ymatou.productsync.infrastructure.config.datasource;
 
-import org.apache.commons.lang.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,15 +22,13 @@ import java.lang.reflect.Method;
 public class DynamicDataSourceAspect {
 
     private final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
-    //TODO 有没有多线程问题?
-    private final StopWatch sw = new StopWatch();
     @Pointcut("execution(* com.ymatou.productsync.domain.sqlrepo.*Query.*(..))")
     public void executeRepository() {
     }
 
 
     @Before("executeRepository()")
-    public void before(JoinPoint point) {
+    public void before(JoinPoint point) throws Exception{
         Object target = point.getTarget();
         String method = point.getSignature().getName();
 
@@ -43,25 +40,17 @@ public class DynamicDataSourceAspect {
             if (m != null && m.isAnnotationPresent(TargetDataSource.class)) {
                 TargetDataSource data = m.getAnnotation(TargetDataSource.class);
                 DynamicDataSourceContextHolder.setDataSourceType(data.value());
-               //TODO using DEBUG mode
-                logger.info("DataSource：" + data.value());
-                sw.reset();
-                sw.start();
+                logger.debug("DataSource：" + data.value());
+            }else {
+                throw new Exception("缺少数据库注解");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
         }
     }
 
     @After("executeRepository()")
     public void restoreDataSource(JoinPoint point) {
         DynamicDataSourceContextHolder.clearDataSourceType();
-        String method = point.getSignature().getName();
-        try{
-            sw.stop();
-            logger.debug(String.format("Repository_%s_耗时_%d：",method,sw.getTime()));
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
     }
 }

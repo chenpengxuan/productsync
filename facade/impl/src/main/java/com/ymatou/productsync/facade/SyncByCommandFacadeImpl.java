@@ -80,31 +80,37 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
         if (config == null) {
             //参数错误，无需MQ重试
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
-            DEFAULT_LOGGER.info(String.format("发生业务指令异常，异常原因为：ProductId:%s,LiveId:%d,ActionType:%s,TransactionId:%d", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId()));
+            DEFAULT_LOGGER.info("发生业务指令异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId());
             BaseResponse response = BaseResponse.newSuccessInstance();
             response.setMessage("没有对应场景，场景指令不正确");
             return response;
         }
+        boolean syncSuccess = false;
+        try {
+            if(executor.checkNeedProcessCommand(req.getTransactionId())) {
+                syncSuccess = executor.executeCommand(req, config);
+            }
+        }catch (IllegalArgumentException argException) {
+            executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
+            DEFAULT_LOGGER.info("发生业务参数级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), argException.getMessage());
+            return BaseResponse.newSuccessInstance();
+        } catch (BizException bizException) {
+            executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
+            DEFAULT_LOGGER.error("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(),bizException);
+            BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
+        }
         //执行成功的并且是商品相关操作
-        if (executor.executorCommand(req, config) && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
+        if (syncSuccess && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
             try {
                 messageBusDispatcher.PublishAsync(req.getProductId(), req.getActionType());
                 return BaseResponse.newSuccessInstance();
             } catch (MessageBusException e) {
                 executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.SUCCESS);
                 //目前商品部分业务相关指令消息的分发只是针对商品快照，如果发生消息总线异常，则只是记录到异常日志
-                DEFAULT_LOGGER.error(String.format("同步服务发送消息发生异常,transactionId为%d,productId为%s,actionType为%ss",
-                        req.getTransactionId(), req.getProductId(), req.getActionType()), e);
+                DEFAULT_LOGGER.error("同步服务发送消息发生异常,transactionId为{},productId为{},actionType为{}",
+                        req.getTransactionId(), req.getProductId(), req.getActionType(), e);
                 return BaseResponse.newSuccessInstance();
-            } catch (IllegalArgumentException argExceptin) {
-                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
-                DEFAULT_LOGGER.info(String.format("发生业务参数级异常，异常原因为：ProductId:%s,LiveId:%d,ActionType:%s,TransactionId:%d,%s", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), argExceptin.getMessage()));
-                return BaseResponse.newSuccessInstance();
-            } catch (BizException bizException) {
-                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
-                DEFAULT_LOGGER.error(String.format("发生业务级异常，异常原因为：ProductId:%s,LiveId:%d,ActionType:%s,TransactionId:%d,%s", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage()));
-                BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
-            }
+            } 
         }
         return BaseResponse.newFailInstance(ErrorCode.FAIL);
     }

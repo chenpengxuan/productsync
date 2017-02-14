@@ -90,7 +90,7 @@ public class ExecutorConfigTest {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, setOnTopExecutorConfig);
+        commandExecutor.executeCommand(req, setOnTopExecutorConfig);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ExecutorConfigTest {
         long activityId = 157242;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, addActivityExecutorConfig);
+        commandExecutor.executeCommand(req, addActivityExecutorConfig);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ExecutorConfigTest {
         long activityId = 157242;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, confirmActivityExecutorConfig);
+        commandExecutor.executeCommand(req, confirmActivityExecutorConfig);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ExecutorConfigTest {
         long activityId = 157242;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, createActivityExecutorConfig);
+        commandExecutor.executeCommand(req, createActivityExecutorConfig);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ExecutorConfigTest {
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, addProductExecutorConfig);
+        commandExecutor.executeCommand(req, addProductExecutorConfig);
     }
 
     /*
@@ -133,7 +133,7 @@ public class ExecutorConfigTest {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, addProductPicsExecutorConfig);
+        commandExecutor.executeCommand(req, addProductPicsExecutorConfig);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class ExecutorConfigTest {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, deleteProductPicsExecutorConfig);
+        commandExecutor.executeCommand(req, deleteProductPicsExecutorConfig);
     }
 
     @Test
@@ -151,7 +151,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, suspendSaleExecutorConfig);
+        commandExecutor.executeCommand(req, suspendSaleExecutorConfig);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class ExecutorConfigTest {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, modifyBrandAndCategoryExecutorConfig);
+        commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
     }
 
     /**
@@ -172,7 +172,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(productInActivityId);
 
-        commandExecutor.executorCommand(req, syncActivityProductExecutorConfig);
+        commandExecutor.executeCommand(req, syncActivityProductExecutorConfig);
     }
 
     @Test
@@ -180,14 +180,14 @@ public class ExecutorConfigTest {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, autoOnShelfProductExecutorConfig);
+        commandExecutor.executeCommand(req, autoOnShelfProductExecutorConfig);
     }
 
     public void testCatalogStockChange() {
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, catalogStockChangeExecutorConfig);
+        commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
     }
 
 
@@ -198,7 +198,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, modifyActivityExecutorConfig);
+        commandExecutor.executeCommand(req, modifyActivityExecutorConfig);
     }
 
     /**
@@ -211,7 +211,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, setOffTopExecutorConfig);
+        commandExecutor.executeCommand(req, setOffTopExecutorConfig);
     }
 
     /**
@@ -224,7 +224,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, deleteProductExecutorConfig);
+        commandExecutor.executeCommand(req, deleteProductExecutorConfig);
     }
 
 
@@ -239,7 +239,7 @@ public class ExecutorConfigTest {
         req.setProductId(productId);
         req.setActivityId(activityId);
         List<MongoData> update= productPutoutExecutorConfig.loadSourceData(0,productId);
-        commandExecutor.executorCommand(req, productPutoutExecutorConfig);
+        commandExecutor.executeCommand(req, productPutoutExecutorConfig);
     }
 
 
@@ -251,7 +251,7 @@ public class ExecutorConfigTest {
         req.setProductId(productId);
         req.setActivityId(activityId);
         List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(activityId,productId);
-        commandExecutor.executorCommand(req, productPutoutExecutorConfig);
+        commandExecutor.executeCommand(req, productPutoutExecutorConfig);
     }
 
     @Test
@@ -261,7 +261,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, batchSetOnShelfExecutorConfig);
+        commandExecutor.executeCommand(req, batchSetOnShelfExecutorConfig);
     }
 
     @Test
@@ -271,7 +271,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
         req.setProductId(productId);
-        commandExecutor.executorCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+        commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
     }
 
     @Test
@@ -281,6 +281,6 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        commandExecutor.executorCommand(req, modifyActivityPriceExecutorConfig);
+        commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
     }
 }

@@ -1,5 +1,5 @@
 rootProject.name = 'productsync'
-include 'facade','infrastructure','domain','test','web','job'
+include 'facade','infrastructure','domain','test','web'
 
 include 'facade:model'
 include 'facade:interface'
