@@ -54,10 +54,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @POST
     @Path("/{cache:(?i:cache)}/{invokemongocrud:(?i:invokemongocrud)}")
     @Override
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public BaseResponse syncByCommand(SyncByCommandReq req) {
-        return getCommandResult(req);//// FIXME: 2017/2/14 需要封装成return result.IsSuccees ? "ok" : "fail";
+    public String syncByCommand(SyncByCommandReq req) {
+        return executeCommand(req).isSuccess() ? "ok":"fail";
     }
 
     /**
@@ -72,13 +71,17 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public BaseResponse updateByCommandSync(SyncByCommandReq req) {
-        return getCommandResult(req);
+        return executeCommand(req);
     }
 
-    private BaseResponse getCommandResult(SyncByCommandReq req) {
+    /**
+     * 同步
+     * @param req
+     * @return
+     */
+    private BaseResponse executeCommand(SyncByCommandReq req) {
         ExecutorConfig config = executorConfigFactory.getCommand(req.getActionType());
         if (config == null) {
-            //参数错误，无需MQ重试
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
             DEFAULT_LOGGER.info("发生业务指令异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId());
             BaseResponse response = BaseResponse.newSuccessInstance();

@@ -14,7 +14,7 @@ public interface SyncCommandFacade {
      *
      * @param req 基于业务场景的请求
      */
-    BaseResponse syncByCommand(SyncByCommandReq req);
+    String syncByCommand(SyncByCommandReq req);
 
     /**
      * Get方式同步调用
