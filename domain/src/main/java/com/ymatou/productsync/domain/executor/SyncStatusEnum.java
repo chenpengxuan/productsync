@@ -1,9 +1,14 @@
 package com.ymatou.productsync.domain.executor;
 
 /**
- * Created by zhangyifan on 2016/12/15.
+ * 业务操作状态枚举
+ * Created by chenpengxuan on 2017/2/13.
  */
 public enum SyncStatusEnum {
+    /**
+     * 业务异常，需要重试
+     */
+    BizEXCEPTION(-3),
 
     /**
      * 参数异常无需重试
@@ -11,7 +16,7 @@ public enum SyncStatusEnum {
     IllegalArgEXCEPTION(-2),
 
     /**
-     * 失败
+     * 系统异常，需要重试
      */
     FAILED(-1),
 

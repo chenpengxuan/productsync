@@ -3,7 +3,7 @@ package com.ymatou.productsync.test;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;
@@ -118,7 +118,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testAddProduct() {
+    public void testAddProduct(){
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
@@ -155,7 +155,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void testModifyBrandAndCategory() {
+    public void testModifyBrandAndCategory(){
         String productId = "acf23898-c735-4f70-adc2-f8e09e60d19f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
@@ -205,7 +205,7 @@ public class ExecutorConfigTest {
      *
      */
     @Test
-    public void testSetOffTop() {
+    public void testSetOffTop(){
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
@@ -233,12 +233,12 @@ public class ExecutorConfigTest {
      */
     @Test
     public void testProductPutout() throws MessageBusException {
-//        long activityId = 157242;
-        long activityId = 0;
+        long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
+        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(0,productId);
         commandExecutor.executorCommand(req, productPutoutExecutorConfig);
     }
 

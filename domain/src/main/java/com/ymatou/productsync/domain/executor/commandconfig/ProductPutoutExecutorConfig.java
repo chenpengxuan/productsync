@@ -1,11 +1,12 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.google.common.collect.Lists;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.Utils;
@@ -39,7 +40,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
     }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException {
+    public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
         if (activityId <= 0) {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
@@ -65,14 +66,10 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 if (sellerMap.isEmpty())
                     return mongoDataList;
                 long sellerId = Long.parseLong(sellerMap.get("userId").toString());
-                GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq() {{
-                    setProductIds(new ArrayList<String>() {{
-                        add(productId);
-                    }});
-                    setSellerId(sellerId);
-                    setBeginTime(Utils.addDate(-90));
-                    setEndTime(Utils.getNow());
-                }};
+                GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq();
+                getOrderAmountInfosReqequest.setProductIds(Lists.newArrayList(productId));
+                getOrderAmountInfosReqequest.setSellerId(sellerId);
+
                 GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
                 if (respOrderAmount != null && respOrderAmount.isSuccess()) {
                     HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();

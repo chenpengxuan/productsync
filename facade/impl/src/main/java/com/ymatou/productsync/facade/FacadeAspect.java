@@ -8,13 +8,13 @@
 package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.ymatou.messagebus.client.MessageBusException;
-import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.domain.executor.CommandExecutor;
+import com.ymatou.productsync.domain.executor.SyncStatusEnum;
 import com.ymatou.productsync.facade.model.ErrorCode;
-import com.ymatou.productsync.facade.model.req.BaseRequest;
+import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
-import com.ymatou.productsync.infrastructure.util.Utils;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import com.ymatou.productsync.infrastructure.util.Utils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,6 +23,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,12 +43,15 @@ public class FacadeAspect {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(FacadeAspect.class);
 
+    @Autowired
+    private CommandExecutor commandExecutor;
+
     @Pointcut("execution(* com.ymatou.productsync.facade.*Facade.*(*)) && args(req)")
-    public void executeFacade(BaseRequest req) {
+    public void executeFacade(SyncByCommandReq req) {
     }
 
     @Around("executeFacade(req)")
-    public Object aroundFacadeExecution(ProceedingJoinPoint joinPoint, BaseRequest req)
+    public Object aroundFacadeExecution(ProceedingJoinPoint joinPoint, SyncByCommandReq req)
             throws InstantiationException, IllegalAccessException {
 
         Logger logger = DEFAULT_LOGGER;
@@ -82,22 +86,11 @@ public class FacadeAspect {
 
             req.validate();
             resp = joinPoint.proceed(new Object[]{req});
-        } catch (IllegalArgumentException e) {
-            resp = buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, e.getLocalizedMessage());
-            logger.error("Invalid request: {}", req, e);
-        } catch (BizException e) {
-            //前端可能将错误msg直接抛给用户
-            resp = buildErrorResponse(joinPoint, e.getErrorCode(), e.getLocalizedMessage());
-            logger.error("Failed to execute request: {}, Error:{}", req.getRequestId(),
-                    e.getErrorCode() + "|" + e.getErrorCode().getMessage(), e);
-        }catch (MessageBusException e) {
-            //前端可能将错误msg直接抛给用户
-            resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
-            logger.error("Unknown error in executing request:{}", req, e);
         }
         catch (Throwable e) {
             //前端可能将错误msg直接抛给用户
             resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
+            commandExecutor.updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.FAILED);
             logger.error("Unknown error in executing request:{}", req, e);
         } finally {
             long consumedTime = System.currentTimeMillis() - startTime;
@@ -118,7 +111,7 @@ public class FacadeAspect {
 
     }
 
-    private String getRequestFlag(BaseRequest req) {
-        return req.getClass().getSimpleName() + "|" + req.getRequestId();
+    private String getRequestFlag(SyncByCommandReq req) {
+        return req.getActionType() + "|" + req.getTransactionId();
     }
 }

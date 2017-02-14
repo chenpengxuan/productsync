@@ -265,7 +265,7 @@ SELECT  DISTINCT
             SELECT
             iActivityId
             FROM [dbo].[Ymt_ProductsInLive] WITH(NOLOCK) WHERE [sProductId] = #{productId}  AND dEndTime>GETDATE() and isnull(iaction,0)>-1
-</select>
+    </select>
     <!--获取直播商品时间-->
     <select id="getLiveProductTime"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
@@ -322,7 +322,8 @@ SELECT  DISTINCT
     </select>
 
     <!-- 取待同步的活动商品的规格（库存&价格） -->
-    <select id="getActivityProductCatalogs" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+    <select id="getActivityProductCatalogs"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 
         SELECT
             sCatalogID		AS 'cid',
@@ -357,6 +358,7 @@ SELECT  DISTINCT
                     from Ymt_Catalogs
                     WHERE iAction >-1 and  sProductId = #{productId}
     </select>
+
     <!--根据productid获取商品用户id-->
     <select id="getProductUser" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
@@ -364,4 +366,25 @@ SELECT  DISTINCT
         from Ymt_Products
         WHERE iAction =0 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
+
+    <!--根据transactionId获取业务凭据信息-->
+    <select id="getTransactionInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.TransactionInfo">
+             SELECT [TransactionId]
+                ,[NewTranStatus]
+                ,[NewRetryTimes]
+                ,[NewUpdateTime]
+            FROM [dbo].[BusinessCredentialInfo]
+            WHERE TransactionId = #{transactionId}
+    </select>
+
+    <!--更新商品业务凭据信息-->
+    <update id="updateTransactionInfo" parameterType="com.ymatou.productsync.domain.sqlrepo.TransactionInfo">
+        UPDATE [dbo].[BusinessCredentialInfo]
+       SET
+           [NewTranStatus] = #{newTranStatus}
+          ,[NewRetryTimes] = #{newRetryTimes}
+          ,[NewUpdateTime] = #{newUpdateTime}
+     WHERE TransactionId = #{transactionId}
+    </update>
 </mapper>

@@ -1,11 +1,10 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
-import com.ymatou.productsync.domain.executor.CmdTypeEnum;
-import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.executor.*;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +24,7 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.AddActivity;
     }
 
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getActivityInfo(activityId);
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
@@ -47,6 +46,9 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("lid", activityId);
             mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId),sqlDataList));
+        }else
+        {
+            throw new BizException(ErrorCode.BIZFAIL,"getActivityInfo为空");
         }
         return mongoDataList;
     }

@@ -1,6 +1,4 @@
-package com.ymatou.productsync.domain.model;
-
-import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
+package com.ymatou.productsync.domain.model.mongo;
 
 import java.util.List;
 import java.util.Map;

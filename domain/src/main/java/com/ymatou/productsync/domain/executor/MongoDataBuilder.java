@@ -1,6 +1,7 @@
 package com.ymatou.productsync.domain.executor;
 
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 
@@ -69,7 +70,7 @@ public class MongoDataBuilder {
      */
     public static MongoData createDelete(String tableName,
                                          Map<String, Object> matchCondition) {
-        return buildMongoData(tableName, MongoOperationTypeEnum.DELETE, matchCondition, null);
+        return buildMongoData(tableName, MongoOperationTypeEnum.DELETE, matchCondition, Lists.newArrayList());
     }
 
     /**
