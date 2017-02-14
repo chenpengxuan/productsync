@@ -162,13 +162,16 @@ public class ExecutorConfigTest {
         commandExecutor.executorCommand(req, modifyBrandAndCategoryExecutorConfig);
     }
 
+    /**
+     * 同步活动商品数据
+     *
+     */
     @Test
     public void testSyncActivityProduct() {
-        String productId = "edc21ac6-5fc9-494c-9f36-110b841f75a0";
-        long activityId = 18946;
+        long productInActivityId = 286006;
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(productId);
-        req.setActivityId(activityId);
+        req.setActivityId(productInActivityId);
+
         commandExecutor.executorCommand(req, syncActivityProductExecutorConfig);
     }
 
@@ -187,7 +190,7 @@ public class ExecutorConfigTest {
         commandExecutor.executorCommand(req, catalogStockChangeExecutorConfig);
     }
 
-//
+
     @Test
     public void testModifyActivity(){
         long activityId = 157242;
