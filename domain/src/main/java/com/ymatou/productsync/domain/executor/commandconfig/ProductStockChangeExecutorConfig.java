@@ -6,6 +6,8 @@ import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
                 mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb,conditions, MapUtil.mapToList(catalog)));
 
             });
+        }else{
+            throw new BizException(ErrorCode.BIZFAIL,this.getCommand()+"-getProductCatalogs");
         }
         return mongoDataList;
     }

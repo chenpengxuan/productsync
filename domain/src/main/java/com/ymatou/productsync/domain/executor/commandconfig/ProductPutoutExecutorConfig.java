@@ -15,6 +15,8 @@ import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,7 @@ import java.util.*;
 @Component("productPutoutExecutorConfig")
 public class ProductPutoutExecutorConfig implements ExecutorConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductPutoutExecutorConfig.class);
     @Autowired
     private CommandQuery commandQuery;
 
@@ -70,11 +73,15 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 getOrderAmountInfosReqequest.setProductIds(Lists.newArrayList(productId));
                 getOrderAmountInfosReqequest.setSellerId(sellerId);
 
-                GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
-                if (respOrderAmount != null && respOrderAmount.isSuccess()) {
-                    HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
-                    if (orderAmountMap.get(productId) != null)
-                        productOrderCount = orderAmountMap.get(productId).getPaid();
+                try {
+                    GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
+                    if (respOrderAmount != null && respOrderAmount.isSuccess()) {
+                        HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
+                        if (orderAmountMap.get(productId) != null)
+                            productOrderCount = orderAmountMap.get(productId).getPaid();
+                    }
+                }catch (Exception ex) {
+                    logger.error("商品下架调用订单数接口getOrderProductAmountInfos异常",ex);
                 }
 
                 //商品下过单更新状态，否则下架后删除Mongo数据
