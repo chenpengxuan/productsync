@@ -33,13 +33,17 @@ public class SyncActivityProductExecutorConfig implements ExecutorConfig {
 
         List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productInactivityId);
         List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productInactivityId);
-
-        if (sqlProducts != null && !sqlProducts.isEmpty() && sqlCatalogs != null && !sqlCatalogs.isEmpty()) {
-            sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", sqlCatalogs);
-            mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productInactivityId), sqlProducts));
-        } else {
-            throw new BizException(ErrorCode.BIZFAIL, "getActivityProducts 或 getActivityProductCatalogs 为空");
+        if (sqlProducts == null || sqlProducts.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, "getActivityProducts 为空");
         }
+
+        if (sqlCatalogs == null || sqlCatalogs.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, "getActivityProductCatalogs 为空");
+        }
+
+        sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", sqlCatalogs);
+        mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productInactivityId), sqlProducts));
+
         return mongoDataList;
     }
 }

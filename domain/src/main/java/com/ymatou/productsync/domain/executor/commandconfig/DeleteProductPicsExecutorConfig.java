@@ -31,16 +31,16 @@ public class DeleteProductPicsExecutorConfig implements ExecutorConfig {
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         List<MongoData> mongoDataList = new ArrayList<>();
-
         List<Map<String, Object>> sqlDataList = commandQuery.getProductPictureList(productId);
-        if(sqlDataList != null && !sqlDataList.isEmpty()) {
-            Object[] pics = sqlDataList.parallelStream().map(t -> t.get("pics")).toArray();
-            sqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics", pics);
-            mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
+
+        if (sqlDataList == null || sqlDataList.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, "getProductPictureList 为空");
         }
-        else {
-            throw new BizException(ErrorCode.BIZFAIL,"getProductPictureList 为空");
-        }
+
+        Object[] pics = sqlDataList.parallelStream().map(t -> t.get("pics")).toArray();
+        sqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics", pics);
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
+
         return mongoDataList;
     }
 }
