@@ -1,7 +1,8 @@
 package com.ymatou.productsync.domain.executor;
 
 /**
- * 业务指令枚举
+ * 业务指令枚举，
+ * 注意！！直播部分和商品部分分别添加到各自区域
  * Created by chenpengxuan on 2017/1/19.
  */
 public enum CmdTypeEnum {
