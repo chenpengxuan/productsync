@@ -7,6 +7,8 @@ import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,10 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         //直播商品更新-istop
         List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
+        if(productTop==null || productTop.isEmpty())
+        {
+            throw new BizException(ErrorCode.BIZFAIL,this.getCommand()+"-getLiveProductTop");
+        }
         mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
 
         //更新直播品牌-brands

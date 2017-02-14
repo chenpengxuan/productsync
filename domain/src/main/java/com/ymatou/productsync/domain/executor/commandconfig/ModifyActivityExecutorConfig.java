@@ -7,6 +7,8 @@ import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,13 +59,15 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
                 Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
                 activity.put("brands", brands);
             }
+        }else{
+            throw new BizException(ErrorCode.BIZFAIL,this.getCommand()+"-getActivityInfo");
         }
 
         //设置要更新的数据
         MongoData liveMongoData = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), mapList);
         mongoDataList.add(liveMongoData);
 
-        ///2.直播商品数据更新 -- fixme: 123级分类需要处理
+        ///2.直播商品数据更新 --
         List<Map<String, Object>> liveProductMapList = commandQuery.getLiveProductByActivityId(activityId);
         List<Map<String, Object>> productMapList = commandQuery.getProductNewTimeByActivityId(activityId);
         if (liveProductMapList != null) {
