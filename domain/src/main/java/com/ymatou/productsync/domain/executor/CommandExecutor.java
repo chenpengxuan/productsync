@@ -2,8 +2,13 @@ package com.ymatou.productsync.domain.executor;
 
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
+import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
+import com.ymatou.productsync.domain.sqlrepo.TransactionInfo;
+import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
+import com.ymatou.productsync.infrastructure.util.Utils;
 import org.apache.http.util.Asserts;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +55,7 @@ public class CommandExecutor {
      * @param req
      * @param config
      */
-    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException{
+    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException {
             boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
             updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
             return isSuccess;
