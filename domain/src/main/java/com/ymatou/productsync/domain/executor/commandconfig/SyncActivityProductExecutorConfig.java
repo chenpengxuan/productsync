@@ -6,6 +6,8 @@ import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,27 +28,22 @@ public class SyncActivityProductExecutorConfig implements ExecutorConfig {
     public CmdTypeEnum getCommand(){ return CmdTypeEnum.SyncActivityProduct; }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long productInactivityId, String productId) throws BizException {
         List<MongoData> mongoDataList = new ArrayList<>();
 
-        List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productId, activityId);
-        List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productId, activityId);
-
-        if(sqlProducts != null && !sqlProducts.isEmpty() && sqlCatalogs != null && !sqlCatalogs.isEmpty()) {
-
-            List<Map<String, Object>> tmpCatalogList = new ArrayList<>();
-            sqlCatalogs.parallelStream().forEach(data-> {
-                Map<String, Object> tmpCatalogMap = new HashMap<>();
-                tmpCatalogMap.put("cid", data.get("cid"));
-                tmpCatalogMap.put("stock", data.get("stock"));
-                tmpCatalogMap.put("price", data.get("price"));
-
-                tmpCatalogList.add(tmpCatalogMap);
-            });
-
-            sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", tmpCatalogList);
-            mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productId, activityId), sqlProducts));
+        List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productInactivityId);
+        List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productInactivityId);
+        if (sqlProducts == null || sqlProducts.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, "getActivityProducts 为空");
         }
+
+        if (sqlCatalogs == null || sqlCatalogs.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, "getActivityProductCatalogs 为空");
+        }
+
+        sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", sqlCatalogs);
+        mongoDataList.add(MongoDataBuilder.syncActivityProducts(MongoQueryBuilder.queryProductIdAndActivityId(productInactivityId), sqlProducts));
+
         return mongoDataList;
     }
 }
