@@ -35,17 +35,18 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.规格价格及库存更新
-        List<Map<String, Object>> catalogList =  commandQuery.getProductCatalogs(productId);
-        if(catalogList!=null && !catalogList.isEmpty()){
-            catalogList.parallelStream().forEach(catalog->{
-                Map<String,Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid").toString());
-                conditions.put("cid",catalog.get("cid"));
-                mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb,conditions, MapUtil.mapToList(catalog)));
-
-            });
-        }else{
-            throw new BizException(ErrorCode.BIZFAIL,this.getCommand()+"-getProductCatalogs");
+        List<Map<String, Object>> catalogList = commandQuery.getProductCatalogs(productId);
+        if (catalogList == null || catalogList.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductCatalogs 为空");
         }
+
+        catalogList.parallelStream().forEach(catalog -> {
+            Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid").toString());
+            conditions.put("cid", catalog.get("cid"));
+            mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(catalog)));
+
+        });
+
         return mongoDataList;
     }
 }

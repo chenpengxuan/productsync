@@ -40,24 +40,25 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         //直播商品更新-istop
         List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
-        if(productTop==null || productTop.isEmpty())
-        {
-            throw new BizException(ErrorCode.BIZFAIL,this.getCommand()+"-getLiveProductTop");
+        if (productTop == null || productTop.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getLiveProductTop 为空");
         }
         mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
 
         //更新直播品牌-brands
         Map<String, Object> lives = new HashMap();
         List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
-        if (products != null && !products.isEmpty()) {
-            products.stream().forEach(t -> t.remove("dAddTime"));
-            Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
-            lives.put("brands", brands);
+        if (products == null || products.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductInfoByActivityId 为空");
         }
-        if (!lives.isEmpty()) {
-            MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
-            mongoDataList.add(liveMd);
-        }
+        products.stream().forEach(t -> t.remove("dAddTime"));
+        Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+        lives.put("brands", brands);
+
+        //更新直播
+        MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
+        mongoDataList.add(liveMd);
+
         return mongoDataList;
     }
 }

@@ -41,27 +41,28 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.直播数据更新
         List<Map<String, Object>> mapList = liveCommandQuery.getActivityInfo(activityId);
-        //处理brands,country,flag
-        if (mapList != null && !mapList.isEmpty()) {
-            //MapUtil.MapFieldToStringArray(mapList, "brands", ",");
-            Map<String, Object> activity = mapList.get(0);
-            int countryId = Integer.parseInt(activity.get("iCountryId").toString());
-            activity.remove("iCountryId");
-            Optional<Map<String, Object>> country = liveCommandQuery.getCountryInfo(countryId).stream().findFirst();
-            if (country.isPresent()) {
-                Map<String, Object> con = country.get();
-                activity.put("country", con.get("sCountryNameZh"));
-                activity.put("flag", con.get("sFlag"));
-            }
-            List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
-            if (products != null && !products.isEmpty()) {
-                products.stream().forEach(t -> t.remove("dAddTime"));
-                Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
-                activity.put("brands", brands);
-            }
-        }else{
-            throw new BizException(ErrorCode.BIZFAIL,this.getCommand()+"-getActivityInfo");
+        if (mapList == null || mapList.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getActivityInfo为空");
         }
+
+        //处理brands,country,flag
+        //MapUtil.MapFieldToStringArray(mapList, "brands", ",");
+        Map<String, Object> activity = mapList.get(0);
+        int countryId = Integer.parseInt(activity.get("iCountryId").toString());
+        activity.remove("iCountryId");
+        Optional<Map<String, Object>> country = liveCommandQuery.getCountryInfo(countryId).stream().findFirst();
+        if (country.isPresent()) {
+            Map<String, Object> con = country.get();
+            activity.put("country", con.get("sCountryNameZh"));
+            activity.put("flag", con.get("sFlag"));
+        }
+        List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
+        if (products != null && !products.isEmpty()) {
+            products.stream().forEach(t -> t.remove("dAddTime"));
+            Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+            activity.put("brands", brands);
+        }
+
 
         //设置要更新的数据
         MongoData liveMongoData = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), mapList);
