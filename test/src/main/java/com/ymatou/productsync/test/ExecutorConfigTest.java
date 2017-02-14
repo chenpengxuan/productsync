@@ -3,7 +3,7 @@ package com.ymatou.productsync.test;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.junit.Test;

@@ -3,9 +3,11 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.joda.time.DateTime;
@@ -32,7 +34,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
     }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long activityId, String productId) throws BizException{
         //商品信息
         List<Map<String, Object>> sqlProductDataList = commandQuery.getProductDetailInfo(productId);
         //商品规格信息
@@ -50,10 +52,14 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
             mongoDataList.add(MongoDataBuilder.createProductAdd(sqlProductDataList));
+        }else {
+            throw new BizException(ErrorCode.BIZFAIL,"getProductDetailInfo为空");
         }
         //创建规格信息
         if (sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()) {
             mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));
+        }else{
+            throw new BizException(ErrorCode.BIZFAIL,"getProductCatalogInfo为空");
         }
         //创建商品图文描述信息
         if (sqlProductDescDataList != null && !sqlProductDescDataList.isEmpty()) {
@@ -64,6 +70,8 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             sqlProductDescDataList.clear();
             sqlProductDescDataList.add(tempMap);
             mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));
+        }else{
+            throw new BizException(ErrorCode.BIZFAIL,"getProductDescInfo为空");
         }
         //创建直播商品信息
         if(sqlProductInLiveDataList != null && !sqlProductInLiveDataList.isEmpty()){

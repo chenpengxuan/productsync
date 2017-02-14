@@ -4,7 +4,7 @@ import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class CreateActivityExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getActivityInfo(activityId);
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
-            Map<String, Object> activity = sqlDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
+            Map<String, Object> activity = sqlDataList.stream().findFirst().orElse(Collections.emptyMap());
             int countryId = Integer.parseInt(activity.get("iCountryId").toString());
             activity.remove("iCountryId");
             List<Map<String, Object>> country = commandQuery.getCountryInfo(countryId);

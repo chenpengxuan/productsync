@@ -6,7 +6,7 @@ import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.Utils;
@@ -40,7 +40,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
     }
 
     @Override
-    public List<MongoData> loadSourceData(long activityId, String productId) throws MessageBusException {
+    public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
         if (activityId <= 0) {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);

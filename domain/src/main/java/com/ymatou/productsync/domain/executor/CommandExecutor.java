@@ -20,13 +20,28 @@ public class CommandExecutor {
     @Autowired
     private MongoRepository mongoRepository;
 
+    @Autowired
+    private CommandQuery commandQuery;
+
     /**
      * 更新业务凭据状态设置为参数异常无需重试
      *
      * @param transactionId 业务凭据id
      */
     public void updateTransactionInfo(int transactionId, SyncStatusEnum status) {
-        ////// FIXME: 2017/2/6 添加操作业务凭据操作
+        TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
+        if(transactionInfo == null){
+            logger.error(String.format("没有找到对应的业务凭据信息，transsactionId为%d,",transactionId));
+        }
+        transactionInfo.setNewRetryTimes(
+        transactionInfo.getNewTranStatus() != SyncStatusEnum.BizEXCEPTION.ordinal()
+        && transactionInfo.getNewTranStatus() != SyncStatusEnum.FAILED.ordinal()
+        ? transactionInfo.getNewRetryTimes():transactionInfo.getNewRetryTimes() + 1);
+        transactionInfo.setNewTranStatus(status.ordinal());
+        transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+        if(commandQuery.updateTransactionInfo(transactionInfo) <= 0){
+            logger.error(String.format("更新商品业务凭据发生异常，transsactionId为%d,",transactionId));
+        }
     }
 
     /**
@@ -35,17 +50,9 @@ public class CommandExecutor {
      * @param req
      * @param config
      */
-    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config) {
-        try {
+    public boolean executorCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException{
             boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
             updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
-            Asserts.check(isSuccess, "");
             return isSuccess;
-        } catch (IllegalArgumentException argExceptin) {
-            updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
-        } catch (MessageBusException ex) {
-            updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
-        }
-        return false;
     }
 }
