@@ -22,4 +22,12 @@ public interface SyncCommandFacade {
      * @return
      */
     BaseResponse updateByCommandSync(SyncByCommandReq req);
+
+    /**
+     * 更新商品快照信息
+     * @param productId
+     * @param snapshotVersion
+     * @return
+     */
+    BaseResponse updateProductSnapShot(String productId,String snapshotVersion);
 }

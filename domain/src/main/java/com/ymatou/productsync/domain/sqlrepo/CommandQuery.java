@@ -183,6 +183,15 @@ public interface CommandQuery {
     List<Map<String, Object>> getActivityProductCatalogs(@Param("productInactivityId") long productInactivityId);
 
     /**
+     * 根据直播id获取直播商品排序信息
+     *
+     * @param activityId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductsLiveSort(@Param("activityId") long activityId);
+
+    /**
      * 更新商品业务凭据
      *
      * @param transactionInfo

@@ -3,11 +3,15 @@ package com.ymatou.productsync.facade;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.*;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
+import com.ymatou.productsync.infrastructure.util.Utils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,10 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品同步业务场景
@@ -38,6 +46,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      */
     @Autowired
     private CommandExecutor executor;
+
+    @Autowired
+    private MongoRepository mongoRepository;
 
     /**
      * 消息总线客户端
@@ -72,6 +83,42 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @Consumes(MediaType.APPLICATION_JSON)
     public BaseResponse updateByCommandSync(SyncByCommandReq req) {
         return executeCommand(req);
+    }
+
+    /**
+     * 更新商品快照信息
+     * @param productId
+     * @param snapshotVersion
+     * @return
+     */
+    @GET
+    @Path("/{cache:(?i:cache)}/{updateproductsnapshot:(?i:updateproductsnapshot)}")
+    @Override
+    @Produces(MediaType.APPLICATION_JSON)
+    public BaseResponse updateProductSnapShot(@QueryParam("productId:(?i:productId)") String productId,@QueryParam("snapshotVersion:(?i:snapshotVersion)") String snapshotVersion){
+        if (productId == null
+                || productId.isEmpty()
+                || snapshotVersion == null
+                || snapshotVersion.isEmpty()) {
+            DEFAULT_LOGGER.error("更新商品快照异常，异常原因为：参数不正确");
+            BaseResponse response = BaseResponse.newSuccessInstance();
+            response.setMessage("更新商品快照异常，异常原因为：参数不正确");
+            return response;
+        }
+        List<MongoData> mongoDataList = new ArrayList<>();
+        List<Map<String,Object>> updateData = new ArrayList<>();
+        Map<String,Object> tempMap = new HashMap();
+        tempMap.put("ver",snapshotVersion);
+        tempMap.put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+        updateData.add(tempMap);
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),updateData));
+        try{
+        return mongoRepository.excuteMongo(mongoDataList) ? BaseResponse.newSuccessInstance():BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
+        }
+        catch(Exception ex){
+            DEFAULT_LOGGER.error("更新商品快照发生异常，异常原因为{}",ex.getMessage(),ex);
+            return BaseResponse.newFailInstance(ErrorCode.FAIL);
+        }
     }
 
     /**

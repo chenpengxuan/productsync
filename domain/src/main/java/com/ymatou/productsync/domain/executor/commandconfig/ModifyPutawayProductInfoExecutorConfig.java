@@ -8,8 +8,6 @@ import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
-import com.ymatou.productsync.infrastructure.util.Utils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,13 +46,11 @@ public class ModifyPutawayProductInfoExecutorConfig implements ExecutorConfig {
         //更新商品信息
         if (sqlProductDataList != null && !sqlProductDataList.isEmpty()) {
             MapUtil.mapFieldToStringArray(sqlProductDataList, "pics", ",");
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
             mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId),sqlProductDataList));
         }
         //更新规格信息
         if (sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()) {
-
+            mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId),null));//先删除再插入
             mongoDataList.add(MongoDataBuilder.createCatalogUpsert(MongoQueryBuilder.queryProductId(productId),MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));
         }
         //创建商品图文描述信息

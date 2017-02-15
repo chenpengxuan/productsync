@@ -11,6 +11,21 @@ public class TransactionInfo {
     private int transactionId;
 
     /**
+     * 直播id
+     */
+    private int liveId;
+
+    /**
+     * 商品id
+     */
+    private String productId;
+
+    /**
+     * 业务指令
+     */
+    private String actionType;
+
+    /**
      * 业务执行状态
      */
     private int newTranStatus;
