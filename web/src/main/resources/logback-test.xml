@@ -2,7 +2,7 @@
 <configuration>
 	<property name="pattern"
 		value="%date [%thread] %-5level %logger{40} KEY[%X{logPrefix}] - %msg%n" />
-	<property name="level" value="debug" />
+	<property name="level" value="info" />
 	<property name="charset" value="UTF-8" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -38,7 +38,7 @@
 	-
 
 	<logger name="com.ymatou.productsync">
-		<level value="${level}" />
+		<level value="debug" />
 		<appender-ref ref="HTTP-POST-ERROR-APPENDER" />
 	</logger>
 
