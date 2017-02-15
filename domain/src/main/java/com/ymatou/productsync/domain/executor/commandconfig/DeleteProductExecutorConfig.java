@@ -9,6 +9,8 @@ import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,23 +45,27 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
         //pc上删除商品
         if (activityId <= 0) {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
-            if (deleteProducts != null && !deleteProducts.isEmpty()) {
-                //更新商品
-                MongoData productMd = MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), deleteProducts);
-                //删除直播商品
-                Map<String, Object> matchConditionInfo = new HashMap();
-                matchConditionInfo.put("spid", productId);
-                //fixme:matchConditionInfo.put("end",now); <
-                MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
-                //删规格
-                Map<String, Object> actionMap = new HashMap<String, Object>();
-                actionMap.put("action", "-1");
-                List<Map<String, Object>> invalidActions = Lists.newArrayList(actionMap);
-                MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), invalidActions);
-                mongoDataList.add(productMd);
-                mongoDataList.add(liveProductMd);
-                mongoDataList.add(catalogMd);
+
+            if (deleteProducts == null || deleteProducts.isEmpty()) {
+                throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getDeleteProducts为空");
             }
+
+            //更新商品
+            MongoData productMd = MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), deleteProducts);
+            //删除直播商品
+            Map<String, Object> matchConditionInfo = new HashMap();
+            matchConditionInfo.put("spid", productId);
+            //fixme:matchConditionInfo.put("end",now); <
+            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
+            //删规格
+            Map<String, Object> actionMap = new HashMap<String, Object>();
+            actionMap.put("action", "-1");
+            List<Map<String, Object>> invalidActions = Lists.newArrayList(actionMap);
+            MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), invalidActions);
+            mongoDataList.add(productMd);
+            mongoDataList.add(liveProductMd);
+            mongoDataList.add(catalogMd);
+
         } else { //从直播中删除商品
             //更新直播商品
             List<Map<String, Object>> liveProducts = commandQuery.getLiveProductTime(productId, activityId);
