@@ -90,6 +90,13 @@ public class ExecutorConfigTest {
     @Autowired
     private SetTopProductExecutorConfig setTopProductExecutorConfig;
 
+
+    @Autowired
+    private DeleteActivityExecutorConfig deleteActivityExecutorConfig;
+
+    @Autowired
+    private RemoveFromActivityExecutorConfig removeFromActivityExecutorConfig;
+
     @Test
     public void testSetOnTopExecutorConfig() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
@@ -222,19 +229,25 @@ public class ExecutorConfigTest {
     }
 
     /**
-     *
+     * setOnTopExecutorConfig
      */
     @Test
-    public void testSetOffTop(){
+    public void testSetOffTop() {
+        //测试取消置顶
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-      boolean checkOk =  commandExecutor.executeCommand(req, setOffTopExecutorConfig);
-      Asserts.check(checkOk,"");
+        boolean checkOk = commandExecutor.executeCommand(req, setOffTopExecutorConfig);
+        Asserts.check(checkOk, "");
 
-
+        //测试置顶
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId);
+        req2.setActivityId(activityId);
+        boolean checkOk2 = commandExecutor.executeCommand(req2, setOnTopExecutorConfig);
+        Asserts.check(checkOk2, "");
     }
 
     /**
@@ -271,15 +284,15 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
+        //List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
         boolean check = commandExecutor.executeCommand(req, productPutoutExecutorConfig);
         Asserts.check(check,"");
 
         //不带直播id场景
         String productId2 = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req2 = new SyncByCommandReq();
-        req.setProductId(productId2);
-        List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);
+        req2.setProductId(productId2);
+        //List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);
         boolean checkOk =commandExecutor.executeCommand(req2, productPutoutExecutorConfig);
         Asserts.check(checkOk,"");
     }
@@ -291,22 +304,57 @@ public class ExecutorConfigTest {
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check =  commandExecutor.executeCommand(req, productPutoutExecutorConfig);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check =  commandExecutor.executeCommand(req, productStockChangeExecutorConfig);
         Asserts.check(check,"");
 
         //不存在的商品id，exception
         String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
         SyncByCommandReq req2 = new SyncByCommandReq();
-        req.setProductId(productId2);
-        List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check2  =  commandExecutor.executeCommand(req, productPutoutExecutorConfig);
+        req2.setProductId(productId2);
+        //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check2  =  commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
         Asserts.check(check2,"");
 
 
     }
 
     @Test
+    public void testDeleteActivity() throws MessageBusException {
+
+        long activityId = 25;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check = commandExecutor.executeCommand(req, deleteActivityExecutorConfig);
+        Asserts.check(check, "");
+
+    }
+
+    @Test
+    public void testRemoveFromActivity() throws MessageBusException {
+
+        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
+        long activityId = 3152;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check =  commandExecutor.executeCommand(req, removeFromActivityExecutorConfig);
+        Asserts.check(check,"");
+
+        //测试一个不存在的直播id
+        long activityId2 = 1;
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId);
+        req2.setActivityId(activityId2);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check2 =  commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
+        Asserts.check(check2,"");
+
+    }
+
+        @Test
     public void testBatchSetOnShelf() {
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
