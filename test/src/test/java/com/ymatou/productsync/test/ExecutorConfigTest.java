@@ -310,7 +310,7 @@ public class ExecutorConfigTest {
     @Test
     public void testDeleteActivity() throws MessageBusException {
 
-        long activityId = 157242;
+        long activityId = 25;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
         //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
