@@ -87,6 +87,9 @@ public class ExecutorConfigTest {
     @Autowired
     private ModifyActivityPriceExecutorConfig modifyActivityPriceExecutorConfig;
 
+    @Autowired
+    private SetTopProductExecutorConfig setTopProductExecutorConfig;
+
     @Test
     public void testSetOnTopExecutorConfig() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
@@ -332,5 +335,14 @@ public class ExecutorConfigTest {
         req.setProductId(productId);
         req.setActivityId(activityId);
         commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
+    }
+
+    @Test
+    public  void testSetTopProduct()
+    {
+        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executeCommand(req, setTopProductExecutorConfig);
     }
 }
