@@ -87,6 +87,10 @@ public class ExecutorConfigTest {
     @Autowired
     private ModifyActivityPriceExecutorConfig modifyActivityPriceExecutorConfig;
 
+
+    @Autowired
+    private DeleteActivityExecutorConfig deleteActivityExecutorConfig;
+
     @Test
     public void testSetOnTopExecutorConfig() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
@@ -268,15 +272,15 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
+        //List<MongoData> update= productPutoutExecutorConfig.loadSourceData(activityId,productId);
         boolean check = commandExecutor.executeCommand(req, productPutoutExecutorConfig);
         Asserts.check(check,"");
 
         //不带直播id场景
         String productId2 = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req2 = new SyncByCommandReq();
-        req.setProductId(productId2);
-        List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);
+        req2.setProductId(productId2);
+        //List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);
         boolean checkOk =commandExecutor.executeCommand(req2, productPutoutExecutorConfig);
         Asserts.check(checkOk,"");
     }
@@ -288,22 +292,34 @@ public class ExecutorConfigTest {
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
-        List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
         boolean check =  commandExecutor.executeCommand(req, productPutoutExecutorConfig);
         Asserts.check(check,"");
 
         //不存在的商品id，exception
         String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
         SyncByCommandReq req2 = new SyncByCommandReq();
-        req.setProductId(productId2);
-        List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check2  =  commandExecutor.executeCommand(req, productPutoutExecutorConfig);
+        req2.setProductId(productId2);
+        //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check2  =  commandExecutor.executeCommand(req2, productPutoutExecutorConfig);
         Asserts.check(check2,"");
 
 
     }
 
     @Test
+    public void testDeleteActivity() throws MessageBusException {
+
+        long activityId = 157242;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check = commandExecutor.executeCommand(req, deleteActivityExecutorConfig);
+        Asserts.check(check, "");
+
+    }
+
+        @Test
     public void testBatchSetOnShelf() {
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
