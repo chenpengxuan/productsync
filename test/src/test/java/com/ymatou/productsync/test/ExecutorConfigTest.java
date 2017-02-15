@@ -91,6 +91,9 @@ public class ExecutorConfigTest {
     @Autowired
     private DeleteActivityExecutorConfig deleteActivityExecutorConfig;
 
+    @Autowired
+    private RemoveFromActivityExecutorConfig removeFromActivityExecutorConfig;
+
     @Test
     public void testSetOnTopExecutorConfig() {
         String productId = "992b3749-4379-4260-b05b-24e734423f9f";
@@ -316,6 +319,29 @@ public class ExecutorConfigTest {
         //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
         boolean check = commandExecutor.executeCommand(req, deleteActivityExecutorConfig);
         Asserts.check(check, "");
+
+    }
+
+    @Test
+    public void testRemoveFromActivity() throws MessageBusException {
+
+        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
+        long activityId = 3152;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check =  commandExecutor.executeCommand(req, removeFromActivityExecutorConfig);
+        Asserts.check(check,"");
+
+        //测试一个不存在的直播id
+        long activityId2 = 1;
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId);
+        req2.setActivityId(activityId2);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check2 =  commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
+        Asserts.check(check2,"");
 
     }
 
