@@ -156,25 +156,26 @@ public interface CommandQuery {
 
     /**
      * 获取直播商品信息
+     *
      * @param productId
      * @return
      */
     @TargetDataSource("productDataSource")
-    List<Map<String,Object>> getProductLiveInfo(@Param("activityId") long activityId,@Param("productId") String productId);
+    List<Map<String, Object>> getProductLiveInfo(@Param("activityId") long activityId, @Param("productId") String productId);
 
     /**
      * 获取待同步的活动商品信息
-
+     *
      * @param productInactivityId
      * @return
      */
     @TargetDataSource("productDataSource")
-    List<Map<String,Object>> getActivityProducts(@Param("productInactivityId") long productInactivityId);
+    List<Map<String, Object>> getActivityProducts(@Param("productInactivityId") long productInactivityId);
 
 
     /**
      * 获取待同步的活动商品规格列表信息
-
+     *
      * @param productInactivityId
      * @return
      */
@@ -183,6 +184,7 @@ public interface CommandQuery {
 
     /**
      * 更新商品业务凭据
+     *
      * @param transactionInfo
      * @return
      */
@@ -191,6 +193,7 @@ public interface CommandQuery {
 
     /**
      * 根据transactionId获取业务凭据信息
+     *
      * @param transactionId
      * @return
      */

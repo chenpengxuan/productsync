@@ -273,7 +273,7 @@ SELECT  DISTINCT
         SELECT  dStartTime as 'start'
         ,dEndTime as 'end'
         FROM    dbo.Ymt_ProductsInLive
-        WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+        WHERE   sProductId = #{productId,jdbcType=VARCHAR} WITH(NOLOCK)
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 
@@ -296,7 +296,7 @@ SELECT  DISTINCT
                     ,fEarnestPrice as 'earnest'
                     ,iNum as 'stock'
                     ,iAction as 'action'
-                    from Ymt_Catalogs
+                    from Ymt_Catalogs WITH(NOLOCK)
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
     <!--取待同步的活动商品 -->
@@ -346,7 +346,7 @@ SELECT  DISTINCT
             ,iSellStatus AS 'status'
             ,iIsTop AS 'istop'
             ,dReadyPutawayProductSort AS 'sort'
-    FROM    dbo.Ymt_ProductsInLive
+    FROM    dbo.Ymt_ProductsInLive WITH(NOLOCK)
     WHERE   sProductId = #{productId,jdbcType=VARCHAR}
     AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
@@ -356,7 +356,7 @@ SELECT  DISTINCT
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         select      sCatalogId as 'cid'
                     ,iNum as 'stock'
-                    from Ymt_Catalogs
+                    from Ymt_Catalogs WITH(NOLOCK)
                     WHERE iAction >-1 and  sProductId = #{productId}
     </select>
 
@@ -368,6 +368,15 @@ SELECT  DISTINCT
         WHERE iAction =0 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
 
+    <!--根据直播id获取直播商品排序信息-->
+    <select id="getProductsLiveSort"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT  sProductId AS 'spid',
+                dReadyPutawayProductSort AS 'sort'
+        FROM Ymt_ProductsInLive WITH (NOLOCK)
+        WHERE iAction  > -1 AND  iActivityId = #{activityId};
+    </select>
+
     <!--根据transactionId获取业务凭据信息-->
     <select id="getTransactionInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.transactionInfo">
@@ -375,7 +384,7 @@ SELECT  DISTINCT
                 ,[NewTranStatus]
                 ,[NewRetryTimes]
                 ,[NewUpdateTime]
-            FROM [dbo].[BusinessCredentialInfo]
+            FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
             WHERE TransactionId = #{transactionId}
     </select>
 
