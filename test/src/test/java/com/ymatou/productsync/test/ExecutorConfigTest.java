@@ -281,7 +281,8 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
         req.setProductId(productId);
-        commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+        boolean result = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+        Assert.assertTrue(result);
     }
 
     @Test
