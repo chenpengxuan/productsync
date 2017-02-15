@@ -208,4 +208,13 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     TransactionInfo getTransactionInfo(@Param("transactionId") long transactionId);
+
+    /**
+     * 获取商品橱窗推荐状态
+     *
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductOnOffTop(@Param("productId") String productId);
 }

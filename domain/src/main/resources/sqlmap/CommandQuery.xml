@@ -42,8 +42,8 @@
 			   a.iIsTop AS 'istop',
 			   a.iSellStatus AS 'status',
 			   p.iBrandId AS 'bid',
-			   p.sBrand AS 'bname',
-			   b.sBrandEn AS 'benname',
+			   p.sBrand AS 'brand',
+			   b.sBrandEn AS 'ebrand',
 			   p.iThirdCategoryId AS 'tcatid'
 		FROM Ymt_ProductsInLive (NOLOCK) a
 		INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
@@ -397,4 +397,10 @@ SELECT  DISTINCT
           ,[NewUpdateTime] = #{newUpdateTime}
      WHERE TransactionId = #{transactionId}
     </update>
+
+    <!--根据productid获取商品橱窗推荐状态-->
+    <select id="getProductOnOffTop"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT isTop as 'istop'  FROM dbo.Ymt_Products WHERE sProductId= #{productId}
+    </select>
 </mapper>

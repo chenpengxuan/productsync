@@ -6,6 +6,8 @@ import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
 import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,8 +45,10 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
                 liveproduct.remove("iActivityId");
                 liveproduct.put("brands", brands);// FIXME: 2017/2/8  需要测试(brands == null || brands.Count() == 0) ? null : brands)
                 mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(lid), liveproducts));
-                mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId,lid), sqlDataList));
+                mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, lid), sqlDataList));
             });
+        } else {
+            throw new BizException(ErrorCode.BIZFAIL, "getValidLiveByProductId");
         }
         return mongoDataList;
     }
