@@ -45,16 +45,18 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlProductInLiveDataList = commandQuery.getProductLiveInfo(activityId, productId);
         //直播信息
         List<Map<String, Object>> sqlLiveDataList = liveCommandQuery.getProductInfoByActivityId(activityId);
+
+        //前置条件检查
+        if (sqlProductDataList == null || sqlProductDataList.isEmpty()){
+            throw new BizException(ErrorCode.BIZFAIL,"getProductDetailInfo为空");
+        }
         List<MongoData> mongoDataList = new ArrayList<>();
         //创建商品信息
-        if (sqlProductDataList != null && !sqlProductDataList.isEmpty()) {
             MapUtil.mapFieldToStringArray(sqlProductDataList, "pics", ",");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
             mongoDataList.add(MongoDataBuilder.createProductAdd(sqlProductDataList));
-        }else {
-            throw new BizException(ErrorCode.BIZFAIL,"getProductDetailInfo为空");
-        }
+
         //创建规格信息
         if (sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()) {
             mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));

@@ -83,7 +83,7 @@ allprojects {
 
         zkclientVersion = "0.1"
         commonsLang3Version = "3.4"
-        disconfVersion = "2.6.39"
+        disconfVersion = "2.6.40"
         commonsIoVersion = "2.4"
 
         mongoDriverVerson = "3.2.2"
