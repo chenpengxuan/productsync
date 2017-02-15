@@ -23,8 +23,6 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ProductSyncApplication.class)// 指定我们SpringBoot工程的Application启动类
 public class ExecutorConfigTest {
-    @Autowired
-    private SetOnTopExecutorConfig setOnTopExecutorConfig;
 
     @Autowired
     private AddActivityExecutorConfig addActivityExecutorConfig;
@@ -61,6 +59,9 @@ public class ExecutorConfigTest {
 
     @Autowired
     private  SetOffTopExecutorConfig setOffTopExecutorConfig ;
+
+    @Autowired
+    private  SetOnTopExecutorConfig setOnTopExecutorConfig ;
 
     @Autowired
     private  DeleteProductExecutorConfig deleteProductExecutorConfig ;
@@ -226,19 +227,25 @@ public class ExecutorConfigTest {
     }
 
     /**
-     *
+     * setOnTopExecutorConfig
      */
     @Test
-    public void testSetOffTop(){
+    public void testSetOffTop() {
+        //测试取消置顶
         long activityId = 157242;
         String productId = "7577884f-8606-4571-ba52-4881e89e660c";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-      boolean checkOk =  commandExecutor.executeCommand(req, setOffTopExecutorConfig);
-      Asserts.check(checkOk,"");
+        boolean checkOk = commandExecutor.executeCommand(req, setOffTopExecutorConfig);
+        Asserts.check(checkOk, "");
 
-
+        //测试置顶
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId);
+        req2.setActivityId(activityId);
+        boolean checkOk2 = commandExecutor.executeCommand(req2, setOnTopExecutorConfig);
+        Asserts.check(checkOk2, "");
     }
 
     /**
@@ -296,7 +303,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check =  commandExecutor.executeCommand(req, productPutoutExecutorConfig);
+        boolean check =  commandExecutor.executeCommand(req, productStockChangeExecutorConfig);
         Asserts.check(check,"");
 
         //不存在的商品id，exception
@@ -304,7 +311,7 @@ public class ExecutorConfigTest {
         SyncByCommandReq req2 = new SyncByCommandReq();
         req2.setProductId(productId2);
         //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check2  =  commandExecutor.executeCommand(req2, productPutoutExecutorConfig);
+        boolean check2  =  commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
         Asserts.check(check2,"");
 
 
