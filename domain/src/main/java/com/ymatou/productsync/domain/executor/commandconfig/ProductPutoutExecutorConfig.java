@@ -78,7 +78,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq();
             getOrderAmountInfosReqequest.setProductIds(Lists.newArrayList(productId));
             getOrderAmountInfosReqequest.setSellerId(sellerId);
-
+            //调订单接口，业务对下架无太大影响，可以忽略异常
             try {
                 GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
                 if (respOrderAmount != null && respOrderAmount.isSuccess()) {
