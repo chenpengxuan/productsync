@@ -28,7 +28,7 @@ public enum CmdTypeEnum {
     BatchSetOnShelf,
 
     /**
-     * 批量上架商品 App
+     * 上架商品【商品售罄】
      */
     SetOnShelfUpdateStockNum,
 
