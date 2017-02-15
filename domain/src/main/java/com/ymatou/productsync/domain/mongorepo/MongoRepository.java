@@ -48,6 +48,8 @@ public class MongoRepository {
      * @return
      */
     private boolean processMongoData(MongoData mongoData) throws IllegalArgumentException {
+        logger.info(mongoData.toString());
+        logger.debug("Data:"+mongoData.getUpdateData().toString());
         if (mongoData.getTableName().isEmpty())
             throw new IllegalArgumentException("mongo table name 不能为空");
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());

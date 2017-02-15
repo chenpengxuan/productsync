@@ -1,5 +1,7 @@
 package com.ymatou.productsync.domain.model.mongo;
 
+import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 import java.util.Map;
 
@@ -60,5 +62,19 @@ public class MongoData {
         this.matchCondition = matchCondition;
     }
 
+
+    @Override
+    public String toString()
+    {
+        String output= operationType+"   "+tableName+"  ";
+        if(!CollectionUtils.isEmpty(matchCondition))
+        {
+            output += matchCondition.toString();
+        }else
+        {
+            output += "conditions is empty";
+        }
+        return output;
+    }
 
 }

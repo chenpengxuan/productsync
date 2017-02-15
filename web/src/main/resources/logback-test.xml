@@ -38,7 +38,7 @@
 	-
 
 	<logger name="com.ymatou.productsync">
-		<level value="${level}" />
+		<level value="debug" />
 		<appender-ref ref="HTTP-POST-ERROR-APPENDER" />
 	</logger>
 

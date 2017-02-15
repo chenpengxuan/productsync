@@ -6,6 +6,8 @@ import com.ymatou.productsync.domain.executor.commandconfig.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
+import org.apache.http.util.Asserts;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,7 +200,22 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
-        commandExecutor.executeCommand(req, modifyActivityExecutorConfig);
+        boolean isOk = commandExecutor.executeCommand(req, modifyActivityExecutorConfig);
+        Asserts.check(isOk, "");
+
+        //无效的直播Id
+        long activityId2 = 0;
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setActivityId(activityId2);
+        boolean isOk2 = commandExecutor.executeCommand(req2, modifyActivityExecutorConfig);
+        Asserts.check(isOk2, "");
+
+        //有直播商品的直播，要更新直播商品、商品信息
+        long activityId3 = 149338;
+        SyncByCommandReq req3 = new SyncByCommandReq();
+        req3.setActivityId(activityId3);
+        boolean isOk3 = commandExecutor.executeCommand(req3, modifyActivityExecutorConfig);
+        Asserts.check(isOk3, "");
     }
 
     /**
@@ -271,7 +288,8 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
         req.setProductId(productId);
-        commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+        boolean result = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+        Assert.assertTrue(result);
     }
 
     @Test

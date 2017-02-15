@@ -36,7 +36,9 @@ public class CommandExecutor {
         TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
         if(transactionInfo == null){
             logger.error("没有找到对应的业务凭据信息，transsactionId为{},",transactionId);
-            throw new BizException(ErrorCode.BIZFAIL,String.format("没有找到对应的业务凭据信息,transactionId为%d",transactionId));
+            //FIXME
+            //throw new BizException(ErrorCode.BIZFAIL,String.format("没有找到对应的业务凭据信息,transactionId为%d",transactionId));
+            return;
         }
         //针对是失败状态
         transactionInfo.setNewRetryTimes(
@@ -45,6 +47,7 @@ public class CommandExecutor {
         ? transactionInfo.getNewRetryTimes() + 1:transactionInfo.getNewRetryTimes());
         transactionInfo.setNewTranStatus(status.ordinal());
         transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+
         if(commandQuery.updateTransactionInfo(transactionInfo) <= 0){
             logger.error("更新商品业务凭据发生异常，transsactionId为{},",transactionId);
         }
