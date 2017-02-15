@@ -209,6 +209,13 @@ public class ExecutorConfigTest {
         req2.setActivityId(activityId2);
         boolean isOk2 = commandExecutor.executeCommand(req2, modifyActivityExecutorConfig);
         Asserts.check(isOk2, "");
+
+        //有直播商品的直播，要更新直播商品、商品信息
+        long activityId3 = 149338;
+        SyncByCommandReq req3 = new SyncByCommandReq();
+        req3.setActivityId(activityId3);
+        boolean isOk3 = commandExecutor.executeCommand(req3, modifyActivityExecutorConfig);
+        Asserts.check(isOk3, "");
     }
 
     /**
