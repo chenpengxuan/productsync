@@ -84,7 +84,7 @@ public class MongoRepository{
                             .getN() > 0;
                     break;
                 case DELETE:
-                    processResult = collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).getN() > 0;
+                    processResult = collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).wasAcknowledged();
                     break;
                 default:
                     throw new IllegalArgumentException("mongo 操作类型不正确");
