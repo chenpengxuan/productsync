@@ -9,7 +9,7 @@ package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.SyncStatusEnum;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;

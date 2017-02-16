@@ -391,7 +391,8 @@ SELECT  DISTINCT
     <!--获取需要补单的信息-->
     <select id="getCompensationInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.transactionInfo">
-        SELECT TOP ${readCount} [TransactionId]
+        SELECT TOP ${readCount}
+        [TransactionId]
         ,[ActionType]
         ,[ProductId]
         ,[LiveId]
@@ -399,7 +400,10 @@ SELECT  DISTINCT
         ,[NewRetryTimes]
         ,[NewUpdateTime]
         FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
-        WHERE TransactionId = #{transactionId}
+        WHERE
+        [NewTranStatus] = 0 AND DATEDIFF(MINUTE ,NewUpdateTime,GETDATE()) > ${timeLimit}
+        AND ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
+        ORDER BY CreateTime DESC
     </select>
 
     <!--更新商品业务凭据信息-->

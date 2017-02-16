@@ -1,4 +1,4 @@
-package com.ymatou.productsync.domain.executor;
+package com.ymatou.productsync.domain.model.sql;
 
 /**
  * 业务操作状态枚举

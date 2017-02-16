@@ -3,7 +3,6 @@ package com.ymatou.productsync.test.domain;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.apache.http.util.Asserts;
@@ -13,8 +12,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
 
 /**
  * 场景业务指令器test
@@ -131,7 +128,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testAddProduct() {
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        String productId = "a48d272a-a677-4d27-9478-e00fdf7ae338";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);

@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor;
 
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;

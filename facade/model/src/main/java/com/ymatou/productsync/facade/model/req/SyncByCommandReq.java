@@ -2,7 +2,7 @@ package com.ymatou.productsync.facade.model.req;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 
 /**
  * Created by chenpengxuan on 2016/12/9.
