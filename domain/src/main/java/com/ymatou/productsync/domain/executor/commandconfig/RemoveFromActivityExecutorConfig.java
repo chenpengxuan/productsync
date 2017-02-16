@@ -12,6 +12,7 @@ import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * Created by chenfei on 2017/2/15.
  * 商品从直播中移除
  */
+@Component("removeFromActivityExecutorConfig")
 public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;

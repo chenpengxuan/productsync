@@ -1,4 +1,4 @@
-package com.ymatou.productsync.test;
+package com.ymatou.productsync.test.domain;
 
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
