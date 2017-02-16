@@ -1,4 +1,4 @@
-package com.ymatou.productsync.test;
+package com.ymatou.productsync.test.domain;
 
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
@@ -278,8 +278,8 @@ public class ExecutorConfigTest {
     @Test
     public void testProductPutout() throws MessageBusException {
         //带直播id场景
-        long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        long activityId = 3152;
+        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
