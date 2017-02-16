@@ -2,6 +2,7 @@ package com.ymatou.productsync.facade.model.req;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.ws.rs.QueryParam;
 
 /**
  * Created by chenpengxuan on 2016/12/9.
@@ -11,27 +12,32 @@ public class SyncByCommandReq extends BaseRequest {
     /**
      * 直播id
      */
+    @QueryParam("ActivityId")
     private long activityId;
 
     /**
      * 商品id
      */
+    @QueryParam("ProductId")
     private String productId;
 
     /**
      * 集成调用方app标识
      */
+    @QueryParam("AppId")
     private String appId;
 
     /**
      * 业务场景指令
      */
     @NotBlank(message = "业务指令不能为空")
+    @QueryParam("ActionType")
     private String actionType;
 
     /**
      * 业务凭据id
      */
+    @QueryParam("TransactionId")
     private int transactionId;
 
     public long getActivityId() {

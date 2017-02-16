@@ -81,7 +81,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @Override
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public BaseResponse updateByCommandSync(SyncByCommandReq req) {
+    public BaseResponse updateByCommandSync(@BeanParam SyncByCommandReq req) {
         return executeCommand(req);
     }
 
