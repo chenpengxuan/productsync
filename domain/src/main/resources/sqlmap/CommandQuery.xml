@@ -388,6 +388,20 @@ SELECT  DISTINCT
             WHERE TransactionId = #{transactionId}
     </select>
 
+    <!--获取需要补单的信息-->
+    <select id="getCompensationInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.transactionInfo">
+        SELECT TOP ${readCount} [TransactionId]
+        ,[ActionType]
+        ,[ProductId]
+        ,[LiveId]
+        ,[NewTranStatus]
+        ,[NewRetryTimes]
+        ,[NewUpdateTime]
+        FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
+        WHERE TransactionId = #{transactionId}
+    </select>
+
     <!--更新商品业务凭据信息-->
     <update id="updateTransactionInfo" parameterType="com.ymatou.productsync.domain.model.sql.TransactionInfo">
         UPDATE [dbo].[BusinessCredentialInfo]

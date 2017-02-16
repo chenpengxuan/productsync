@@ -139,6 +139,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
         try {
             if(executor.checkNeedProcessCommand(req.getTransactionId())) {
                 syncSuccess = executor.executeCommand(req, config);
+                return syncSuccess ? BaseResponse.newSuccessInstance():BaseResponse.newFailInstance(ErrorCode.FAIL);
             }
         }catch (IllegalArgumentException argException) {
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
