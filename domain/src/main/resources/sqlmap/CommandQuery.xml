@@ -42,8 +42,8 @@
 			   a.iIsTop AS 'istop',
 			   a.iSellStatus AS 'status',
 			   p.iBrandId AS 'bid',
-			   p.sBrand AS 'brand',
-			   b.sBrandEn AS 'ebrand',
+			   p.sBrand AS 'ebrand',
+			   b.sBrand AS 'brand',
 			   p.iThirdCategoryId AS 'tcatid'
 		FROM Ymt_ProductsInLive (NOLOCK) a
 		INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
