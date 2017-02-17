@@ -1,6 +1,7 @@
 package com.ymatou.productsync.infrastructure.util;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -116,11 +117,10 @@ public class MapUtil {
                 tempMap.putAll(data);
                 Arrays.stream(fieldList).forEach(key -> tempMap.remove(key));
                 Map<String, Object> tempPropertyMap = new HashMap<>();
-                Arrays.stream(fieldList).forEach(key -> {
-                    if(data.get(key) != null){
-                    tempPropertyMap.put(key,data.get(key));}
-                });
-                if(!tempPropertyMap.isEmpty()) {
+                Arrays.stream(fieldList).forEach(key ->
+                    tempPropertyMap.put(key,data.get(key))
+                );
+                if(!Maps.filterValues(tempPropertyMap,x -> x != null).isEmpty()) {
                     nestedDataList.add(tempPropertyMap);
                 }
                 if(!nestedDataList.isEmpty()) {
@@ -135,11 +135,10 @@ public class MapUtil {
                         .orElse(Collections.emptyMap()).get(nestedObjKey);
                 Map<String, Object> tempPropertyMap = new HashMap<>();
                 if(!tempNestedDataList.isEmpty())
-                Arrays.stream(fieldList).forEach(key -> {
-                    if(data.get(key) != null){
-                    tempPropertyMap.put(key,data.get(key));}
-                });
-                if(!tempPropertyMap.isEmpty()) {
+                Arrays.stream(fieldList).forEach(key ->
+                    tempPropertyMap.put(key,data.get(key))
+                );
+                if(!Maps.filterValues(tempPropertyMap,x -> x != null).isEmpty()) {
                     tempNestedDataList.add(tempPropertyMap);
                 }
             }
