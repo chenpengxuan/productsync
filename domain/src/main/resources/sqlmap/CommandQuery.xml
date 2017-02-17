@@ -272,8 +272,8 @@ SELECT  DISTINCT
 
         SELECT  dStartTime as 'start'
         ,dEndTime as 'end'
-        FROM    dbo.Ymt_ProductsInLive
-        WHERE   sProductId = #{productId,jdbcType=VARCHAR} WITH(NOLOCK)
+        FROM    dbo.Ymt_ProductsInLive WITH(NOLOCK)
+        WHERE   sProductId = #{productId,jdbcType=VARCHAR}
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 
@@ -402,7 +402,7 @@ SELECT  DISTINCT
         FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
         WHERE
         [NewTranStatus] = 0 AND DATEDIFF(MINUTE ,NewUpdateTime,GETDATE()) > ${timeLimit}
-        AND ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
+        OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
         ORDER BY CreateTime DESC
     </select>
 

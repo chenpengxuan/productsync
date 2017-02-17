@@ -12,5 +12,9 @@ public enum  MongoOperationTypeEnum {
     //更新不到时创建
     UPSERT,
     //删除
-    DELETE
+    DELETE,
+    //查询单个
+    SELECTSINGLE,
+    //查询多个
+    SELECTMANY
 }

@@ -1,6 +1,7 @@
 package com.ymatou.productsync.infrastructure.util;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -108,25 +109,37 @@ public class MapUtil {
     public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList, String[] fieldList, String nestedObjKey,String checkKey) {
         if (mapList == null) {return null;}
         List<Map<String, Object>> tempDataList = new ArrayList<>();
-        List<Map<String, Object>> nestedDataList = new ArrayList<>();
         mapList.forEach(data -> {
             if (!tempDataList.stream().anyMatch(x -> x.containsValue(data.get(checkKey)))) {
-                nestedDataList.clear();
+                List<Map<String, Object>> nestedDataList = new ArrayList<>();
                 Map<String, Object> tempMap = new HashMap<>();
                 tempMap.putAll(data);
                 Arrays.stream(fieldList).forEach(key -> tempMap.remove(key));
                 Map<String, Object> tempPropertyMap = new HashMap<>();
-                Arrays.stream(fieldList).forEach(key -> tempPropertyMap.put(key,data.get(key)));
-                nestedDataList.add(tempPropertyMap);
-                tempMap.put(nestedObjKey, nestedDataList);
+                Arrays.stream(fieldList).forEach(key ->
+                    tempPropertyMap.put(key,data.get(key))
+                );
+                if(!Maps.filterValues(tempPropertyMap,x -> x != null).isEmpty()) {
+                    nestedDataList.add(tempPropertyMap);
+                }
+                if(!nestedDataList.isEmpty()) {
+                    tempMap.put(nestedObjKey, nestedDataList);
+                }else{
+                    tempMap.put(nestedObjKey, null);
+                }
                 tempDataList.add(tempMap);
             } else {
                 List<Map<String, Object>> tempNestedDataList = (List<Map<String, Object>>) tempDataList.parallelStream()
                         .filter(x -> x.containsValue(data.get(checkKey))).findFirst()
                         .orElse(Collections.emptyMap()).get(nestedObjKey);
                 Map<String, Object> tempPropertyMap = new HashMap<>();
-                Arrays.stream(fieldList).forEach(key -> tempPropertyMap.put(key,data.get(key)));
-                tempNestedDataList.add(tempPropertyMap);
+                if(!tempNestedDataList.isEmpty())
+                Arrays.stream(fieldList).forEach(key ->
+                    tempPropertyMap.put(key,data.get(key))
+                );
+                if(!Maps.filterValues(tempPropertyMap,x -> x != null).isEmpty()) {
+                    tempNestedDataList.add(tempPropertyMap);
+                }
             }
         });
         return tempDataList;

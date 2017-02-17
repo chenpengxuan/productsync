@@ -3,6 +3,7 @@ package com.ymatou.productsync.domain.executor;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 
 import java.util.List;
@@ -32,6 +33,27 @@ public class MongoDataBuilder {
         md.setOperationType(operationType);
         md.setMatchCondition(matchCondition);
         md.setUpdateData(updateData);
+        return md;
+    }
+
+    /**
+     * 查询指令创建
+     * @param tableName
+     * @param operationType
+     * @param matchCondition
+     * @param distinctKey
+     * @return
+     */
+    public static MongoQueryData buildQueryMongoData(String tableName,
+                                           MongoOperationTypeEnum operationType,
+                                           Map<String, Object> matchCondition,
+                                                     String distinctKey
+                                           ) {
+        MongoQueryData md = new MongoQueryData();
+        md.setTableName(tableName);
+        md.setOperationType(operationType);
+        md.setMatchCondition(matchCondition);
+        md.setDistinctKey(distinctKey);
         return md;
     }
 
@@ -121,6 +143,15 @@ public class MongoDataBuilder {
     public static MongoData createProductUpsert(Map<String, Object> matchCondition,
                                                 List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.ProductDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
+    /**
+     * 查询单个商品信息
+     * @param matchCondition
+     * @return
+     */
+    public static MongoQueryData querySingleProductInfo(Map<String, Object> matchCondition){
+        return buildQueryMongoData(Constants.ProductDb,MongoOperationTypeEnum.SELECTSINGLE,matchCondition,"");
     }
 
     /**

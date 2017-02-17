@@ -71,4 +71,28 @@ public class TransactionInfo {
     public void setNewUpdateTime(String newUpdateTime) {
         this.newUpdateTime = newUpdateTime;
     }
+
+    public int getLiveId() {
+        return liveId;
+    }
+
+    public void setLiveId(int liveId) {
+        this.liveId = liveId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
+    }
 }

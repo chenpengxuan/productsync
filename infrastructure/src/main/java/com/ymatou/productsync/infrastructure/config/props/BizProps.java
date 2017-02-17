@@ -11,8 +11,15 @@ import org.springframework.stereotype.Component;
 @Component
 @DisconfFile(fileName = "biz.properties")
 public class BizProps {
-
+    /**
+     * 补单读取条目数限制
+     */
     private int readCount;
+
+    /**
+     * 补单初始状态重试时间限制
+     */
+    private int timeLimit;
 
     @DisconfFileItem(name = "readCount")
     public int getReadCount() {
@@ -21,5 +28,14 @@ public class BizProps {
 
     public void setReadCount(int readCount) {
         this.readCount = readCount;
+    }
+
+    @DisconfFileItem(name = "timeLimit")
+    public int getTimeLimit() {
+        return timeLimit;
+    }
+
+    public void setTimeLimit(int timeLimit) {
+        this.timeLimit = timeLimit;
     }
 }
