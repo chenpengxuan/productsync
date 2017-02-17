@@ -1,8 +1,12 @@
 package com.ymatou.productsync.domain.mongorepo;
 
+import com.google.common.collect.Lists;
+import com.mongodb.DBObject;
 import com.mongodb.DuplicateKeyException;
 import com.ymatou.performancemonitorclient.PerformanceStatisticContainer;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
 import com.ymatou.productsync.infrastructure.config.datasource.DynamicDataSourceAspect;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
@@ -14,9 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * mongo 仓储操作相关
@@ -36,8 +39,9 @@ public class MongoRepository{
      * @return
      */
     public boolean excuteMongo(List<MongoData> mongoDataList) throws IllegalArgumentException {
-        if (mongoDataList == null || mongoDataList.isEmpty())
+        if (mongoDataList == null || mongoDataList.isEmpty()) {
             throw new IllegalArgumentException("mongoDataList 不能为空");
+        }
         List<Boolean> resultList = new ArrayList();
         mongoDataList.stream().forEach(x -> {
             try {
@@ -50,14 +54,58 @@ public class MongoRepository{
     }
 
     /**
+     * mongo 查询
+     * @param mongoQueryData
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public List<Map<String,Object>> queryMongo(MongoQueryData mongoQueryData) throws IllegalArgumentException{
+        if (mongoQueryData == null) {
+            throw new IllegalArgumentException("mongoData 不能为空");
+        }
+        if (mongoQueryData.getTableName().isEmpty()) {
+            throw new IllegalArgumentException("mongo table name 不能为空");
+        }
+        if(mongoQueryData.getOperationType() == MongoOperationTypeEnum.SELECTMANY && mongoQueryData.getDistinctKey().isEmpty()){
+            throw new IllegalArgumentException("mongo 查询多条时 distinct key 不能为空");
+        }
+        MongoCollection collection = jongoClient.getCollection(mongoQueryData.getTableName());
+        List<Map<String,Object>> mapList = new ArrayList<>();
+        Map<String,Object> tempMap;
+        List<DBObject> tempList;
+        switch (mongoQueryData.getOperationType()){
+            case SELECTSINGLE:
+                if(mongoQueryData.getMatchCondition() != null) {
+                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(HashMap.class);
+                }
+                else{
+                    tempMap = collection.findOne().as(HashMap.class);
+                }
+                mapList.add(tempMap);
+                break;
+            case SELECTMANY:
+                if(mongoQueryData.getMatchCondition() != null) {
+                    tempList = collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(DBObject.class);
+                    mapList = tempList.parallelStream().map(x -> x.toMap()).collect(Collectors.toList());
+                }
+                else{
+                    mapList = Lists.newArrayList(collection.find().as(HashMap.class).iterator());
+                }
+                break;
+        }
+        return mapList;
+    }
+
+    /**
      * mongodata 实际操作
      *
      * @param mongoData
      * @return
      */
     private boolean processMongoData(MongoData mongoData) throws IllegalArgumentException {
-        if (mongoData.getTableName().isEmpty())
+        if (mongoData.getTableName().isEmpty()) {
             throw new IllegalArgumentException("mongo table name 不能为空");
+        }
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
         logger.debug("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()));
         //增加定制化性能监控汇报
