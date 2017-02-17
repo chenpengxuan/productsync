@@ -33,6 +33,8 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlDataList = commandQuery.getProductBrandAndCategory(productId);
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
             mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
+        } else {
+            throw new BizException(ErrorCode.BIZFAIL, "getProductBrandAndCategory为空");
         }
         List<Map<String, Object>> liveproducts = commandQuery.getValidLiveByProductId(productId);
         if (liveproducts != null && !liveproducts.isEmpty()) {
@@ -47,8 +49,6 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
                 mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(lid), liveproducts));
                 mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, lid), sqlDataList));
             });
-        } else {
-            throw new BizException(ErrorCode.BIZFAIL, "getValidLiveByProductId");
         }
         return mongoDataList;
     }
