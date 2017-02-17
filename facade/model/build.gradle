@@ -10,6 +10,8 @@ dependencies {
     compile "org.jboss.resteasy:resteasy-jaxrs:${resteasyJaxrsVersion}"
     compile "org.jboss.resteasy:resteasy-client:${resteasyJaxrsVersion}"
     compile "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonVersion}"
+    compile "com.alibaba:fastjson:${fastjsonVersion}"
     compile "javax.el:el-api:${elApiVersion}"
 }
 
