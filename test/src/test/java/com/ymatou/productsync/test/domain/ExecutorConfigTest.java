@@ -201,23 +201,23 @@ public class ExecutorConfigTest {
 
     @Test
     public void testModifyActivity() {
-        long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        long activityId = 157305;
+        //String productId = "e06c1578-e88e-43c1-a763-519e9fb60701";
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(productId);
+        //req.setProductId(productId);
         req.setActivityId(activityId);
         boolean isOk = commandExecutor.executeCommand(req, modifyActivityExecutorConfig);
         Asserts.check(isOk, "");
 
         //无效的直播Id
-        long activityId2 = 0;
-        SyncByCommandReq req2 = new SyncByCommandReq();
-        req2.setActivityId(activityId2);
-        boolean isOk2 = commandExecutor.executeCommand(req2, modifyActivityExecutorConfig);
-        Asserts.check(isOk2, "");
+//        long activityId2 = 0;
+//        SyncByCommandReq req2 = new SyncByCommandReq();
+//        req2.setActivityId(activityId2);
+//        boolean isOk2 = commandExecutor.executeCommand(req2, modifyActivityExecutorConfig);
+//        Asserts.check(!isOk2, "");
 
         //有直播商品的直播，要更新直播商品、商品信息
-        long activityId3 = 149338;
+        long activityId3 = 157305;
         SyncByCommandReq req3 = new SyncByCommandReq();
         req3.setActivityId(activityId3);
         boolean isOk3 = commandExecutor.executeCommand(req3, modifyActivityExecutorConfig);
@@ -253,7 +253,7 @@ public class ExecutorConfigTest {
     public void testDeleteProduct() throws MessageBusException {
         //从直播中删商品
         long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        String productId = "210a0e9a-147f-4f71-b3af-3b97e60fe640";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
@@ -330,8 +330,8 @@ public class ExecutorConfigTest {
     @Test
     public void testRemoveFromActivity() throws MessageBusException {
 
-        String productId = "f68f94f6-898a-4df7-823a-f187c0b62db3";
-        long activityId = 3152;
+        String productId = "5fbcbc07-16fc-4186-9729-90ba7ba53e57";
+        long activityId = 149338;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
@@ -340,13 +340,13 @@ public class ExecutorConfigTest {
         Asserts.check(check, "");
 
         //测试一个不存在的直播id
-        long activityId2 = 1;
-        SyncByCommandReq req2 = new SyncByCommandReq();
-        req2.setProductId(productId);
-        req2.setActivityId(activityId2);
-        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check2 = commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
-        Asserts.check(check2, "");
+//        long activityId2 = 1;
+//        SyncByCommandReq req2 = new SyncByCommandReq();
+//        req2.setProductId(productId);
+//        req2.setActivityId(activityId2);
+//        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+//        boolean check2 = commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
+//        Asserts.check(check2, "");
 
     }
 
