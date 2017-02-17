@@ -39,7 +39,7 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
                 mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(t)));
             });
         } else {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductStockInfo");
+            throw new BizException(ErrorCode.BIZFAIL, "getProductStockInfo为空");
         }
         return mongoDataList;
     }

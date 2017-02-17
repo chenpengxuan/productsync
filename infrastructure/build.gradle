@@ -40,7 +40,7 @@ dependencies {
 	compile "com.esotericsoftware:kryo:${kryoVersion}"
 	compile "de.javakaffee:kryo-serializers:${kryoSerializersVersion}"
 
-	compile "org.quartz-scheduler:quartz:${quartzVersion}"
+//	compile "org.quartz-scheduler:quartz:${quartzVersion}"
 
 	//ymatou
 	compile "com.ymatou:performancemonitorclient:${performanceMonitorClientVersion}"
