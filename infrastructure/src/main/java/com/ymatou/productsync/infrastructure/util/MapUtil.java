@@ -109,10 +109,9 @@ public class MapUtil {
     public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList, String[] fieldList, String nestedObjKey,String checkKey) {
         if (mapList == null) {return null;}
         List<Map<String, Object>> tempDataList = new ArrayList<>();
-        List<Map<String, Object>> nestedDataList = new ArrayList<>();
         mapList.forEach(data -> {
             if (!tempDataList.stream().anyMatch(x -> x.containsValue(data.get(checkKey)))) {
-                nestedDataList.clear();
+                List<Map<String, Object>> nestedDataList = new ArrayList<>();
                 Map<String, Object> tempMap = new HashMap<>();
                 tempMap.putAll(data);
                 Arrays.stream(fieldList).forEach(key -> tempMap.remove(key));

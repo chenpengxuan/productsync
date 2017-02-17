@@ -21,12 +21,6 @@ public interface CommandQuery {
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getLiveProductTop(@Param("productId") String productId, @Param("activityId") long activityId);
 
-    @TargetDataSource("apolloLogDataSource")
-    List<List<Map<String, Object>>> setTopProduct2(@Param("productId") String productId);
-
-    @TargetDataSource("liveDataSource")
-    List<List<Map<String, Object>>> setTopProduct3(@Param("liveId") int liveId);
-
     /**
      * 根据直播id获取直播基本信息
      *
