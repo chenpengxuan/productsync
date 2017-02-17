@@ -58,12 +58,10 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             //fixme:matchConditionInfo.put("end",now); <
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
             //删规格
-            Map<String, Object> actionMap = new HashMap<String, Object>();
-            actionMap.put("action", "-1");
-            List<Map<String, Object>> invalidActions = Lists.newArrayList(actionMap);
-            MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), invalidActions);
+            MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), Lists.newArrayList());
             mongoDataList.add(productMd);
             mongoDataList.add(liveProductMd);
+            //直播品牌不更新
             mongoDataList.add(catalogMd);
 
         } else { //从直播中删除商品
