@@ -228,12 +228,12 @@ SELECT  DISTINCT
     <!--获取商品的品牌品类信息-->
     <select id="getProductBrandAndCategory" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT
+         SELECT
                     P.iBrandId AS bid ,
-                    CASE WHEN P.iBrandId = 0 THEN P.sBrand
-                         ELSE B.sBrand
-                    END AS brand ,
-                    B.sBrandEn AS ebrand ,
+                    b.sBrand AS brand ,
+                     CASE WHEN P.iBrandId = 0 THEN P.sBrand--product表优先存的是英文品牌
+                         ELSE B.sBrandEn
+                    END  AS ebrand ,
                     P.iCategoryId AS scatid ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
