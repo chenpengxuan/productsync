@@ -402,7 +402,7 @@ SELECT  DISTINCT
         FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
         WHERE
         [NewTranStatus] = 0 AND DATEDIFF(MINUTE ,NewUpdateTime,GETDATE()) > ${timeLimit}
-        AND ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
+        OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
         ORDER BY CreateTime DESC
     </select>
 

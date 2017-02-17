@@ -210,6 +210,15 @@ public interface CommandQuery {
     TransactionInfo getTransactionInfo(@Param("transactionId") long transactionId);
 
     /**
+     * 获取需要补单的信息
+     * @param readCount
+     * @param timeLimit
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<TransactionInfo> getCompensationInfo(@Param("readCount") int readCount,@Param("timeLimit") int timeLimit);
+
+    /**
      * 获取商品橱窗推荐状态
      *
      * @param productId

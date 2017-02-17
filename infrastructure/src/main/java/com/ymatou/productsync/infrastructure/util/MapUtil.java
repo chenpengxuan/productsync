@@ -116,17 +116,32 @@ public class MapUtil {
                 tempMap.putAll(data);
                 Arrays.stream(fieldList).forEach(key -> tempMap.remove(key));
                 Map<String, Object> tempPropertyMap = new HashMap<>();
-                Arrays.stream(fieldList).forEach(key -> tempPropertyMap.put(key,data.get(key)));
-                nestedDataList.add(tempPropertyMap);
-                tempMap.put(nestedObjKey, nestedDataList);
+                Arrays.stream(fieldList).forEach(key -> {
+                    if(data.get(key) != null){
+                    tempPropertyMap.put(key,data.get(key));}
+                });
+                if(!tempPropertyMap.isEmpty()) {
+                    nestedDataList.add(tempPropertyMap);
+                }
+                if(!nestedDataList.isEmpty()) {
+                    tempMap.put(nestedObjKey, nestedDataList);
+                }else{
+                    tempMap.put(nestedObjKey, null);
+                }
                 tempDataList.add(tempMap);
             } else {
                 List<Map<String, Object>> tempNestedDataList = (List<Map<String, Object>>) tempDataList.parallelStream()
                         .filter(x -> x.containsValue(data.get(checkKey))).findFirst()
                         .orElse(Collections.emptyMap()).get(nestedObjKey);
                 Map<String, Object> tempPropertyMap = new HashMap<>();
-                Arrays.stream(fieldList).forEach(key -> tempPropertyMap.put(key,data.get(key)));
-                tempNestedDataList.add(tempPropertyMap);
+                if(!tempNestedDataList.isEmpty())
+                Arrays.stream(fieldList).forEach(key -> {
+                    if(data.get(key) != null){
+                    tempPropertyMap.put(key,data.get(key));}
+                });
+                if(!tempPropertyMap.isEmpty()) {
+                    tempNestedDataList.add(tempPropertyMap);
+                }
             }
         });
         return tempDataList;

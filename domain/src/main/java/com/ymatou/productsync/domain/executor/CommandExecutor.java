@@ -6,12 +6,16 @@ import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
+import com.ymatou.productsync.infrastructure.config.props.BizProps;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 业务指令执行器
@@ -26,6 +30,9 @@ public class CommandExecutor {
 
     @Autowired
     private CommandQuery commandQuery;
+
+    @Autowired
+    private BizProps bizProps;
 
     /**
      * 更新业务凭据状态设置为参数异常无需重试
@@ -48,6 +55,20 @@ public class CommandExecutor {
 
         if(commandQuery.updateTransactionInfo(transactionInfo) <= 0){
             logger.error("更新商品业务凭据发生异常，transsactionId为{},",transactionId);
+        }
+    }
+
+    public void compensateCommand(){
+        List<TransactionInfo> transactionInfoList = commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit());
+        if(transactionInfoList != null && !transactionInfoList.isEmpty()){
+            List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
+                SyncByCommandReq tempReq = new SyncByCommandReq();
+                tempReq.setTransactionId(x.getTransactionId());
+                tempReq.setActivityId(x.getLiveId());
+                tempReq.setProductId(x.getProductId());
+                tempReq.setActionType(x.getActionType());
+                return tempReq;
+            }).collect(Collectors.toList());
         }
     }
 
