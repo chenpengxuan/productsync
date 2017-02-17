@@ -71,7 +71,7 @@ public class MongoRepository{
         }
         MongoCollection collection = jongoClient.getCollection(mongoQueryData.getTableName());
         List<Map<String,Object>> mapList = new ArrayList<>();
-        Map<String,Object> tempMap;
+        Map<String,Object> tempMap = new HashMap<>();
         List<DBObject> tempList;
         switch (mongoQueryData.getOperationType()){
             case SELECTSINGLE:
@@ -81,15 +81,17 @@ public class MongoRepository{
                 else{
                     tempMap = collection.findOne().as(HashMap.class);
                 }
-                mapList.add(tempMap);
+                if(tempMap != null) {
+                    mapList.add(tempMap);
+                }
                 break;
             case SELECTMANY:
                 if(mongoQueryData.getMatchCondition() != null) {
                     tempList = collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(DBObject.class);
-                    mapList = tempList.parallelStream().map(x -> x.toMap()).collect(Collectors.toList());
+                    mapList = tempList.parallelStream().map(x -> (Map<String,Object>)x.toMap()).collect(Collectors.toList());
                 }
                 else{
-                    mapList = Lists.newArrayList(collection.find().as(HashMap.class).iterator());
+                    mapList = Lists.newArrayList((Iterator<? extends Map<String,Object>>) collection.find().as(tempMap.getClass()).iterator());
                 }
                 break;
         }

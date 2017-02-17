@@ -128,7 +128,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testAddProduct() {
-        String productId = "a48d272a-a677-4d27-9478-e00fdf7ae338";
+        String productId = "77a1c6dc-ccb0-441c-92f8-7d2f489ddf2b";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);

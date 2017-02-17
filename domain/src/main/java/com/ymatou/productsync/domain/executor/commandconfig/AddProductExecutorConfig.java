@@ -75,7 +75,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         Map<String, Object> tempProductDataMap = sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap());
         tempProductDataMap.replace("newdesc", tempProductDataMap.get("newdesc"), ((int) tempProductDataMap.get("newdesc")) == 1);
         //针对添加商品进直播的情况不能覆盖版本号,如果商品已经存在的话，则不更新商品快照信息
-        if (!mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
+        if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
                 .parallelStream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
@@ -94,29 +94,31 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         sqlProductDescDataList.add(tempDescMap);
         mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));
 
-        //创建直播商品信息
-        Map<String, Object> tempLiveProductMap = sqlProductInLiveDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
-        Map<String, Object> productMap = sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
-        tempLiveProductMap.put("bid", productMap.get("bid"));
-        tempLiveProductMap.put("mcatid", productMap.get("mcatid"));
-        tempLiveProductMap.put("mcatname", productMap.get("mcatname"));
-        tempLiveProductMap.put("scatid", productMap.get("scatid"));
-        tempLiveProductMap.put("scatname", productMap.get("scatname"));
-        tempLiveProductMap.put("tcatid", productMap.get("tcatid"));
-        tempLiveProductMap.put("tcatname", productMap.get("tcatname"));
-        tempLiveProductMap.put("brand", productMap.get("brand"));
-        tempLiveProductMap.put("ebrand", productMap.get("ebrand"));
-        tempLiveProductMap.put("comments", 0);
-        tempLiveProductMap.put("lname", "");
-        mongoDataList.add(MongoDataBuilder.createProductLiveAdd(sqlProductInLiveDataList));
+        //针对添加是商品进直播与直播中添加商品的场景
+        if(activityId > 0) {
+            //创建直播商品信息
+            Map<String, Object> tempLiveProductMap = sqlProductInLiveDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
+            Map<String, Object> productMap = sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
+            tempLiveProductMap.put("bid", productMap.get("bid"));
+            tempLiveProductMap.put("mcatid", productMap.get("mcatid"));
+            tempLiveProductMap.put("mcatname", productMap.get("mcatname"));
+            tempLiveProductMap.put("scatid", productMap.get("scatid"));
+            tempLiveProductMap.put("scatname", productMap.get("scatname"));
+            tempLiveProductMap.put("tcatid", productMap.get("tcatid"));
+            tempLiveProductMap.put("tcatname", productMap.get("tcatname"));
+            tempLiveProductMap.put("brand", productMap.get("brand"));
+            tempLiveProductMap.put("ebrand", productMap.get("ebrand"));
+            tempLiveProductMap.put("comments", 0);
+            mongoDataList.add(MongoDataBuilder.createProductLiveAdd(sqlProductInLiveDataList));
 
-        //更新直播信息
-        Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).toArray();
-        sqlLiveDataList.clear();
-        Map<String, Object> tempLiveMap = new HashMap<>();
-        tempLiveMap.put("brands", brands);
-        sqlLiveDataList.add(tempLiveMap);
-        mongoDataList.add(MongoDataBuilder.createLiveAdd(sqlLiveDataList));
+            //更新直播信息
+            Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).toArray();
+            sqlLiveDataList.clear();
+            Map<String, Object> tempLiveMap = new HashMap<>();
+            tempLiveMap.put("brands", brands);
+            sqlLiveDataList.add(tempLiveMap);
+            mongoDataList.add(MongoDataBuilder.createLiveAdd(sqlLiveDataList));
+        }
         return mongoDataList;
     }
 }
