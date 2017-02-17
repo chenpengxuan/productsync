@@ -468,7 +468,7 @@ public class ExecutorConfigTest {
         Map<String, Object> prod1 = query3.stream().findFirst().orElse(Collections.emptyMap());
         req.setActivityId(Integer.parseInt(prod1.get("iProductInActivityId").toString()));
         try {
-            commandExecutor.executeCommand(req, modifyActivityExecutorConfig);
+            commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
         } catch (Exception ex) {
             Asserts.check(ex.getMessage() == "getActivityProductCatalogs 为空", "测试活动商品规格没有的情况fail");
         }
