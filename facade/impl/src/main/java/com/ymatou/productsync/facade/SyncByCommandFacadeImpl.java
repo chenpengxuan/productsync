@@ -128,8 +128,11 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     /**
      * 补单功能
      */
+    @GET
+    @Path("/{cache:(?i:cache)}/{compensateCommand:(?i:compensateCommand)}")
+    @Override
     public void compensateCommand(){
-        List<TransactionInfo> transactionInfoList = commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit());
+        List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
         if(transactionInfoList != null && !transactionInfoList.isEmpty()){
             List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
                 SyncByCommandReq tempReq = new SyncByCommandReq();
@@ -140,9 +143,8 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                 return tempReq;
             }).collect(Collectors.toList());
             CompletableFuture.supplyAsync(() -> {
-                syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> {
-
-                });
+                syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq));
+                return "";
             });
         }
     }
