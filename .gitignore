@@ -7,5 +7,5 @@ logs/
 /**/.idea
 /**/*.iml
 /**.idea
-
 /.idea
+/**/disconf.properties
