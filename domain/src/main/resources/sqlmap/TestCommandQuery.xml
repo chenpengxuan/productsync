@@ -30,8 +30,8 @@
     <!--取个直播商品-->
     <select id="getLiveProduct"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        select top 1 sProductId from Ymt_Products where sProductId in
-        (select sProductId from Ymt_ProductsInLive where GETDATE() between dStartTime and dEndTime) order by dAddTime desc
+        select top 1 a.sProductId,b.iActivityId from Ymt_Products a join Ymt_ProductsInLive b on a.sProductId=b.sProductId
+		where GETDATE() between dStartTime and dEndTime order by b.dAddTime desc
     </select>
 
     <!--取个活动商品-->

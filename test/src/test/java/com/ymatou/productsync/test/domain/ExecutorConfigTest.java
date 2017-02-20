@@ -441,8 +441,16 @@ public class ExecutorConfigTest {
 
     @Test
     public void testSetOnShelfUpdateStockNum() {
-        long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+//        #1正常批量上架商品【商品售罄】
+//        List<Map<String, Object>> query = commandQuery.getLiveProduct();
+//        Map<String, Object> prod = query.stream().findFirst().orElse(Collections.emptyMap());
+//        SyncByCommandReq req = new SyncByCommandReq();
+//        req.setProductId(prod.get("sProductId").toString());
+//        req.setActivityId(Integer.parseInt(prod.get("iActivityId").toString()));
+//        boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+//        Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
+        long activityId = 157589;
+        String productId = "9022e96f-f273-47d0-a2a4-de2085235b43";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(activityId);
         req.setProductId(productId);

@@ -95,7 +95,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景
-        if(activityId > 0) {
+        if (activityId > 0) {
             //创建直播商品信息
             Map<String, Object> tempLiveProductMap = sqlProductInLiveDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
             Map<String, Object> productMap = sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
@@ -117,7 +117,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             Map<String, Object> tempLiveMap = new HashMap<>();
             tempLiveMap.put("brands", brands);
             sqlLiveDataList.add(tempLiveMap);
-            mongoDataList.add(MongoDataBuilder.createLiveAdd(sqlLiveDataList));
+            mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), sqlLiveDataList));
         }
         return mongoDataList;
     }
