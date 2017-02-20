@@ -121,18 +121,18 @@ public class MongoRepository {
                         processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
                     }
                     break;
-                case UPDATE: {
+                case UPDATE:
                     processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .multi()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
-                }
-                case UPSERT: {
+                    break;
+                case UPSERT:
                     processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .upsert()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
-                }
+                    break;
                 case DELETE:
                     processResult = collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).wasAcknowledged();
                     break;
