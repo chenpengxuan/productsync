@@ -1,5 +1,7 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -10,12 +12,11 @@ import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
+import com.ymatou.productsync.infrastructure.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by chenfei on 2017/2/9.
@@ -39,13 +40,24 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         if (catalogList == null || catalogList.isEmpty()) {
             throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductCatalogs 为空");
         }
-
+        final double[] minPrice = {Double.MAX_VALUE};
+        final double[] maxPrice = {Double.MIN_VALUE};
         catalogList.parallelStream().forEach(catalog -> {
+            double price = Double.parseDouble(catalog.get("price").toString());
+            minPrice[0] = Double.min(price, minPrice[0]);
+            maxPrice[0] = Double.max(price, maxPrice[0]);
             Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid").toString());
             conditions.put("cid", catalog.get("cid"));
             mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(catalog)));
-
         });
+
+        //更新商品最大最小价格
+        List<Map<String, Object>> productCatalog = Lists.newArrayList();
+         Map<String,Object> datas = new HashMap<>();
+        datas.put("minp", Utils.doubleFormat(minPrice[0],2));
+        datas.put("maxp",Utils.doubleFormat(maxPrice[0],2));
+        productCatalog.add(datas);
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),productCatalog));
 
         return mongoDataList;
     }

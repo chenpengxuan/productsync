@@ -121,10 +121,8 @@
                     ) AS 'minp' ,--最低规格价
                     P.iUserId AS 'sid' ,
                     P.SellerLoginId AS 'sname' ,
-                    CASE WHEN P.iBrandId = 0 THEN P.sBrand
-                         ELSE B.sBrand
-                    END AS 'brand' ,
-                    B.sBrandEn AS 'ebrand' ,
+                    b.sBrand AS 'brand' ,
+                    p.sbrand AS 'ebrand' ,
                     P.iCategoryId AS 'scatid' ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
@@ -224,16 +222,15 @@ SELECT  DISTINCT
     ,P.iAction as 'action'
     FROM [dbo].Ymt_Products AS P WITH(NOLOCK)
     WHERE P.[sProductId] = #{productId,jdbcType=VARCHAR};
-</select>
+    </select>
+
     <!--获取商品的品牌品类信息-->
     <select id="getProductBrandAndCategory" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT
+         SELECT
                     P.iBrandId AS bid ,
-                    CASE WHEN P.iBrandId = 0 THEN P.sBrand
-                         ELSE B.sBrand
-                    END AS brand ,
-                    B.sBrandEn AS ebrand ,
+                    b.sBrand AS brand ,
+                    p.sbrand AS ebrand ,
                     P.iCategoryId AS scatid ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
@@ -279,7 +276,7 @@ SELECT  DISTINCT
 
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT c.sBrand,c.sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+          SELECT c.sBrand,a.sBrand as sbranden  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
     </select>

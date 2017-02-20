@@ -376,7 +376,7 @@ public class ExecutorConfigTest {
     @Test
     public void testProductStockChange() throws MessageBusException {
 
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        String productId = "916ca256-d34e-4c26-bd82-e4c85d5dc309";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
@@ -384,12 +384,12 @@ public class ExecutorConfigTest {
         Asserts.check(check, "");
 
         //不存在的商品id，exception
-        String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
-        SyncByCommandReq req2 = new SyncByCommandReq();
-        req2.setProductId(productId2);
-        //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check2 = commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
-        Asserts.check(check2, "");
+//        String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
+//        SyncByCommandReq req2 = new SyncByCommandReq();
+//        req2.setProductId(productId2);
+//        //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
+//        boolean check2 = commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
+//        Asserts.check(check2, "");
 
 
     }
