@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 业务指令执行器
@@ -59,21 +58,11 @@ public class CommandExecutor {
     }
 
     /**
-     * 补单功能
+     * 获取待补单业务列表
+     * @return
      */
-    public void compensateCommand(){
-        List<TransactionInfo> transactionInfoList = commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit());
-        if(transactionInfoList != null && !transactionInfoList.isEmpty()){
-            List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
-                SyncByCommandReq tempReq = new SyncByCommandReq();
-                tempReq.setTransactionId(x.getTransactionId());
-                tempReq.setActivityId(x.getLiveId());
-                tempReq.setProductId(x.getProductId());
-                tempReq.setActionType(x.getActionType());
-                return tempReq;
-            }).collect(Collectors.toList());
+    public List<TransactionInfo> getCompensationInfo(){
 
-        }
     }
 
     /**

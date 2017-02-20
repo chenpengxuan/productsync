@@ -8,5 +8,4 @@ logs/
 /**/*.iml
 /**.idea
 /.idea
-disconf.properties
 /web/src/main/resources/disconf.properties
