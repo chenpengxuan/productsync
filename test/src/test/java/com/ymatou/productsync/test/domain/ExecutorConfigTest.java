@@ -48,6 +48,9 @@ public class ExecutorConfigTest {
     private AddProductExecutorConfig addProductExecutorConfig;
 
     @Autowired
+    private ModifyPutawayProductInfoExecutorConfig modifyPutawayProductInfoExecutorConfig;
+
+    @Autowired
     private AddProductPicsExecutorConfig addProductPicsExecutorConfig;
 
     @Autowired
@@ -174,6 +177,14 @@ public class ExecutorConfigTest {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);
+    }
+
+    @Test
+    public void testUpdateProduct() {
+        String productId = "715b0cc6-d873-4f15-b560-763672d40ac1";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        commandExecutor.executeCommand(req, modifyPutawayProductInfoExecutorConfig);
     }
 
     /*
