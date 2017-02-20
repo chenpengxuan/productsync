@@ -122,9 +122,7 @@
                     P.iUserId AS 'sid' ,
                     P.SellerLoginId AS 'sname' ,
                     b.sBrand AS 'brand' ,
-                     CASE WHEN P.iBrandId = 0 THEN P.sBrand--product表优先存的是英文品牌
-                         ELSE B.sBrandEn
-                    END  AS 'ebrand' ,
+                    p.sbrand AS 'ebrand' ,
                     P.iCategoryId AS 'scatid' ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
@@ -232,9 +230,7 @@ SELECT  DISTINCT
          SELECT
                     P.iBrandId AS bid ,
                     b.sBrand AS brand ,
-                     CASE WHEN P.iBrandId = 0 THEN P.sBrand--product表优先存的是英文品牌
-                         ELSE B.sBrandEn
-                    END  AS ebrand ,
+                    p.sbrand AS ebrand ,
                     P.iCategoryId AS scatid ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
@@ -280,7 +276,7 @@ SELECT  DISTINCT
 
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-          SELECT c.sBrand,c.sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+          SELECT c.sBrand,a.sBrand as sbranden  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
     </select>
