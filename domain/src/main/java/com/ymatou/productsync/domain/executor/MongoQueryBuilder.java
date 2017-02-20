@@ -34,6 +34,19 @@ public class MongoQueryBuilder {
     }
 
     /**
+     * 根据商品id与规格id查询
+     * @param productId
+     * @param catalogId
+     * @return
+     */
+    public static Map<String, Object> queryProductIdAndCatalogId(String productId,String catalogId) {
+        Map<String, Object> matchConditionInfo = new HashMap();
+        matchConditionInfo.put("spid", productId);
+        matchConditionInfo.put("cid",catalogId);
+        return matchConditionInfo;
+    }
+
+    /**
      * 根据商品与直播id查询
      *
      * @param productId

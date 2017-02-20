@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * Created by chenpengxuan on 2017/2/6.
  */
 @Component
-public class MongoRepository{
+public class MongoRepository {
     @Autowired
     private Jongo jongoClient;
 
@@ -55,43 +55,42 @@ public class MongoRepository{
 
     /**
      * mongo 查询
+     *
      * @param mongoQueryData
      * @return
      * @throws IllegalArgumentException
      */
-    public List<Map<String,Object>> queryMongo(MongoQueryData mongoQueryData) throws IllegalArgumentException{
+    public List<Map<String, Object>> queryMongo(MongoQueryData mongoQueryData) throws IllegalArgumentException {
         if (mongoQueryData == null) {
             throw new IllegalArgumentException("mongoData 不能为空");
         }
         if (mongoQueryData.getTableName().isEmpty()) {
             throw new IllegalArgumentException("mongo table name 不能为空");
         }
-        if(mongoQueryData.getOperationType() == MongoOperationTypeEnum.SELECTMANY && mongoQueryData.getDistinctKey().isEmpty()){
+        if (mongoQueryData.getOperationType() == MongoOperationTypeEnum.SELECTMANY && mongoQueryData.getDistinctKey().isEmpty()) {
             throw new IllegalArgumentException("mongo 查询多条时 distinct key 不能为空");
         }
         MongoCollection collection = jongoClient.getCollection(mongoQueryData.getTableName());
-        List<Map<String,Object>> mapList = new ArrayList<>();
-        Map<String,Object> tempMap = new HashMap<>();
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        Map<String, Object> tempMap = new HashMap<>();
         List<DBObject> tempList;
-        switch (mongoQueryData.getOperationType()){
+        switch (mongoQueryData.getOperationType()) {
             case SELECTSINGLE:
-                if(mongoQueryData.getMatchCondition() != null) {
+                if (mongoQueryData.getMatchCondition() != null) {
                     tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(HashMap.class);
-                }
-                else{
+                } else {
                     tempMap = collection.findOne().as(HashMap.class);
                 }
-                if(tempMap != null) {
+                if (tempMap != null) {
                     mapList.add(tempMap);
                 }
                 break;
             case SELECTMANY:
-                if(mongoQueryData.getMatchCondition() != null) {
+                if (mongoQueryData.getMatchCondition() != null) {
                     tempList = collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(DBObject.class);
-                    mapList = tempList.parallelStream().map(x -> (Map<String,Object>)x.toMap()).collect(Collectors.toList());
-                }
-                else{
-                    mapList = Lists.newArrayList((Iterator<? extends Map<String,Object>>) collection.find().as(tempMap.getClass()).iterator());
+                    mapList = tempList.parallelStream().map(x -> (Map<String, Object>) x.toMap()).collect(Collectors.toList());
+                } else {
+                    mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find().as(tempMap.getClass()).iterator());
                 }
                 break;
         }
@@ -119,19 +118,20 @@ public class MongoRepository{
                         processResult = collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
                     } catch (DuplicateKeyException ex) {
                         logger.info("{}mongo插入操作发生重复键异常", mongoData.getUpdateData());
+                        processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
                     }
                     break;
                 case UPDATE:
-                    processResult = collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .multi()
-                            .with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap())))
-                            .getN() > 0;
+                            .with(MapUtil.makeObjFromMap(xData))
+                            .getN() > 0).collect(Collectors.toList()).contains(false);
                     break;
                 case UPSERT:
-                    processResult = collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .upsert()
-                            .with(MapUtil.makeObjFromMap(mongoData.getUpdateData().parallelStream().findFirst().orElse(Collections.emptyMap())))
-                            .getN() > 0;
+                            .with(MapUtil.makeObjFromMap(xData))
+                            .getN() > 0).collect(Collectors.toList()).contains(false);
                     break;
                 case DELETE:
                     processResult = collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).wasAcknowledged();

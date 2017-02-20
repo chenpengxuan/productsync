@@ -142,10 +142,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                 tempReq.setActionType(x.getActionType());
                 return tempReq;
             }).collect(Collectors.toList());
-            CompletableFuture.supplyAsync(() -> {
-                syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq));
-                return "";
-            });
+            CompletableFuture.runAsync(() ->
+                    syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq))
+            );
         }
     }
 
