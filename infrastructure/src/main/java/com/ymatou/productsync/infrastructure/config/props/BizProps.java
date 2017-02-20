@@ -21,6 +21,11 @@ public class BizProps {
      */
     private int timeLimit;
 
+    /**
+     * 重试次数限制
+     */
+    private int retryLimit;
+
     @DisconfFileItem(name = "readCount")
     public int getReadCount() {
         return readCount;
@@ -37,5 +42,14 @@ public class BizProps {
 
     public void setTimeLimit(int timeLimit) {
         this.timeLimit = timeLimit;
+    }
+
+    @DisconfFileItem(name = "retryLimit")
+    public int getRetryLimit() {
+        return retryLimit;
+    }
+
+    public void setRetryLimit(int retryLimit) {
+        this.retryLimit = retryLimit;
     }
 }

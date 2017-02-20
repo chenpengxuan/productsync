@@ -400,6 +400,9 @@ SELECT  DISTINCT
         WHERE
         [NewTranStatus] = 0 AND DATEDIFF(MINUTE ,NewUpdateTime,GETDATE()) > ${timeLimit}
         OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
+         <![CDATA[
+        AND [NewRetryTimes] <= ${retryLimit}
+        ]]>
         ORDER BY CreateTime DESC
     </select>
 

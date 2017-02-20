@@ -207,10 +207,11 @@ public interface CommandQuery {
      * 获取需要补单的信息
      * @param readCount
      * @param timeLimit
+     * @param retryLimit
      * @return
      */
     @TargetDataSource("productDataSource")
-    List<TransactionInfo> getCompensationInfo(@Param("readCount") int readCount,@Param("timeLimit") int timeLimit);
+    List<TransactionInfo> getCompensationInfo(@Param("readCount") int readCount,@Param("timeLimit") int timeLimit,@Param("retryLimit") int retryLimit);
 
     /**
      * 获取商品橱窗推荐状态
