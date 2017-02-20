@@ -117,7 +117,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             Map<String, Object> tempLiveMap = new HashMap<>();
             tempLiveMap.put("brands", brands);
             sqlLiveDataList.add(tempLiveMap);
-            mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), sqlLiveDataList));
+            mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId), sqlLiveDataList));
         }
         return mongoDataList;
     }
