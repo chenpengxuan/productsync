@@ -256,7 +256,7 @@ public class MongoDataBuilder {
      * @param updateData
      * @return
      */
-    public static MongoData createProductLiveUpert(List<Map<String, Object>> updateData){
+    public static MongoData createProductLiveUpsert(List<Map<String, Object>> updateData){
         return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPSERT,null,updateData);
     }
 
