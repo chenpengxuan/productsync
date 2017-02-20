@@ -13,8 +13,8 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @author luoshiqian 2016/5/18 10:27
- *         线程池对拒绝任务（无线程可用）的处理策略 记录日志
+ * @author luoshiqian 2016/5/18 10:27 线程池对拒绝任务（无线程可用）的处理策略 记录日志
+ *
  */
 public class LogRejectedPolicy implements RejectedExecutionHandler {
 
