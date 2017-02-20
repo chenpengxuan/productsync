@@ -122,13 +122,13 @@ public class MongoRepository {
                     }
                     break;
                 case UPDATE: {
-                    return mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .multi()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
                 }
                 case UPSERT: {
-                    return mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .upsert()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);

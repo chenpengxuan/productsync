@@ -51,7 +51,7 @@ public class ModifyPutawayProductInfoExecutorConfig implements ExecutorConfig {
         //更新规格信息
         if (sqlCatalogDataList != null && !sqlCatalogDataList.isEmpty()) {
             mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId),null));//先删除再插入
-            mongoDataList.add(MongoDataBuilder.createCatalogUpsert(MongoQueryBuilder.queryProductId(productId),MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));
+            mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList,new String[]{"name","pic","value"},"props","cid")));
         }
         //创建商品图文描述信息
         if (sqlProductDescDataList != null && !sqlProductDescDataList.isEmpty()) {
