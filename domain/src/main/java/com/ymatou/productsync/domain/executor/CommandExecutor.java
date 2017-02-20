@@ -58,6 +58,9 @@ public class CommandExecutor {
         }
     }
 
+    /**
+     * 补单功能
+     */
     public void compensateCommand(){
         List<TransactionInfo> transactionInfoList = commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit());
         if(transactionInfoList != null && !transactionInfoList.isEmpty()){
