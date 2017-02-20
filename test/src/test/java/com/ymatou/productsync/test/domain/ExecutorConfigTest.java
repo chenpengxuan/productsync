@@ -181,7 +181,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testUpdateProduct() {
-        String productId = "e884549d-453c-416c-ab9d-6a6990ac7202";
+        String productId = "a5b429d1-28de-41a0-bbe1-294ea1bb2a0a";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, modifyPutawayProductInfoExecutorConfig);
