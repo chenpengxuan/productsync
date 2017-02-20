@@ -5,6 +5,7 @@ import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
+import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * 商品同步业务场景
@@ -119,6 +122,30 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
         catch(Exception ex){
             DEFAULT_LOGGER.error("更新商品快照发生异常，异常原因为{}",ex.getMessage(),ex);
             return BaseResponse.newFailInstance(ErrorCode.FAIL);
+        }
+    }
+
+    /**
+     * 补单功能
+     */
+    @GET
+    @Path("/{cache:(?i:cache)}/{compensateCommand:(?i:compensateCommand)}")
+    @Override
+    public void compensateCommand(){
+        List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
+        if(transactionInfoList != null && !transactionInfoList.isEmpty()){
+            List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
+                SyncByCommandReq tempReq = new SyncByCommandReq();
+                tempReq.setTransactionId(x.getTransactionId());
+                tempReq.setActivityId(x.getLiveId());
+                tempReq.setProductId(x.getProductId());
+                tempReq.setActionType(x.getActionType());
+                return tempReq;
+            }).collect(Collectors.toList());
+            CompletableFuture.supplyAsync(() -> {
+                syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq));
+                return "";
+            });
         }
     }
 

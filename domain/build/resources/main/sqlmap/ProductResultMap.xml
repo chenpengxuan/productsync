@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ /*
+  ~  (C) Copyright 2016 Ymatou (http://www.ymatou.com/).
+  ~  All rights reserved.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ymatou.productsync.domain.sqlrepo.ProductResultMap">
+    <resultMap id="keyValueMap1" type="java.util.Map"/>
+    <resultMap id="keyValueMap2" type="java.util.Map"/>
+    <resultMap id="keyValueMap3" type="java.util.Map"/>
+    <resultMap id="keyValueMap4" type="java.util.Map"/>
+    <resultMap id="keyValueMap5" type="java.util.Map"/>
+    <resultMap id="keyValueMap6" type="java.util.Map"/>
+    <resultMap id="keyValueMap7" type="java.util.Map"/>
+    <resultMap id="keyValueMap8" type="java.util.Map"/>
+    <resultMap id="transactionInfo" type="com.ymatou.productsync.domain.model.sql.TransactionInfo"/>
+</mapper>

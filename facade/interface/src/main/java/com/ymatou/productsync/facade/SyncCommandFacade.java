@@ -30,4 +30,9 @@ public interface SyncCommandFacade {
      * @return
      */
     BaseResponse updateProductSnapShot(String productId,String snapshotVersion);
+
+    /**
+     * 补单操作
+     */
+    void compensateCommand();
 }
