@@ -16,8 +16,8 @@ import java.util.*;
  * 修改商品描述与图片信息
  * Created by chenpengxuan on 2017/2/15.
  */
-@Component("updateProductsInfo")
-public class UpdateProductsInfo implements ExecutorConfig{
+@Component("updateProductsInfoExecutorConfig")
+public class UpdateProductsInfoExecutorConfig implements ExecutorConfig{
     @Autowired
     private CommandQuery commandQuery;
 

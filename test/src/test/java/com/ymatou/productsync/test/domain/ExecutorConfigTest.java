@@ -253,6 +253,7 @@ public class ExecutorConfigTest {
         Asserts.check(success, "测试商品自动上架fail！");
     }
 
+    @Test
     public void testCatalogStockChange() {
 //        #1 正常商品规格库存测试
         List<Map<String, Object>> tproducts = commandQuery.getProduct();
@@ -271,6 +272,11 @@ public class ExecutorConfigTest {
         }
     }
 
+    @Test
+    public void testUpdateTransactionInfo() {
+        int transationId = 10;
+        commandExecutor.updateTransactionInfo(transationId, SyncStatusEnum.BizEXCEPTION);
+    }
 
     @Test
     public void testModifyActivity() {

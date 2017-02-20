@@ -50,7 +50,7 @@ public class CommandExecutor {
         transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()//业务异常
         || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode()//系统异常
         ? transactionInfo.getNewRetryTimes() + 1:transactionInfo.getNewRetryTimes());
-        transactionInfo.setNewTranStatus(status.ordinal());
+        transactionInfo.setNewTranStatus(status.getCode());
         transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
 
         if(commandQuery.updateTransactionInfo(transactionInfo) <= 0){
@@ -69,6 +69,7 @@ public class CommandExecutor {
                 tempReq.setActionType(x.getActionType());
                 return tempReq;
             }).collect(Collectors.toList());
+
         }
     }
 

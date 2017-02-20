@@ -28,19 +28,18 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.CatalogStockChange;
     }
 
-    public List<MongoData> loadSourceData(long activityId, String productId) {
+    public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getProductStockInfo(productId);
-        if (sqlDataList != null && !sqlDataList.isEmpty()) {
+        if(sqlDataList == null || sqlDataList.isEmpty()){
+            throw new BizException(ErrorCode.BIZFAIL, "getProductStockInfo为空");
+        }
             sqlDataList.parallelStream().forEach(t -> {
                 String cid = t.get("cid").toString();
                 Map<String, Object> conditions = MongoQueryBuilder.queryProductId(productId);
                 conditions.put("cid", cid);
                 mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(t)));
             });
-        } else {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductStockInfo为空");
-        }
         return mongoDataList;
     }
 }

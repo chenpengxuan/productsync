@@ -8,4 +8,4 @@ logs/
 /**/*.iml
 /**.idea
 /.idea
-/**/disconf.properties
+disconf.properties

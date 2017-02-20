@@ -4,10 +4,14 @@ import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.infrastructure.util.Utils;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangyong on 2017/2/9.
@@ -25,9 +29,9 @@ public class AutoOnShelfProductExecutorConfig implements ExecutorConfig {
         matchConditionInfo.put("spid", productId);
         List<Map<String, Object>> updateData = new ArrayList<>();
         Map<String, Object> update = new HashMap();
-        Date date = new Date();
-        update.put("start", new Timestamp(date.getTime()));
-        update.put("end", new Timestamp(date.getTime() + 7 * 24 * 60 * 60 * 1000));
+        DateTime date = new DateTime();
+        update.put("start", date.toString(Utils.DEFAULT_DATE_FORMAT));
+        update.put("end", date.plusDays(7).toString(Utils.DEFAULT_DATE_FORMAT));
         updateData.add(update);
         mongoDataList.add(MongoDataBuilder.createProductUpdate(matchConditionInfo, updateData));
         return mongoDataList;
