@@ -62,7 +62,7 @@ public class CommandExecutor {
      * @return
      */
     public List<TransactionInfo> getCompensationInfo(){
-        return commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit());
+        return commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit(),bizProps.getRetryLimit());
     }
 
     /**

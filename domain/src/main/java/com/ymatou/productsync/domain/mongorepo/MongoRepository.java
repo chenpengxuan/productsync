@@ -119,6 +119,7 @@ public class MongoRepository{
                         processResult = collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
                     } catch (DuplicateKeyException ex) {
                         logger.info("{}mongo插入操作发生重复键异常", mongoData.getUpdateData());
+                        processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
                     }
                     break;
                 case UPDATE:
