@@ -171,7 +171,7 @@ public class ExecutorConfigTest {
         }
     }
 
-    @Test
+
     public void testAddProduct() {
         String productId = "67a3e031-5b99-408f-b40f-3f76d3aa9a81";
         SyncByCommandReq req = new SyncByCommandReq();
