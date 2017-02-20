@@ -10,3 +10,4 @@ logs/
 /.idea
 /web/src/main/resources/disconf.properties
 build
+classes
