@@ -12,7 +12,7 @@
     <!--设置、取消橱窗商品-->
     <select id="getLiveProductTop" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT  iIsTop as 'istop',iSellStatus as 'status'
+        SELECT  cast((case when iIsTop = 1 then 1 else 0 end) as bit)  as 'istop',iSellStatus as 'status'
         FROM    dbo.Ymt_ProductsInLive
         WHERE   sProductId = #{productId,jdbcType=VARCHAR}
         AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1;

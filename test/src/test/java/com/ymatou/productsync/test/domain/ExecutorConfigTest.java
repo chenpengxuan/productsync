@@ -485,13 +485,17 @@ public class ExecutorConfigTest {
 
     @Test
     public void testBatchSetOnShelf() {
-        long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
-        SyncByCommandReq req = new SyncByCommandReq();
-        req.setActivityId(activityId);
-        req.setProductId(productId);
-        boolean success = commandExecutor.executeCommand(req, batchSetOnShelfExecutorConfig);
-        Asserts.check(success, "测试批量C商品上架fail!");
+        try {
+            long activityId = 157242;
+            String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+            SyncByCommandReq req = new SyncByCommandReq();
+            req.setActivityId(activityId);
+            req.setProductId(productId);
+            boolean success = commandExecutor.executeCommand(req, batchSetOnShelfExecutorConfig);
+            Asserts.check(success, "测试批量C商品上架fail!");
+        } catch (Exception ex) {
+            Asserts.check(false, "测试批量C商品上架fail!" + ex);
+        }
     }
 
     @Test
@@ -504,13 +508,18 @@ public class ExecutorConfigTest {
 //        req.setActivityId(Integer.parseInt(prod.get("iActivityId").toString()));
 //        boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
 //        Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
-        long activityId = 157678;
-        String productId = "9022e96f-f273-47d0-a2a4-de2085235b43";
-        SyncByCommandReq req = new SyncByCommandReq();
-        req.setActivityId(activityId);
-        req.setProductId(productId);
-        boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
-        Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
+        try {
+            long activityId = 157589;
+            String productId = "9022e96f-f273-47d0-a2a4-de2085235b43";
+            SyncByCommandReq req = new SyncByCommandReq();
+            req.setActivityId(activityId);
+            req.setProductId(productId);
+            boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+            Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "测试正常批量上架商品【商品售罄】fail" + ex);
+        }
+
     }
 
     @Test

@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/8.
- * 取消商品在直播中置顶
+ * 取消商品在直播中置顶 chenfei
  */
 @Component("setOffTopExecutorConfig")
 public class SetOffTopExecutorConfig implements ExecutorConfig {
@@ -46,18 +46,18 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
         mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
 
         //更新直播品牌-brands
-        Map<String, Object> lives = new HashMap();
-        List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
-        if (products == null || products.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductInfoByActivityId 为空");
-        }
-        products.stream().forEach(t -> t.remove("dAddTime"));
-        Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
-        lives.put("brands", brands);
-
-        //更新直播
-        MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
-        mongoDataList.add(liveMd);
+//        Map<String, Object> lives = new HashMap();
+//        List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
+//        if (products == null || products.isEmpty()) {
+//            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductInfoByActivityId 为空");
+//        }
+//        products.stream().forEach(t -> t.remove("dAddTime"));
+//        Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+//        lives.put("brands", brands);
+//
+//        //更新直播
+//        MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
+//        mongoDataList.add(liveMd);
 
         return mongoDataList;
     }

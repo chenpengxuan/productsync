@@ -108,7 +108,6 @@ public class MongoRepository {
             throw new IllegalArgumentException("mongo table name 不能为空");
         }
         MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
-        logger.debug("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()));
         //增加定制化性能监控汇报
         boolean result = PerformanceStatisticContainer.addWithReturn(() -> {
             boolean processResult = false;
@@ -122,13 +121,13 @@ public class MongoRepository {
                     }
                     break;
                 case UPDATE:
-                    processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .multi()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
                     break;
                 case UPSERT:
-                    processResult = mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
                             .upsert()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
@@ -141,6 +140,7 @@ public class MongoRepository {
             }
             return processResult;
         }, "processMongoData_" + mongoData.getOperationType().name() + "_" + mongoData.getTableName(), Constants.APP_ID);
+        logger.info("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{},操作结果为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()),result);
         return result;
     }
 }
