@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -85,6 +86,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //创建规格信息 先删除再更新
         mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId),null));
         mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList, new String[]{"name", "pic", "value"}, "props", "cid")));
+        sqlCatalogDataList.parallelStream().forEach(z -> z.replace("earnest",z.get("earnest"),Utils.decimalFormat(Utils.zeroIfNull((BigDecimal) z.get("earnest")),2)));
 
         //创建商品图文描述信息
         Map<String, Object> tempDescMap = new HashMap<>();
@@ -93,7 +95,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         tempDescMap.put("pics", sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
         sqlProductDescDataList.clear();
         sqlProductDescDataList.add(tempDescMap);
-        mongoDataList.add(MongoDataBuilder.createProductDescUpsert(sqlProductDescDataList));
+        mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId),sqlProductDescDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景
         if (activityId > 0) {
@@ -110,7 +112,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempLiveProductMap.put("brand", productMap.get("brand"));
             tempLiveProductMap.put("ebrand", productMap.get("ebrand"));
             tempLiveProductMap.put("comments", 0);
-            mongoDataList.add(MongoDataBuilder.createProductLiveUpsert(sqlProductInLiveDataList));
+            mongoDataList.add(MongoDataBuilder.createProductLiveUpsert(MongoQueryBuilder.queryProductIdAndLiveId(productId,activityId),sqlProductInLiveDataList));
 
             //更新直播信息
             Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).toArray();

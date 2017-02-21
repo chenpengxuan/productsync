@@ -238,8 +238,8 @@ public class MongoDataBuilder {
      * @param updateData
      * @return
      */
-    public static MongoData createProductDescUpsert(List<Map<String, Object>> updateData) {
-        return buildMongoData(Constants.ProductDescriptionDb, MongoOperationTypeEnum.UPSERT, null, updateData);
+    public static MongoData createProductDescUpsert(Map<String, Object> matchCondition,List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.ProductDescriptionDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
     /**
@@ -256,8 +256,8 @@ public class MongoDataBuilder {
      * @param updateData
      * @return
      */
-    public static MongoData createProductLiveUpsert(List<Map<String, Object>> updateData){
-        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPSERT,null,updateData);
+    public static MongoData createProductLiveUpsert(Map<String, Object> matchCondition,List<Map<String, Object>> updateData){
+        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPSERT,matchCondition,updateData);
     }
 
 

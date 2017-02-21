@@ -1,8 +1,6 @@
 package com.ymatou.productsync.test.domain;
 
-import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.TestCommandQuery;
@@ -10,7 +8,6 @@ import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.apache.http.util.Asserts;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,9 +185,11 @@ public class ExecutorConfigTest {
 
     @Test
     public void testAddProduct() {
-        String productId = "67a3e031-5b99-408f-b40f-3f76d3aa9a81";
+        String productId = "3be45de7-1301-42f7-888c-278657e98336";
+        int liveId = 157815;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
+        req.setActivityId(liveId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);
     }
 
@@ -525,5 +524,79 @@ public class ExecutorConfigTest {
         Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
     }
 
+    @Test
+    public void testModifyActivityPrice() {
+//        #1正常修改商品活动价
+        SyncByCommandReq req = new SyncByCommandReq();
+        List<Map<String, Object>> query = commandQuery.getActivityProduct();
+        Map<String, Object> prod = query.stream().findFirst().orElse(Collections.emptyMap());
+        req.setProductId(prod.get("sProductId").toString());
+        req.setActivityId(Integer.parseInt(prod.get("iProductInActivityId").toString()));
+        boolean success1 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
+        Asserts.check(success1, "测试正常修改商品活动价fail！");
+    }
 
+    @Test
+    public void testModifyActivityPriceNpException() {
+//        #2测试活动商品没有的情况
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(0);
+        try {
+            boolean success2 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
+            Asserts.check(success2, "测试活动商品没有的情况fail！");
+        } catch (BizException ex) {
+            Asserts.check(true, "");
+        }
+    }
+
+    @Test
+    public void testModifyActivityPriceNcException() {
+//        #3测试活动商品规格没有的情况
+        SyncByCommandReq req = new SyncByCommandReq();
+        List<Map<String, Object>> query3 = commandQuery.getInvalidActivityProduct();
+        Map<String, Object> prod1 = query3.stream().findFirst().orElse(Collections.emptyMap());
+        req.setActivityId(Integer.parseInt(prod1.get("iProductInActivityId").toString()));
+        try {
+            boolean success3 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
+            Asserts.check(success3, "测试活动商品规格没有的情况fail!");
+        } catch (BizException ex) {
+            Asserts.check(true, "");
+        }
+    }
+
+    @Test
+    public void testSetTopProduct() {
+        SyncByCommandReq req = new SyncByCommandReq();
+        //#1正常设置橱窗推荐商品
+        try {
+            List<Map<String, Object>> tproducts = commandQuery.getTopProduct();
+            Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
+            req.setProductId(prod.get("sProductId").toString());
+            boolean success1 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
+            Asserts.check(success1, "正常设置橱窗推荐商品fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "正常设置橱窗推荐商品fail！" + ex);
+        }
+
+        //#2正常取消设置橱窗推荐产品
+        try {
+            List<Map<String, Object>> ntprods = commandQuery.getNotTopProduct();
+            Map<String, Object> nprod = ntprods.stream().findFirst().orElse(Collections.emptyMap());
+            req.setProductId(nprod.get("sProductId").toString());
+            boolean success2 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
+            Asserts.check(success2, "正常取消设置橱窗推荐产品fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "正常取消设置橱窗推荐产品fail！" + ex);
+        }
+
+        //#3操作不存在的商品
+        req.setProductId("edc21ac6-5fc9-494c-9f36-110b841f75a00");
+        try {
+            boolean success3 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
+            Asserts.check(success3, "操作不存在的商品设置橱窗推荐产品fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "操作不存在的商品设置橱窗推荐产品fail！" + ex);
+        }
+
+    }
 }

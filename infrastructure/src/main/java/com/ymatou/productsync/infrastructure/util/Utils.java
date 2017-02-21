@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,29 +158,37 @@ public class Utils {
      *
      * @return
      */
-    public static Date getNow() {
-        Date currentTime = new Date();
-        return currentTime;
+    public static DateTime getNow() {
+        return new DateTime(DEFAULT_DATE_FORMAT);
     }
 
-    public static Date addDate(int day){
-        Calendar calendar  = Calendar.getInstance();
-        calendar.add(Calendar.DATE,day);
+    public static Date addDate(int day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, day);
         return calendar.getTime();
     }
 
     /**
      * double格式化，保留几位小数
+     *
      * @param value
      * @param digit
      * @return
      */
-    public static double doubleFormat(double value,int digit)
-    {
+    public static double doubleFormat(double value, int digit) {
         BigDecimal bg = new BigDecimal(value);
         double doubleValue = bg.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
         return doubleValue;
     }
 
-
+    /**
+     * decimal格式化，保留几位小数
+     * @param value
+     * @param digit
+     * @return
+     */
+    public static double decimalFormat(BigDecimal value, int digit) {
+        double doubleValue = value.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return doubleValue;
+    }
 }
