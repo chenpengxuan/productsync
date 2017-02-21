@@ -185,9 +185,11 @@ public class ExecutorConfigTest {
 
     @Test
     public void testAddProduct() {
-        String productId = "67a3e031-5b99-408f-b40f-3f76d3aa9a81";
+        String productId = "3be45de7-1301-42f7-888c-278657e98336";
+        int liveId = 157815;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
+        req.setActivityId(liveId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);
     }
 
