@@ -156,12 +156,17 @@ public class ExecutorConfigTest {
 
     @Test
     public void testCreateActivity() {
-        //#1正常创建直播
-        long activityId = 157242;
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setActivityId(activityId);
-        boolean issuccess = commandExecutor.executeCommand(req, createActivityExecutorConfig);
-        Asserts.check(issuccess, "测试创建直播fail！");
+        //#1正常创建直播
+        try {
+            long activityId = 157242;
+
+            req.setActivityId(activityId);
+            boolean issuccess = commandExecutor.executeCommand(req, createActivityExecutorConfig);
+            Asserts.check(issuccess, "正常创建直播fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "正常创建直播fail!" + ex);
+        }
 
         //#2sql没有的直播
         long nActivityId = 1572420;
@@ -173,9 +178,9 @@ public class ExecutorConfigTest {
         }
     }
 
-
+    @Test
     public void testAddProduct() {
-        String productId = "77a1c6dc-ccb0-441c-92f8-7d2f489ddf2b";
+        String productId = "67a3e031-5b99-408f-b40f-3f76d3aa9a81";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);
@@ -183,7 +188,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testUpdateProduct() {
-        String productId = "a5b429d1-28de-41a0-bbe1-294ea1bb2a0a";
+        String productId = "e884549d-453c-416c-ab9d-6a6990ac7202";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, modifyPutawayProductInfoExecutorConfig);
@@ -220,27 +225,37 @@ public class ExecutorConfigTest {
 
     @Test
     public void testModifyBrandAndCategory() {
-//        #1现货商品
-        List<Map<String, Object>> tproducts = commandQuery.getProduct();
-        Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(prod.get("sProductId").toString());
-        boolean success1 = commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
-        Asserts.check(success1, "现货商品修改分类品牌fail！");
+        //        #1现货商品
+        try {
+            List<Map<String, Object>> tproducts = commandQuery.getProduct();
+            Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
+            req.setProductId(prod.get("sProductId").toString());
+            boolean success1 = commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
+            Asserts.check(success1, "现货商品修改分类品牌fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "现货商品修改分类品牌fail！" + ex);
+        }
 
 //        #2直播商品
-        List<Map<String, Object>> lproducts = commandQuery.getLiveProduct();
-        Map<String, Object> lprod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
-        req.setProductId(prod.get("sProductId").toString());
-        boolean success2 = commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
-        Asserts.check(success2, "直播商品修改分类品牌fail！");
+        try {
+            List<Map<String, Object>> lproducts = commandQuery.getLiveProduct();
+            Map<String, Object> lprod = lproducts.stream().findFirst().orElse(Collections.emptyMap());
+            req.setProductId(lprod.get("sProductId").toString());
+            boolean success2 = commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
+            Asserts.check(success2, "直播商品修改分类品牌fail！");
+        } catch (Exception ex) {
+            Asserts.check(false, "直播商品修改分类品牌fail！" + ex);
+        }
 
 //        #3不存在商品
         req.setProductId("7577884f-8606-4571-ba52-4881e89e660cc");
         try {
             commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
+        } catch (BizException ex) {
+            Asserts.check(true, "");
         } catch (Exception ex) {
-            Asserts.check(ex.getMessage() == "getProductBrandAndCategory为空", "测试不存在的商品修改分类品牌fail！");
+            Asserts.check(false, "不存在商品修改分类品牌fail！" + ex);
         }
     }
 
@@ -268,20 +283,26 @@ public class ExecutorConfigTest {
 
     @Test
     public void testCatalogStockChange() {
-//        #1 正常商品规格库存测试
-        List<Map<String, Object>> tproducts = commandQuery.getProduct();
-        Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(prod.get("sProductId").toString());
-        boolean success = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
-        Asserts.check(success, "正常商品规格库存测试!");
+//        #1 正常商品规格库存测试
+        try {
+            List<Map<String, Object>> tproducts = commandQuery.getProduct();
+            Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
+            req.setProductId(prod.get("sProductId").toString());
+            boolean success = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
+            Asserts.check(success, "正常商品规格库存测试fail!");
+        } catch (Exception ex) {
+            Asserts.check(false, "正常商品规格库存测试fail!");
+        }
 
 //        #2 不存在的商品规格库存测试
         req.setProductId("7577884f-8606-4571-ba52-4881e89e660cc");
         try {
-            commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
+            boolean success1 = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
+        } catch (BizException ex) {
+            Asserts.check(true, "");
         } catch (Exception ex) {
-            Asserts.check(ex.getMessage() == "getProductStockInfo为空", "不存在的商品规格库存测试fail！");
+            Asserts.check(false, "不存在的商品规格库存测试fail!");
         }
     }
 
@@ -389,21 +410,30 @@ public class ExecutorConfigTest {
     @Test
     public void testProductStockChange() throws MessageBusException {
 
-        String productId = "916ca256-d34e-4c26-bd82-e4c85d5dc309";
-        SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(productId);
-        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
-        boolean check = commandExecutor.executeCommand(req, productStockChangeExecutorConfig);
-        Asserts.check(check, "");
+        try {
+            String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+            SyncByCommandReq req = new SyncByCommandReq();
+            req.setProductId(productId);
+            //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+            boolean check = commandExecutor.executeCommand(req, productStockChangeExecutorConfig);
+            Asserts.check(check, "测试商品库存增减,价格修改fail!");
+        } catch (Exception ex) {
+            Asserts.check(false, "测试商品库存增减,价格修改fail!" + ex);
+        }
 
         //不存在的商品id，exception
-//        String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
-//        SyncByCommandReq req2 = new SyncByCommandReq();
-//        req2.setProductId(productId2);
-//        //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
-//        boolean check2 = commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
-//        Asserts.check(check2, "");
-
+        try {
+            String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
+            SyncByCommandReq req2 = new SyncByCommandReq();
+            req2.setProductId(productId2);
+            //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
+            boolean check2 = commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
+            Asserts.check(!check2, "测试不存在的商品id商品库存增减,价格修改fail!");
+        } catch (BizException ex) {
+            Asserts.check(true, "");
+        } catch (Exception ex) {
+            Asserts.check(false, "测试不存在的商品id商品库存增减,价格修改fail!");
+        }
 
     }
 
@@ -436,31 +466,32 @@ public class ExecutorConfigTest {
             Asserts.check(false, "测试商品移除直播fail！" + ex);
         }
 
-
-        //测试一个不存在的直播id
-//        long activityId2 = 1;
-//        SyncByCommandReq req2 = new SyncByCommandReq();
-//        req2.setProductId(productId);
-//        req2.setActivityId(activityId2);
-//        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
-//        boolean check2 = commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
-//        Asserts.check(check2, "");
-
+        try {
+            //测试一个不存在的直播id
+            long activityId2 = 1;
+            String productId = "5fbcbc07-16fc-4186-9729-90ba7ba53e57";
+            SyncByCommandReq req2 = new SyncByCommandReq();
+            req2.setProductId(productId);
+            req2.setActivityId(activityId2);
+            //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+            boolean check2 = commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
+            Asserts.check(check2, "测试一个不存在的直播,商品移除直播fail");
+        } catch (BizException ex) {
+            Asserts.check(true, "");
+        } catch (Exception ex) {
+            Asserts.check(false, "测试一个不存在的直播,商品移除直播fail");
+        }
     }
 
     @Test
     public void testBatchSetOnShelf() {
-        try {
-            long activityId = 157242;
-            String productId = "7577884f-8606-4571-ba52-4881e89e660c";
-            SyncByCommandReq req = new SyncByCommandReq();
-            req.setActivityId(activityId);
-            req.setProductId(productId);
-            boolean success = commandExecutor.executeCommand(req, batchSetOnShelfExecutorConfig);
-            Asserts.check(success, "测试批量C商品上架fail!");
-        } catch (Exception ex) {
-            Asserts.check(false, "测试批量C商品上架fail!" + ex);
-        }
+        long activityId = 157242;
+        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        req.setProductId(productId);
+        boolean success = commandExecutor.executeCommand(req, batchSetOnShelfExecutorConfig);
+        Asserts.check(success, "测试批量C商品上架fail!");
     }
 
     @Test
@@ -473,90 +504,86 @@ public class ExecutorConfigTest {
 //        req.setActivityId(Integer.parseInt(prod.get("iActivityId").toString()));
 //        boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
 //        Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
-        try {
-            long activityId = 157589;
-            String productId = "9022e96f-f273-47d0-a2a4-de2085235b43";
-            SyncByCommandReq req = new SyncByCommandReq();
-            req.setActivityId(activityId);
-            req.setProductId(productId);
-            boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
-            Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
-        } catch (Exception ex) {
-            Asserts.check(false, "测试正常批量上架商品【商品售罄】fail" + ex);
-        }
-
+        long activityId = 157678;
+        String productId = "9022e96f-f273-47d0-a2a4-de2085235b43";
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        req.setProductId(productId);
+        boolean success1 = commandExecutor.executeCommand(req, setOnShelfUpdateStockNumExecutorConfig);
+        Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
     }
 
     @Test
     public void testModifyActivityPrice() {
 //        #1正常修改商品活动价
-
-
         SyncByCommandReq req = new SyncByCommandReq();
-        try {
-            List<Map<String, Object>> query = commandQuery.getActivityProduct();
-            Map<String, Object> prod = query.stream().findFirst().orElse(Collections.emptyMap());
-            req.setProductId(prod.get("sProductId").toString());
-            req.setActivityId(Integer.parseInt(prod.get("iProductInActivityId").toString()));
-            boolean success1 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
-            Asserts.check(success1, "测试正常修改商品活动价fail！");
-        } catch (Exception ex) {
-            Asserts.check(false, "测试正常修改商品活动价fail！" + ex);
-        }
+        List<Map<String, Object>> query = commandQuery.getActivityProduct();
+        Map<String, Object> prod = query.stream().findFirst().orElse(Collections.emptyMap());
+        req.setProductId(prod.get("sProductId").toString());
+        req.setActivityId(Integer.parseInt(prod.get("iProductInActivityId").toString()));
+        boolean success1 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
+        Asserts.check(success1, "测试正常修改商品活动价fail！");
+    }
+
+    @Test
+    public void testModifyActivityPriceNpException() {
 //        #2测试活动商品没有的情况
+        SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(0);
         try {
             boolean success2 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
             Asserts.check(success2, "测试活动商品没有的情况fail！");
-        } catch (Exception ex) {
-            Asserts.check(false, "测试活动商品没有的情况fail！" + ex);
+        } catch (BizException ex) {
+            Asserts.check(true, "");
         }
+    }
 
+    @Test
+    public void testModifyActivityPriceNcException() {
 //        #3测试活动商品规格没有的情况
+        SyncByCommandReq req = new SyncByCommandReq();
         List<Map<String, Object>> query3 = commandQuery.getInvalidActivityProduct();
         Map<String, Object> prod1 = query3.stream().findFirst().orElse(Collections.emptyMap());
         req.setActivityId(Integer.parseInt(prod1.get("iProductInActivityId").toString()));
         try {
             boolean success3 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
             Asserts.check(success3, "测试活动商品规格没有的情况fail!");
-        } catch (Exception ex) {
-            Asserts.check(false, "测试活动商品规格没有的情况fail!" + ex);
+        } catch (BizException ex) {
+            Asserts.check(true, "");
         }
     }
 
     @Test
+    //#1正常设置橱窗推荐商品
     public void testSetTopProduct() {
         SyncByCommandReq req = new SyncByCommandReq();
-        //#1正常设置橱窗推荐商品
-        try {
-            List<Map<String, Object>> tproducts = commandQuery.getTopProduct();
-            Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
-            req.setProductId(prod.get("sProductId").toString());
-            boolean success1 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
-            Asserts.check(success1, "正常设置橱窗推荐商品fail！");
-        } catch (Exception ex) {
-            Asserts.check(false, "正常设置橱窗推荐商品fail！" + ex);
-        }
+        List<Map<String, Object>> tproducts = commandQuery.getTopProduct();
+        Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
+        req.setProductId(prod.get("sProductId").toString());
+        boolean success1 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
+        Asserts.check(success1, "正常设置橱窗推荐商品fail！");
+    }
 
-        //#2正常取消设置橱窗推荐产品
-        try {
-            List<Map<String, Object>> ntprods = commandQuery.getNotTopProduct();
-            Map<String, Object> nprod = ntprods.stream().findFirst().orElse(Collections.emptyMap());
-            req.setProductId(nprod.get("sProductId").toString());
-            boolean success2 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
-            Asserts.check(success2, "正常取消设置橱窗推荐产品fail！");
-        } catch (Exception ex) {
-            Asserts.check(false, "正常取消设置橱窗推荐产品fail！" + ex);
-        }
+    @Test
+    //#2正常取消设置橱窗推荐产品
+    public void testUnSetTopProduct() {
+        SyncByCommandReq req = new SyncByCommandReq();
+        List<Map<String, Object>> ntprods = commandQuery.getNotTopProduct();
+        Map<String, Object> nprod = ntprods.stream().findFirst().orElse(Collections.emptyMap());
+        req.setProductId(nprod.get("sProductId").toString());
+        boolean success2 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
+        Asserts.check(success2, "正常取消设置橱窗推荐产品fail！");
+    }
 
-        //#3操作不存在的商品
+    @Test
+    //#3操作不存在的商品
+    public void testSetTopProductExeception() {
+        SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId("edc21ac6-5fc9-494c-9f36-110b841f75a00");
         try {
             boolean success3 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
-            Asserts.check(success3, "操作不存在的商品设置橱窗推荐产品fail！");
-        } catch (Exception ex) {
-            Asserts.check(false, "操作不存在的商品设置橱窗推荐产品fail！" + ex);
+        } catch (BizException ex) {
+            Asserts.check(true, "");
         }
-
     }
 }
