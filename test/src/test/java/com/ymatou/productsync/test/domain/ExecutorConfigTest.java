@@ -178,7 +178,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testUpdateProduct() {
-        String productId = "e78fa7a9-6c68-4d71-b710-24bea0ae5472";
+        String productId = "71133370-0a50-4c62-8468-8df081216fdb";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, modifyPutawayProductInfoExecutorConfig);
@@ -259,6 +259,9 @@ public class ExecutorConfigTest {
         req.setProductId(prod.get("sProductId").toString());
         boolean success = commandExecutor.executeCommand(req, autoOnShelfProductExecutorConfig);
         Asserts.check(success, "测试商品自动上架fail！");
+
+//        #2指定商品id上架更新
+        String productId = "";
     }
 
     @Test
