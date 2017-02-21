@@ -85,6 +85,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //创建规格信息 先删除再更新
         mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId),null));
         mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList, new String[]{"name", "pic", "value"}, "props", "cid")));
+        sqlCatalogDataList.parallelStream().forEach(z -> z.replace("earnest",z.get("earnest"),Utils.doubleFormat(Utils.zeroIfNull((double)z.get("earnest")),2)));
 
         //创建商品图文描述信息
         Map<String, Object> tempDescMap = new HashMap<>();
