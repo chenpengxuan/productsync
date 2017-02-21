@@ -20,17 +20,19 @@ import java.util.Map;
 public class SuspendSaleExecutorConfig implements ExecutorConfig {
 
     @Override
-    public CmdTypeEnum getCommand(){ return CmdTypeEnum.SuspendSale; }
+    public CmdTypeEnum getCommand() {
+        return CmdTypeEnum.SuspendSale;
+    }
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sourceData = new ArrayList<>();
         Map<String, Object> map = new HashMap();
-        map.put("status", 0);
+        map.put("status", 2);
         map.put("istop", false);
         sourceData.add(map);
-        mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId,activityId), sourceData));
+        mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), sourceData));
         return mongoDataList;
     }
 
