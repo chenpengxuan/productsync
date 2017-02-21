@@ -2,15 +2,12 @@ package com.ymatou.productsync.test.domain;
 
 import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.commandconfig.*;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.TestCommandQuery;
-import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.apache.http.util.Asserts;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +79,6 @@ public class ExecutorConfigTest {
     @Autowired
     private ProductStockChangeExecutorConfig productStockChangeExecutorConfig;
 
-
     @Autowired
     private CommandExecutor commandExecutor;
 
@@ -100,7 +96,6 @@ public class ExecutorConfigTest {
 
     @Autowired
     private SetTopProductExecutorConfig setTopProductExecutorConfig;
-
 
     @Autowired
     private DeleteActivityExecutorConfig deleteActivityExecutorConfig;
@@ -183,7 +178,7 @@ public class ExecutorConfigTest {
 
     @Test
     public void testUpdateProduct() {
-        String productId = "a5b429d1-28de-41a0-bbe1-294ea1bb2a0a";
+        String productId = "e78fa7a9-6c68-4d71-b710-24bea0ae5472";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, modifyPutawayProductInfoExecutorConfig);
