@@ -113,15 +113,6 @@ public interface CommandQuery {
     List<Map<String, Object>> getValidLiveByProductId(@Param("productId") String productId);
 
     /**
-     * 根据activytid获取已移除商品列表
-     *
-     * @param ActivityId
-     * @return
-     */
-    @TargetDataSource("productDataSource")
-    List<Map<String, Object>> getProductInfoByActivityIdWithDeleted(@Param("ActivityId") long ActivityId);
-
-    /**
      * 根据activityid获取商品品牌和品类
      *
      * @param activityId

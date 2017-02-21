@@ -63,19 +63,12 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
             activity.put("brands", brands);
         }
 
-
         //设置要更新的数据
         MongoData liveMongoData = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), mapList);
         mongoDataList.add(liveMongoData);
 
         ///2.直播商品数据更新 --
         List<Map<String, Object>> liveProductMapList = commandQuery.getLiveProductByActivityId(activityId);
-        List<Map<String, Object>> deletedLiveProductMapList = commandQuery.getProductInfoByActivityIdWithDeleted(activityId);
-        //
-        if(deletedLiveProductMapList != null){
-            deletedLiveProductMapList.parallelStream().forEach(x ->
-                mongoDataList.add(MongoDataBuilder.createLiveProductDelete(MongoQueryBuilder.queryProductIdAndLiveId(x.get("spid").toString(),activityId))));
-        }
         List<Map<String, Object>> productMapList = commandQuery.getProductNewTimeByActivityId(activityId);
         if (liveProductMapList != null) {
             liveProductMapList.parallelStream().forEach(liveProductItem -> {
