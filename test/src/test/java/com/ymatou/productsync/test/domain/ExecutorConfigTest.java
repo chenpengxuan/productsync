@@ -441,7 +441,7 @@ public class ExecutorConfigTest {
     }
 
     @Test
-    public void TestProductStockChangeException() {
+    public void testProductStockChangeException() {
         //不存在的商品id，exception
         try {
             String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
@@ -467,8 +467,8 @@ public class ExecutorConfigTest {
 
     @Test
     public void testRemoveFromActivity() {
-        String productId = "5fbcbc07-16fc-4186-9729-90ba7ba53e57";
-        long activityId = 149338;
+        String productId = "ccbcd69e-ceb9-4a6b-bfd9-2092df390859";
+        long activityId = 157886;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);

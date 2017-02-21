@@ -5,6 +5,8 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,16 +154,6 @@ public class Utils {
         return JSON.toJSONString(object, SerializerFeature.WriteDateUseDateFormat, SerializerFeature.SortField);
     }
 
-
-    /**
-     * 得到现在时间
-     *
-     * @return
-     */
-    public static DateTime getNow() {
-        return new DateTime(DEFAULT_DATE_FORMAT);
-    }
-
     public static Date addDate(int day) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, day);
@@ -190,5 +182,15 @@ public class Utils {
     public static double decimalFormat(BigDecimal value, int digit) {
         double doubleValue = value.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
         return doubleValue;
+    }
+
+    /**
+     * 日期处理
+     * @param dateTime
+     * @return
+     */
+    public static DateTime parseDateTime(String dateTime){
+        DateTimeFormatter format = DateTimeFormat.forPattern(DEFAULT_DATE_FORMAT);
+        return DateTime.parse(dateTime,format);
     }
 }

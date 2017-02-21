@@ -11,12 +11,10 @@ import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
-import com.ymatou.productsync.infrastructure.util.Utils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -79,14 +77,13 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
                 .parallelStream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new Timestamp(new Date().getTime()));
         }
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //创建规格信息 先删除再更新
         mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId),null));
         mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList, new String[]{"name", "pic", "value"}, "props", "cid")));
-        sqlCatalogDataList.parallelStream().forEach(z -> z.replace("earnest",z.get("earnest"),Utils.decimalFormat(Utils.zeroIfNull((BigDecimal) z.get("earnest")),2)));
 
         //创建商品图文描述信息
         Map<String, Object> tempDescMap = new HashMap<>();
