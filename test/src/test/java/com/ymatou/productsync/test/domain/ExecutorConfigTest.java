@@ -485,6 +485,8 @@ public class ExecutorConfigTest {
     @Test
     public void testModifyActivityPrice() {
 //        #1正常修改商品活动价
+
+
         SyncByCommandReq req = new SyncByCommandReq();
         try {
             List<Map<String, Object>> query = commandQuery.getActivityProduct();
