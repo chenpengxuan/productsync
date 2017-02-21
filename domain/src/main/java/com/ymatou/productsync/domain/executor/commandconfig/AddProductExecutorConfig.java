@@ -93,7 +93,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         tempDescMap.put("pics", sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
         sqlProductDescDataList.clear();
         sqlProductDescDataList.add(tempDescMap);
-        mongoDataList.add(MongoDataBuilder.createProductDescAdd(sqlProductDescDataList));
+        mongoDataList.add(MongoDataBuilder.createProductDescUpsert(sqlProductDescDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景
         if (activityId > 0) {
@@ -110,7 +110,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempLiveProductMap.put("brand", productMap.get("brand"));
             tempLiveProductMap.put("ebrand", productMap.get("ebrand"));
             tempLiveProductMap.put("comments", 0);
-            mongoDataList.add(MongoDataBuilder.createProductLiveAdd(sqlProductInLiveDataList));
+            mongoDataList.add(MongoDataBuilder.createProductLiveUpsert(sqlProductInLiveDataList));
 
             //更新直播信息
             Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).toArray();

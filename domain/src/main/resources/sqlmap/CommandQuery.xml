@@ -39,7 +39,7 @@
 			   a.dEndTime AS 'end',
 			   a.dAddTime AS 'add',
 			   a.dReadyPutawayProductSort AS 'sort',
-			   a.iIsTop AS 'istop',
+			   CAST ((CASE a.iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'
 			   a.iSellStatus AS 'status',
 			   p.iBrandId AS 'bid',
 			   p.sBrand AS 'ebrand',
@@ -154,7 +154,7 @@
 					p.IsPspProduct AS 'ispsp',--是否psp商品
 					p.dListingTime AS 'newstart',--新品有效开始时间
 					p.dNewEndTime AS 'newend',--新品有效结束时间
-					p.istop AS 'istop'--是否买手热推商品
+					CAST ((CASE p.iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'--是否买手热推商品
             FROM    Ymt_Products (NOLOCK) P
                     INNER JOIN cataCTE ON cataCTE.sProductId = P.sProductId
                     LEFT JOIN Ymt_ProductBrand (NOLOCK) B ON B.iBrandId = P.iBrandId
@@ -341,10 +341,10 @@ SELECT  DISTINCT
             ,dEndTime AS 'end'
             ,dAddTime AS 'add'
             ,iSellStatus AS 'status'
-            ,iIsTop AS 'istop'
+            ,CAST ((CASE iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'
             ,dReadyPutawayProductSort AS 'sort'
     FROM    dbo.Ymt_ProductsInLive WITH(NOLOCK)
-    WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+    WHERE   sProductId = #{productId}
     AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
     </select>
 
@@ -419,6 +419,6 @@ SELECT  DISTINCT
     <!--根据productid获取商品橱窗推荐状态-->
     <select id="getProductOnOffTop"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT isTop as 'istop'  FROM dbo.Ymt_Products WHERE sProductId= #{productId}
+        SELECT CAST ((CASE IsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'  FROM dbo.Ymt_Products WHERE sProductId= #{productId}
     </select>
 </mapper>
