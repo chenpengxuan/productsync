@@ -283,7 +283,8 @@ public class ExecutorConfigTest {
         List<Map<String, Object>> tproducts = commandQuery.getProduct();
         Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setProductId(prod.get("sProductId").toString());
+        //req.setProductId(prod.get("sProductId").toString());
+        req.setProductId("a8d61674-ddcf-4d5c-af3d-9a7ddba00923");
         boolean success = commandExecutor.executeCommand(req, autoOnShelfProductExecutorConfig);
         Asserts.check(success, "测试商品自动上架fail！");
     }
