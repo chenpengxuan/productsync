@@ -51,6 +51,14 @@
 		WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
     </select>
 
+    <select id="getProductInfoByActivityIdWithDeleted" parameterType="java.lang.Long"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select sProductId as 'spid' from dbo.Ymt_ProductsInLive WITH(NOLOCK)
+        where iActivityId = #{ActivityId}
+        and isnull(iaction,0)>-1
+    </select>
+
+
     <!--关闭直播-商品新品时间-->
     <select id="getProductNewTimeByActivityId"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">

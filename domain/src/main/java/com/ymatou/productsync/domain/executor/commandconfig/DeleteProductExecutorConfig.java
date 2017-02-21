@@ -1,7 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -56,7 +55,7 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);
             //fixme:matchConditionInfo.put("end",now); <
-            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
+            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             //删规格
             MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), Lists.newArrayList());
             mongoDataList.add(productMd);

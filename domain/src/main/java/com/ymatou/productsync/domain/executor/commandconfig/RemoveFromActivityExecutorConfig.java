@@ -1,6 +1,5 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
-import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -41,7 +40,7 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.删掉直播商品关系
         Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId);
-        mongoDataList.add(MongoDataBuilder.createLiveProductDelete(liveProductCondition, Lists.newArrayList()));
+        mongoDataList.add(MongoDataBuilder.createLiveProductDelete(liveProductCondition));
         //2，更新直播品牌
         Map<String, Object> lives = new HashMap();
         List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);

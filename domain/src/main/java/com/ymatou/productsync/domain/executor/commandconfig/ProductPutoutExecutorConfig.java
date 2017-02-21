@@ -1,7 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.google.common.collect.Lists;
-import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -11,7 +10,6 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
-import com.ymatou.productsync.infrastructure.util.Utils;
 import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
@@ -63,7 +61,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             tempMap.put("$lt", new DateTime().toString(com.ymatou.productsync.infrastructure.util.Utils.DEFAULT_DATE_FORMAT));
             matchConditionInfo.put("end", tempMap);
 
-            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
+            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             mongoDataList.add(liveProductMd);
 
         } else {
