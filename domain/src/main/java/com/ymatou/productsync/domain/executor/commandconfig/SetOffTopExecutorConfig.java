@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/8.
- * 取消商品在直播中置顶
+ * 取消商品在直播中置顶 chenfei
  */
 @Component("setOffTopExecutorConfig")
 public class SetOffTopExecutorConfig implements ExecutorConfig {
