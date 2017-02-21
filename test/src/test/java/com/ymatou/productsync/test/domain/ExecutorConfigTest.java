@@ -321,7 +321,7 @@ public class ExecutorConfigTest {
     public void testSetOffTop() {
         //测试取消置顶
         long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        String productId = "916ca256-d34e-4c26-bd82-e4c85d5dc309";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         req.setActivityId(activityId);
