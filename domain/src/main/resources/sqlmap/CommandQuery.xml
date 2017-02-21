@@ -154,7 +154,7 @@
 					p.IsPspProduct AS 'ispsp',--是否psp商品
 					p.dListingTime AS 'newstart',--新品有效开始时间
 					p.dNewEndTime AS 'newend',--新品有效结束时间
-					CAST ((CASE p.iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'--是否买手热推商品
+					CAST ((CASE p.isTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'--是否买手热推商品
             FROM    Ymt_Products (NOLOCK) P
                     INNER JOIN cataCTE ON cataCTE.sProductId = P.sProductId
                     LEFT JOIN Ymt_ProductBrand (NOLOCK) B ON B.iBrandId = P.iBrandId
