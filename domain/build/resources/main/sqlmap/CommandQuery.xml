@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ ~ /*
+ ~ (C) Copyright 2016 Ymatou (http://www.ymatou.com/).
+ ~ All rights reserved.
+ ~ */
+ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ymatou.productsync.domain.sqlrepo.CommandQuery">
+
+    <!--设置、取消橱窗商品-->
+    <select id="getLiveProductTop" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT  iIsTop as 'istop',iSellStatus as 'status'
+        FROM    dbo.Ymt_ProductsInLive
+        WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+        AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1;
+    </select>
+
+    <!--获取商品详细信息-->
+    <select id="getProductBaseInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT TOP 1
+        ActionType AS 'ActionType',
+        ProductId AS 'ProductId'
+        FROM dbo.ApolloTransactionInfo WITH(NOLOCK)
+        WHERE TransactionId = 1;
+    </select>
+
+    <!--关闭直播-直播商品+品牌-->
+    <select id="getLiveProductByActivityId"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT a.sProductId AS 'spid',
+			   a.iActivityId AS 'lid',
+			   a.iUserId AS 'sid',
+			   a.dStartTime AS 'start',
+			   a.iCommentNum AS 'comments',
+			   a.dEndTime AS 'end',
+			   a.dAddTime AS 'add',
+			   a.dReadyPutawayProductSort AS 'sort',
+			   a.iIsTop AS 'istop',
+			   a.iSellStatus AS 'status',
+			   p.iBrandId AS 'bid',
+			   p.sBrand AS 'ebrand',
+			   b.sBrand AS 'brand',
+			   p.iThirdCategoryId AS 'tcatid'
+		FROM Ymt_ProductsInLive (NOLOCK) a
+		INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
+		LEFT JOIN Ymt_ProductBrand (NOLOCK) b ON p.iBrandId = b.iBrandId
+		WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
+    </select>
+
+    <!--关闭直播-商品新品时间-->
+    <select id="getProductNewTimeByActivityId"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+       SELECT
+        p.isNew AS 'isnew',
+        p.dListingTime AS 'newstart',
+        p.dNewEndTime AS 'newend',
+        p.sProductId as 'spid'
+        FROM Ymt_ProductsInLive (NOLOCK) a
+        INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
+        WHERE a.iActivityId =  ${activityId} AND ISNULL(a.iAction,0) >-1;
+    </select>
+
+    <!--获取商品详情-->
+    <select id="getProductDetailInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+         WITH    pcte
+                  AS ( SELECT   sProductId ,
+                                sOriUrl = STUFF(( SELECT    ',' + sOriUrl
+                                                  FROM      Ymt_ProductPicture (NOLOCK)
+                                                            AS t
+                                                  WHERE     t.sProductId = tb.sProductId
+                                                            AND t.iAction > -1
+                                                            AND t.sProductId = CAST(#{productId} AS VARCHAR(36))
+                                                FOR
+                                                  XML PATH('')
+                                                ), 1, 1, '')
+                       FROM     Ymt_ProductPicture (NOLOCK) tb
+                       WHERE    tb.iAction > -1
+                                AND tb.sProductId = #{productId}
+                       GROUP BY sProductId
+                     ),
+                cataCTE
+                  AS ( SELECT TOP 1
+                                sProductId ,
+                                iAcceptReturn
+                       FROM     Ymt_Catalogs(NOLOCK)
+                       WHERE    iAction > -1
+                                AND sProductId = #{productId}
+                     )
+            SELECT  p.sProductCode AS 'pcode' ,
+                    p.IAction AS 'action' ,
+                    ipid AS 'ipid' ,
+                    P.sProductId AS 'spid' ,
+                    P.iBrandId AS 'bid' ,
+                    P.sProduct AS 'title' ,
+                    P.dAddTime AS 'addtime' ,
+                    p.fFlight AS 'shipping',
+                    cte.sOriUrl AS 'pics' ,--商品主图列表
+                    validStart AS 'start' ,
+                    validEnd AS 'end' ,
+                    P.iCatalogType AS 'ctype' ,--备货方式
+                    P.iCatalogStatus AS 'deliv' ,--发货方式
+                    P.sMobileDescription AS 'intro' ,--商品简介
+                    P.iTariffType AS 'tariffy' ,--是否包税
+                    P.iBondedArea AS 'bonded' ,
+                    ( SELECT    MAX(fQuotePrice)
+                      FROM      Ymt_Catalogs (NOLOCK)
+                      WHERE     sProductId = #{productId}
+                                AND iAction = 0
+                      GROUP BY  sProductId
+                    ) AS 'maxp' ,--最高规格价
+                    ( SELECT    MIN(fQuotePrice)
+                      FROM      Ymt_Catalogs (NOLOCK)
+                      WHERE     sProductId = #{productId}
+                                AND iAction = 0
+                      GROUP BY  sProductId
+                    ) AS 'minp' ,--最低规格价
+                    P.iUserId AS 'sid' ,
+                    P.SellerLoginId AS 'sname' ,
+                    b.sBrand AS 'brand' ,
+                    p.sbrand AS 'ebrand' ,
+                    P.iCategoryId AS 'scatid' ,
+                    ( SELECT    sCategory
+                      FROM      Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iCategoryId
+                    ) AS 'scatname' ,
+                    P.iThirdCategoryId AS 'tcatid' ,
+                    ( SELECT    sCategory
+                      FROM      Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iThirdCategoryId
+                    ) AS 'tcatname' ,
+                    ( SELECT    b.iMasterCategory
+                      FROM      Ymt_ProductCategory (NOLOCK) A
+                                INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
+                      WHERE     B.iCategoryId = P.iCategoryId
+                    ) AS 'mcatid' ,
+                    ( SELECT    A.sCategory
+                      FROM      Ymt_ProductCategory (NOLOCK) A
+                                INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
+                      WHERE     B.iCategoryId = P.iCategoryId
+                    ) AS 'mcatname' ,
+                    P.SellerCountryId AS 'country' ,
+                    P.iLocalReturn AS 'localr' ,--本土退货
+                    P.bNoticeRisk AS 'risk' ,--砍单风险提醒
+                    P.bNoReasonReturn AS 'noreason' ,--7天无理由退货
+                    CASE WHEN pdc.ProductID IS NULL THEN 0
+                         ELSE 1
+                    END AS 'newdesc',--是否新图文描述
+					p.isnew AS 'isnew',--是否新品
+					p.IsPspProduct AS 'ispsp',--是否psp商品
+					p.dListingTime AS 'newstart',--新品有效开始时间
+					p.dNewEndTime AS 'newend',--新品有效结束时间
+					p.istop AS 'istop'--是否买手热推商品
+            FROM    Ymt_Products (NOLOCK) P
+                    INNER JOIN cataCTE ON cataCTE.sProductId = P.sProductId
+                    LEFT JOIN Ymt_ProductBrand (NOLOCK) B ON B.iBrandId = P.iBrandId
+                    LEFT JOIN pcte cte ON cte.sProductId = P.sProductId
+                    LEFT JOIN Ymt_ProductDescConfigWord (NOLOCK) pdc ON pdc.ProductID = P.sProductId
+                                                              AND pdc.[Status] > 0
+            WHERE   P.sProductId = #{productId}
+    </select>
+
+    <!--获取商品规格详情-->
+    <select id="getProductCatalogInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+SELECT  DISTINCT
+                p.sProductId AS 'spid' ,
+                c.sCatalogId AS 'cid' ,--规格编号
+                fQuotePrice AS 'price',--原价
+                c.fNewCustomerPrice AS 'newp',--新客价
+                c.fEarnestPrice AS 'earnest' ,--定金
+                c.fVipPrice AS 'vip',--VIP价
+                c.iNum AS 'stock',--规格库存
+                c.sSKU AS 'sku',--单品编号
+                cp.sProductProperty AS 'name' ,--属性名称
+                cs.sCategoryAttribute AS 'value' ,--属性值
+                cs.sPicUrl AS 'pic',--属性图
+				ISNULL(c.IsPreSale,0) AS 'presale'--是否预售规格
+        FROM    Ymt_Products (NOLOCK) p
+                LEFT JOIN Ymt_Catalogs (NOLOCK) c ON p.sProductId = c.sProductId
+                LEFT JOIN Ymt_CatalogProperty (NOLOCK) cp ON c.sCatalogId = cp.sCatalogId
+                LEFT JOIN Ymt_CatalogSetAttributes (NOLOCK) cs ON cp.sCatalogPropertyId = cs.sCatalogPropertyId
+  WHERE   p.iAction > -1
+                AND c.iAction > -1
+                AND p.sProductId = #{productId}
+    </select>
+
+    <!--获取商品图文描述-->
+    <select id="getProductDescInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+       SELECT  a.WordContent AS 'content',
+                b.[PictureUrl] AS 'pic',
+                b.ProductID AS 'spid'
+        FROM    Ymt_ProductDescConfigWord (NOLOCK)a
+                JOIN Ymt_ProductDescConfigPicture (NOLOCK)b ON b.ProductID = a.ProductID
+        WHERE   a.ProductID = #{productId} AND b.iAction >-1
+    </select>
+
+    <!-- 获取商品有效的图片列表，ActionType: -> AddProductPics & DeleteProductPics -->
+    <select id="getProductPictureList" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+          sOriUrl AS 'pics'
+        FROM dbo.Ymt_ProductPicture WITH(nolock)
+        WHERE sProductId = #{productId,jdbcType=VARCHAR} AND iAction > -1
+        ORDER BY iProductPictureId ASC
+
+    </select>
+
+    <!--获取待删除的商品-->
+    <select id="getDeleteProducts" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+            SELECT P.validStart AS 'start'
+    ,P.validEnd AS 'end'
+    ,P.[dListingTime] AS 'newstart'
+    ,P.[dNewEndtime] AS 'newend'
+    ,P.[isNew] AS 'isnew'
+    ,P.iAction as 'action'
+    FROM [dbo].Ymt_Products AS P WITH(NOLOCK)
+    WHERE P.[sProductId] = #{productId,jdbcType=VARCHAR};
+    </select>
+
+    <!--获取商品的品牌品类信息-->
+    <select id="getProductBrandAndCategory" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+         SELECT
+                    P.iBrandId AS bid ,
+                    b.sBrand AS brand ,
+                    p.sbrand AS ebrand ,
+                    P.iCategoryId AS scatid ,
+                    ( SELECT    sCategory
+                      FROM      Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iCategoryId
+                    ) AS scatname ,
+                    P.iThirdCategoryId AS tcatid ,
+                    ( SELECT    sCategory
+                      FROM      Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iThirdCategoryId
+                    ) AS tcatname ,
+                    ( SELECT    b.iMasterCategory
+                      FROM      Ymt_ProductCategory (NOLOCK) A
+                                INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
+                      WHERE     B.iCategoryId = P.iCategoryId
+                    ) AS mcatid ,
+                    ( SELECT    A.sCategory
+                      FROM      Ymt_ProductCategory (NOLOCK) A
+                                INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
+                      WHERE     B.iCategoryId = P.iCategoryId
+                    ) AS mcatname
+            FROM    Ymt_Products (NOLOCK) P
+                    LEFT JOIN Ymt_ProductBrand (NOLOCK) B ON B.iBrandId = P.iBrandId
+            WHERE   P.sProductId =  #{productId}
+    </select>
+
+    <!--获取商品的品牌品类信息-->
+    <select id="getValidLiveByProductId" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+            SELECT
+            iActivityId
+            FROM [dbo].[Ymt_ProductsInLive] WITH(NOLOCK) WHERE [sProductId] = #{productId}  AND dEndTime>GETDATE() and isnull(iaction,0)>-1
+    </select>
+    <!--获取直播商品时间-->
+    <select id="getLiveProductTime"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT  dStartTime as 'start'
+        ,dEndTime as 'end'
+        FROM    dbo.Ymt_ProductsInLive WITH(NOLOCK)
+        WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+        AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
+    </select>
+
+    <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+          SELECT c.sBrand,a.sBrand as sbranden  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+                                                LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
+                                                WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
+    </select>
+
+    <!--获取商品规格列表-->
+    <select id="getProductCatalogs"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        select sProductId as 'spid'
+                    ,sCatalogId as 'cid'
+                    ,fQuotePrice as 'price'
+					,fNewCustomerPrice as 'newp'
+					,fVipPrice as 'vip'
+                    ,fEarnestPrice as 'earnest'
+                    ,iNum as 'stock'
+                    ,iAction as 'action'
+                    from Ymt_Catalogs WITH(NOLOCK)
+                    WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
+    <!--取待同步的活动商品 -->
+    <select id="getActivityProducts" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+            a.sProductId			AS 'spid',
+            a.iActivityId			AS 'aid',
+            b.SaleSideName			AS 'aname',
+            a.iProductInActivityId	AS 'inaid',
+            a.dBeginTime			AS 'start',
+            a.dEndTime				AS 'end',
+            a.sMarketPrice			AS 'market',
+            CASE WHEN b.LimitNumType = 0 THEN b.iLimitNum ELSE 0 END AS 'alimit',
+            CASE WHEN b.LimitNumType = 1 THEN b.iLimitNum ELSE 0 END AS 'plimit',
+            c.IsTradeIsolation      AS 'isolation',
+            c.IsPartCatalog			AS 'part'
+        FROM dbo.Ymt_ProductsInActivity a WITH(NOLOCK)
+            INNER JOIN dbo.Ymt_Activity b WITH(NOLOCK) ON a.iActivityId = b.iActivityId
+            INNER JOIN dbo.Ymt_ActivityTemplate c WITH(NOLOCK) ON b.iActivityTemplateId = c.iActivityTemplateId
+        WHERE iProductInActivityId = ${productInactivityId}
+
+    </select>
+
+    <!-- 取待同步的活动商品的规格（库存&价格） -->
+    <select id="getActivityProductCatalogs"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+
+        SELECT
+            sCatalogID		AS 'cid',
+            iStockNum		AS 'stock',
+            fActivityPrice	AS 'price'
+        FROM dbo.Ymt_ProductActivityStock WITH(NOLOCK)
+        WHERE iProductInActivityId = ${productInactivityId}
+
+    </select>
+
+    <!--获取直播商品表信息-->
+    <select id="getProductLiveInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+    SELECT  sProductId AS 'spid'
+            ,iActivityId AS 'lid'
+            ,iUserId AS 'sid'
+            ,dStartTime AS 'start'
+            ,dEndTime AS 'end'
+            ,dAddTime AS 'add'
+            ,iSellStatus AS 'status'
+            ,iIsTop AS 'istop'
+            ,dReadyPutawayProductSort AS 'sort'
+    FROM    dbo.Ymt_ProductsInLive WITH(NOLOCK)
+    WHERE   sProductId = #{productId,jdbcType=VARCHAR}
+    AND  iActivityId = ${activityId} AND ISNULL(iAction,0)>-1
+    </select>
+
+    <!--根据productid获取规格信息-->
+    <select id="getProductStockInfo" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select      sCatalogId as 'cid'
+                    ,iNum as 'stock'
+                    from Ymt_Catalogs WITH(NOLOCK)
+                    WHERE iAction >-1 and  sProductId = #{productId}
+    </select>
+
+    <!--根据productid获取商品用户id-->
+    <select id="getProductUser" parameterType="java.lang.String"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select  iUserId as 'userId'
+        from Ymt_Products
+        WHERE iAction =0 and  sProductId = #{productId,jdbcType=VARCHAR};
+    </select>
+
+    <!--根据直播id获取直播商品排序信息-->
+    <select id="getProductsLiveSort"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT  sProductId AS 'spid',
+                dReadyPutawayProductSort AS 'sort'
+        FROM Ymt_ProductsInLive WITH (NOLOCK)
+        WHERE iAction  > -1 AND  iActivityId = #{activityId};
+    </select>
+
+    <!--根据transactionId获取业务凭据信息-->
+    <select id="getTransactionInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.transactionInfo">
+             SELECT [TransactionId]
+                ,[NewTranStatus]
+                ,[NewRetryTimes]
+                ,[NewUpdateTime]
+            FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
+            WHERE TransactionId = #{transactionId}
+    </select>
+
+    <!--获取需要补单的信息-->
+    <select id="getCompensationInfo"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.transactionInfo">
+        SELECT TOP ${readCount}
+        [TransactionId]
+        ,[ActionType]
+        ,[ProductId]
+        ,[LiveId]
+        ,[NewTranStatus]
+        ,[NewRetryTimes]
+        ,[NewUpdateTime]
+        FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
+        WHERE
+        [NewTranStatus] = 0 AND DATEDIFF(MINUTE ,NewUpdateTime,GETDATE()) > ${timeLimit}
+        OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
+        ORDER BY CreateTime DESC
+    </select>
+
+    <!--更新商品业务凭据信息-->
+    <update id="updateTransactionInfo" parameterType="com.ymatou.productsync.domain.model.sql.TransactionInfo">
+        UPDATE [dbo].[BusinessCredentialInfo]
+       SET
+           [NewTranStatus] = #{newTranStatus}
+          ,[NewRetryTimes] = #{newRetryTimes}
+          ,[NewUpdateTime] = #{newUpdateTime}
+     WHERE TransactionId = #{transactionId}
+    </update>
+
+    <!--根据productid获取商品橱窗推荐状态-->
+    <select id="getProductOnOffTop"
+            resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        SELECT isTop as 'istop'  FROM dbo.Ymt_Products WHERE sProductId= #{productId}
+    </select>
+</mapper>
