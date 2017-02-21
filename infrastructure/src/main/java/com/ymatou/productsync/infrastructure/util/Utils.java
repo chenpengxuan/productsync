@@ -180,4 +180,15 @@ public class Utils {
         double doubleValue = bg.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
         return doubleValue;
     }
+
+    /**
+     * decimal格式化，保留几位小数
+     * @param value
+     * @param digit
+     * @return
+     */
+    public static double decimalFormat(BigDecimal value, int digit) {
+        double doubleValue = value.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return doubleValue;
+    }
 }
