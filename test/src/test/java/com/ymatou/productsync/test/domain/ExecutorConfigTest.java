@@ -126,6 +126,7 @@ public class ExecutorConfigTest {
         Asserts.check(issuccess, "测试添加直播fail!");
     }
 
+    @Test
     public void testAddActivityException() {
         //#2sql没有的直播
         SyncByCommandReq req = new SyncByCommandReq();
@@ -241,6 +242,7 @@ public class ExecutorConfigTest {
         Asserts.check(success1, "现货商品修改分类品牌fail！");
     }
 
+    @Test
     public void testModifyBrandAndCategoryLive() {
         SyncByCommandReq req = new SyncByCommandReq();
 //        #2直播商品
@@ -251,6 +253,7 @@ public class ExecutorConfigTest {
         Asserts.check(success2, "直播商品修改分类品牌fail！");
     }
 
+    @Test
     public void testModifyBrandAndCategoryException() {
         SyncByCommandReq req = new SyncByCommandReq();
 //        #3不存在商品
@@ -296,6 +299,7 @@ public class ExecutorConfigTest {
         Asserts.check(success, "正常商品规格库存测试fail!");
     }
 
+    @Test
     public void testCatalogStockChangeException() {
         SyncByCommandReq req = new SyncByCommandReq();
 //        #2 不存在的商品规格库存测试
@@ -520,43 +524,5 @@ public class ExecutorConfigTest {
         Asserts.check(success1, "测试正常批量上架商品【商品售罄】fail！");
     }
 
-    @Test
-    public void testModifyActivityPrice() {
-//        #1正常修改商品活动价
-        SyncByCommandReq req = new SyncByCommandReq();
-        List<Map<String, Object>> query = commandQuery.getActivityProduct();
-        Map<String, Object> prod = query.stream().findFirst().orElse(Collections.emptyMap());
-        req.setProductId(prod.get("sProductId").toString());
-        req.setActivityId(Integer.parseInt(prod.get("iProductInActivityId").toString()));
-        boolean success1 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
-        Asserts.check(success1, "测试正常修改商品活动价fail！");
-    }
 
-    @Test
-    public void testModifyActivityPriceNpException() {
-//        #2测试活动商品没有的情况
-        SyncByCommandReq req = new SyncByCommandReq();
-        req.setActivityId(0);
-        try {
-            boolean success2 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
-            Asserts.check(success2, "测试活动商品没有的情况fail！");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
-    }
-
-    @Test
-    public void testModifyActivityPriceNcException() {
-//        #3测试活动商品规格没有的情况
-        SyncByCommandReq req = new SyncByCommandReq();
-        List<Map<String, Object>> query3 = commandQuery.getInvalidActivityProduct();
-        Map<String, Object> prod1 = query3.stream().findFirst().orElse(Collections.emptyMap());
-        req.setActivityId(Integer.parseInt(prod1.get("iProductInActivityId").toString()));
-        try {
-            boolean success3 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
-            Asserts.check(success3, "测试活动商品规格没有的情况fail!");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
-    }
 }
