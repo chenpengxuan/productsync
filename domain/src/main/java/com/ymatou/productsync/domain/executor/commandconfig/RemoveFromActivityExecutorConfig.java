@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by chenfei on 2017/2/15.
@@ -46,13 +45,13 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
         //2，更新直播品牌
         Map<String, Object> lives = new HashMap();
         List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
-        if (products == null || products.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductInfoByActivityId");
-        }
         if (products != null && !products.isEmpty()) {
             products.stream().forEach(t -> t.remove("dAddTime"));
             Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
             lives.put("brands", brands);
+        }
+        else{
+            lives.put("brands",null);
         }
         if (!lives.isEmpty()) {
             MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
