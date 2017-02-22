@@ -1,6 +1,7 @@
 package com.ymatou.productsync.infrastructure.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.collect.Maps;
 
 import java.util.*;
@@ -38,7 +39,7 @@ public class MapUtil {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
         }
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
-        return JSON.toJSONString(map);
+        return JSON.toJSONString(map, SerializerFeature.QuoteFieldNames);
     }
 
     /**

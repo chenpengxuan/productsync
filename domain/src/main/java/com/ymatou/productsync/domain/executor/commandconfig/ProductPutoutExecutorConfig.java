@@ -10,7 +10,6 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
-import com.ymatou.productsync.infrastructure.util.Utils;
 import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
@@ -58,7 +57,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("$gte", Utils.getNow());
+            tempMap.put("$gte", new Date());
             matchConditionInfo.put("end", tempMap);
 
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);

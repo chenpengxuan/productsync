@@ -1,11 +1,10 @@
 package com.ymatou.productsync.domain.mongorepo;
 
 import com.google.common.collect.Lists;
-import com.mongodb.DBObject;
+import com.google.common.collect.Maps;
 import com.mongodb.DuplicateKeyException;
 import com.ymatou.performancemonitorclient.PerformanceStatisticContainer;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
 import com.ymatou.productsync.infrastructure.config.datasource.DynamicDataSourceAspect;
 import com.ymatou.productsync.infrastructure.constants.Constants;
@@ -60,6 +59,7 @@ public class MongoRepository {
      * @return
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> queryMongo(MongoQueryData mongoQueryData) throws IllegalArgumentException {
         if (mongoQueryData == null) {
             throw new IllegalArgumentException("mongoData 不能为空");
@@ -67,17 +67,14 @@ public class MongoRepository {
         if (mongoQueryData.getTableName().isEmpty()) {
             throw new IllegalArgumentException("mongo table name 不能为空");
         }
-        if (mongoQueryData.getOperationType() == MongoOperationTypeEnum.SELECTMANY && mongoQueryData.getDistinctKey().isEmpty()) {
-            throw new IllegalArgumentException("mongo 查询多条时 distinct key 不能为空");
-        }
         MongoCollection collection = jongoClient.getCollection(mongoQueryData.getTableName());
         List<Map<String, Object>> mapList = new ArrayList<>();
         Map<String, Object> tempMap = new HashMap<>();
-        List<DBObject> tempList;
+        Object[] paramList = processQueryCondition(mongoQueryData);
         switch (mongoQueryData.getOperationType()) {
             case SELECTSINGLE:
                 if (mongoQueryData.getMatchCondition() != null) {
-                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(HashMap.class);
+                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"",""),paramList).as(HashMap.class);
                 } else {
                     tempMap = collection.findOne().as(HashMap.class);
                 }
@@ -87,8 +84,11 @@ public class MongoRepository {
                 break;
             case SELECTMANY:
                 if (mongoQueryData.getMatchCondition() != null) {
-                    tempList = collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition())).as(DBObject.class);
-                    mapList = tempList.parallelStream().map(x -> (Map<String, Object>) x.toMap()).collect(Collectors.toList());
+                    if(mongoQueryData.getDistinctKey() != null && !mongoQueryData.getDistinctKey().isEmpty()) {
+                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"",""),paramList).map(x -> (HashMap<String,Object>)x.toMap()).iterator());
+                    }else{
+                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>)collection.find(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"",""),paramList).as(tempMap.getClass()).iterator());
+                    }
                 } else {
                     mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find().as(tempMap.getClass()).iterator());
                 }
@@ -97,6 +97,38 @@ public class MongoRepository {
         return mapList;
     }
 
+    /**
+     * 处理mongo查询条件
+     * @param mongoQueryData
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private Object[] processQueryCondition(MongoQueryData mongoQueryData)  throws IllegalArgumentException {
+        if (mongoQueryData == null) {
+            throw new IllegalArgumentException("mongoData 不能为空");
+        }
+        List tempResult = new ArrayList();
+        //针对嵌套Map
+        if(mongoQueryData.getMatchCondition() != null && !mongoQueryData.getMatchCondition().isEmpty()){
+            Map<String,Object> parameterizationMap = Maps.filterEntries(mongoQueryData.getMatchCondition(),x -> x.getValue() instanceof Map
+                    && !Maps.filterKeys((Map<String,Object>)x.getValue(),z -> z.contains("$")).isEmpty());
+            if(!parameterizationMap.isEmpty()){
+               parameterizationMap.forEach((x,y) -> {
+                  if(y instanceof Map){
+                      Map<String,Object> tempMap = Maps.filterEntries((Map<String,Object>)y,z -> z.getKey().contains("$"));
+                      if(!tempMap.isEmpty()){
+                          Map<String,Object> unReplacedMap = (Map<String,Object>)mongoQueryData.getMatchCondition().get(x);
+                          tempMap.forEach((k,m) -> {
+                              unReplacedMap.replace(k,m,"#");
+                              tempResult.add(m);
+                          });
+                      }
+                  }
+               });
+            }
+        }
+        return tempResult.toArray();
+    }
     /**
      * mongodata 实际操作
      *

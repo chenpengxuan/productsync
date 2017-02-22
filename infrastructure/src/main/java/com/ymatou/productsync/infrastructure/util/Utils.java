@@ -170,6 +170,15 @@ public class Utils {
     }
 
     /**
+     * 根据指定时间获取对应时间戳
+     * @param dateTime
+     * @return
+     */
+    public static Timestamp getTimestamp(String dateTime){
+        return Timestamp.valueOf(dateTime);
+    }
+
+    /**
      * double格式化，保留几位小数
      *
      * @param value
