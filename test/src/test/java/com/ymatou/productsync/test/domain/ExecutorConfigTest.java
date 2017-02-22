@@ -79,6 +79,8 @@ public class ExecutorConfigTest {
     @Autowired
     private ProductStockChangeExecutorConfig productStockChangeExecutorConfig;
 
+    @Autowired
+    private UpdateActivitySortExecutorConfig updateActivitySortExecutorConfig;
 
     @Autowired
     private CommandExecutor commandExecutor;
@@ -340,6 +342,15 @@ public class ExecutorConfigTest {
         req3.setActivityId(activityId3);
         boolean isOk3 = commandExecutor.executeCommand(req3, modifyActivityExecutorConfig);
         Asserts.check(isOk3, "");
+    }
+
+    @Test
+    public void testModifyActivitySort() {
+        long activityId = 157305;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setActivityId(activityId);
+        boolean isOk = commandExecutor.executeCommand(req, updateActivitySortExecutorConfig);
+        Asserts.check(isOk, "");
     }
 
     /**

@@ -398,7 +398,7 @@ SELECT  DISTINCT
         ,[NewUpdateTime]
         FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
         WHERE
-        [NewTranStatus] = 0 AND DATEDIFF(MINUTE ,NewUpdateTime,GETDATE()) > ${timeLimit}
+        [NewTranStatus] = 0 AND NewUpdateTime > DATEADD(MINUTE,${timeLimit},GETDATE())
         OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
          <![CDATA[
         AND [NewRetryTimes] <= ${retryLimit}
