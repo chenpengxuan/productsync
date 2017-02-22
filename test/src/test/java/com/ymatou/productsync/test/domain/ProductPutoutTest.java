@@ -48,7 +48,7 @@ public class ProductPutoutTest {
     public void testProductPutoutException() {
         //不带直播id场景
         try {
-            String productId2 = "cde180d5-b57c-4e2c-ae1c-db39adcb8c4b";
+            String productId2 = "c1ba2ba5-ee5b-4139-8731-99127715ffb0";
             SyncByCommandReq req2 = new SyncByCommandReq();
             req2.setProductId(productId2);
             //List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);

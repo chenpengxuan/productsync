@@ -103,28 +103,27 @@ public class MongoRepository {
      * @return
      * @throws IllegalArgumentException
      */
-    private Object[] processQueryCondition(Map<String,Object> queryMatchConditionData)  throws IllegalArgumentException {
-        if (queryMatchConditionData == null || queryMatchConditionData.isEmpty()) {
-            throw new IllegalArgumentException("queryMatchConditionData 不能为空");
-        }
+    private Object[] processQueryCondition(Map<String,Object> queryMatchConditionData){
         List tempResult = new ArrayList();
-        //针对嵌套Map
-            Map<String,Object> parameterizationMap = Maps.filterEntries(queryMatchConditionData,x -> x.getValue() instanceof Map
-                    && !Maps.filterKeys((Map<String,Object>)x.getValue(),z -> z.contains("$")).isEmpty());
-            if(!parameterizationMap.isEmpty()){
-               parameterizationMap.forEach((x,y) -> {
-                  if(y instanceof Map){
-                      Map<String,Object> tempMap = Maps.filterEntries((Map<String,Object>)y,z -> z.getKey().contains("$"));
-                      if(!tempMap.isEmpty()){
-                          Map<String,Object> unReplacedMap = (Map<String,Object>)queryMatchConditionData.get(x);
-                          tempMap.forEach((k,m) -> {
-                              unReplacedMap.replace(k,m,"#");
-                              tempResult.add(m);
-                          });
-                      }
-                  }
-               });
+        if (queryMatchConditionData != null && !queryMatchConditionData.isEmpty()) {
+            //针对嵌套Map
+            Map<String, Object> parameterizationMap = Maps.filterEntries(queryMatchConditionData, x -> x.getValue() instanceof Map
+                    && !Maps.filterKeys((Map<String, Object>) x.getValue(), z -> z.contains("$")).isEmpty());
+            if (!parameterizationMap.isEmpty()) {
+                parameterizationMap.forEach((x, y) -> {
+                    if (y instanceof Map) {
+                        Map<String, Object> tempMap = Maps.filterEntries((Map<String, Object>) y, z -> z.getKey().contains("$"));
+                        if (!tempMap.isEmpty()) {
+                            Map<String, Object> unReplacedMap = (Map<String, Object>) queryMatchConditionData.get(x);
+                            tempMap.forEach((k, m) -> {
+                                unReplacedMap.replace(k, m, "#");
+                                tempResult.add(m);
+                            });
+                        }
+                    }
+                });
             }
+        }
         return tempResult.toArray();
     }
     /**

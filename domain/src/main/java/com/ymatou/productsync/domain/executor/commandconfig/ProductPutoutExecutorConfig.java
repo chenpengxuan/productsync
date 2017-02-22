@@ -53,13 +53,13 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             //更新商品
             MongoData productMd = MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), deleteProducts);
             mongoDataList.add(productMd);
+
             //删除直播商品
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);
             Map<String, Object> tempMap = new HashMap<>();
             tempMap.put("$gte", new Date());
             matchConditionInfo.put("end", tempMap);
-
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             mongoDataList.add(liveProductMd);
 
