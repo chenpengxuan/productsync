@@ -1,7 +1,7 @@
 package com.ymatou.productsync.test.domain;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.commandconfig.*;
+import com.ymatou.productsync.domain.executor.commandconfig.SuspendSaleExecutorConfig;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.TestCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -19,19 +19,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 场景业务指令器test
- * Created by chenpengxuan on 2017/1/23.
+ * Created by zhangyong on 2017/2/22.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ProductSyncApplication.class)// 指定我们SpringBoot工程的Application启动类
-public class ExecutorConfigTest {
+public class SuspendSaleTest {
+    @Autowired
+    private TestCommandQuery commandQuery;
+
     @Autowired
     private CommandExecutor commandExecutor;
 
-    @Test
-    public void testUpdateTransactionInfo() {
-        int transationId = 10;
-        commandExecutor.updateTransactionInfo(transationId, SyncStatusEnum.BizEXCEPTION);
-    }
+    @Autowired
+    private SuspendSaleExecutorConfig suspendSaleExecutorConfig;
 
+    @Test
+    public void testSuspendSale() {
+        String productId = "992b3749-4379-4260-b05b-24e734423f9f";
+        long activityId = 334567;
+        SyncByCommandReq req = new SyncByCommandReq();
+        req.setProductId(productId);
+        req.setActivityId(activityId);
+        commandExecutor.executeCommand(req, suspendSaleExecutorConfig);
+    }
 }
