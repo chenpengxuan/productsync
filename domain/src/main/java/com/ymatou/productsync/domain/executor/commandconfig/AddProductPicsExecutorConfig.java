@@ -11,7 +11,10 @@ import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 同步商品主图 - AddProductPics
@@ -31,16 +34,17 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         List<MongoData> mongoDataList = new ArrayList<>();
-        List<Map<String, Object>> sqlDataList = commandQuery.getProductPictureList(productId);
+        List<Map<String, Object>> tempSqlDataList = commandQuery.getProductPictureList(productId);
 
-        if (sqlDataList == null || sqlDataList.isEmpty()) {
+        if (tempSqlDataList == null || tempSqlDataList.isEmpty()) {
             throw new BizException(ErrorCode.BIZFAIL, "getProductPictureList 为空");
         }
 
-        Object[] pics = sqlDataList.parallelStream().map(t -> t.get("pics")).toArray();
-        sqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics", pics);
+        Object[] pics = tempSqlDataList.parallelStream().map(t -> t.get("pics")).toArray();
+        tempSqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics", pics);
+        List<Map<String,Object>> sqlDataList = new ArrayList<>();
+        sqlDataList.add(tempSqlDataList.parallelStream().findFirst().orElse(Collections.emptyMap()));
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
-
         return mongoDataList;
     }
 }
