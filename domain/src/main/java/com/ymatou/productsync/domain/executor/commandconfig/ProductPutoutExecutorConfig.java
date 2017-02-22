@@ -1,7 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.google.common.collect.Lists;
-import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -16,7 +15,6 @@ import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +58,10 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);
             Map<String, Object> tempMap = new HashMap<>();
-            tempMap.put("$lt", new DateTime().toString(com.ymatou.productsync.infrastructure.util.Utils.DEFAULT_DATE_FORMAT));
+            tempMap.put("$gte", Utils.getNow());
             matchConditionInfo.put("end", tempMap);
 
-            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo, null);
+            MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             mongoDataList.add(liveProductMd);
 
         } else {

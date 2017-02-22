@@ -265,13 +265,11 @@ public class MongoDataBuilder {
      * 创建直播商品删除
      *
      * @param matchCondition
-     * @param updateData
      * @return
      */
 
-    public static MongoData createLiveProductDelete(Map<String, Object> matchCondition,
-                                                    List<Map<String, Object>> updateData) {
-        return buildMongoData(Constants.LiveProudctDb, MongoOperationTypeEnum.DELETE, matchCondition, updateData);
+    public static MongoData createLiveProductDelete(Map<String, Object> matchCondition) {
+        return buildMongoData(Constants.LiveProudctDb, MongoOperationTypeEnum.DELETE, matchCondition, null);
     }
 
     /**

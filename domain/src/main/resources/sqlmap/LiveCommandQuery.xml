@@ -40,7 +40,7 @@ SELECT sFlag,sCountryNameZh FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId =
     <select id="getProductInfoByActivityId" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 SELECT  a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
-WHERE b.[iActivityId] = #{ActivityId} and isnull(b.iaction,0)>-1
+WHERE b.[iActivityId] = #{ActivityId}
 order by a.dAddTime DESC
     </select>
 

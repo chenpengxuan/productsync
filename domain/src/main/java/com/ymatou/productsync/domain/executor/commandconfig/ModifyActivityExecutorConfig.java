@@ -63,7 +63,6 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
             activity.put("brands", brands);
         }
 
-
         //设置要更新的数据
         MongoData liveMongoData = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), mapList);
         mongoDataList.add(liveMongoData);
