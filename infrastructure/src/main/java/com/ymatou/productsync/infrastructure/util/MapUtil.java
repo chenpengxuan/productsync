@@ -43,6 +43,19 @@ public class MapUtil {
     }
 
     /**
+     * 将map转换成json字符串格式
+     *
+     * @return
+     */
+    public static String makeJsonStringFromMapForJongo(Map<String, Object> map) throws IllegalArgumentException {
+        if (map == null || map.isEmpty()) {
+            throw new IllegalArgumentException("mongo 待操作数据不能为空");
+        }
+        JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
+        return JSON.toJSONString(map, SerializerFeature.QuoteFieldNames).replaceAll("\"#\"","#");
+    }
+
+    /**
      * 将map转换成obj格式
      *
      * @param map

@@ -70,11 +70,11 @@ public class MongoRepository {
         MongoCollection collection = jongoClient.getCollection(mongoQueryData.getTableName());
         List<Map<String, Object>> mapList = new ArrayList<>();
         Map<String, Object> tempMap = new HashMap<>();
-        Object[] paramList = processQueryCondition(mongoQueryData);
+        Object[] paramList = processQueryCondition(mongoQueryData.getMatchCondition());
         switch (mongoQueryData.getOperationType()) {
             case SELECTSINGLE:
                 if (mongoQueryData.getMatchCondition() != null) {
-                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"#\"","#"),paramList).as(HashMap.class);
+                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()),paramList).as(HashMap.class);
                 } else {
                     tempMap = collection.findOne().as(HashMap.class);
                 }
@@ -85,9 +85,9 @@ public class MongoRepository {
             case SELECTMANY:
                 if (mongoQueryData.getMatchCondition() != null) {
                     if(mongoQueryData.getDistinctKey() != null && !mongoQueryData.getDistinctKey().isEmpty()) {
-                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"#\"","#"),paramList).map(x -> (HashMap<String,Object>)x.toMap()).iterator());
+                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()),paramList).map(x -> (HashMap<String,Object>)x.toMap()).iterator());
                     }else{
-                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>)collection.find(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"#\"","#"),paramList).as(tempMap.getClass()).iterator());
+                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>)collection.find(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()),paramList).as(tempMap.getClass()).iterator());
                     }
                 } else {
                     mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find().as(tempMap.getClass()).iterator());
@@ -99,25 +99,24 @@ public class MongoRepository {
 
     /**
      * 处理mongo查询条件
-     * @param mongoQueryData
+     * @param queryMatchConditionData
      * @return
      * @throws IllegalArgumentException
      */
-    private Object[] processQueryCondition(MongoQueryData mongoQueryData)  throws IllegalArgumentException {
-        if (mongoQueryData == null) {
-            throw new IllegalArgumentException("mongoData 不能为空");
+    private Object[] processQueryCondition(Map<String,Object> queryMatchConditionData)  throws IllegalArgumentException {
+        if (queryMatchConditionData == null || queryMatchConditionData.isEmpty()) {
+            throw new IllegalArgumentException("queryMatchConditionData 不能为空");
         }
         List tempResult = new ArrayList();
         //针对嵌套Map
-        if(mongoQueryData.getMatchCondition() != null && !mongoQueryData.getMatchCondition().isEmpty()){
-            Map<String,Object> parameterizationMap = Maps.filterEntries(mongoQueryData.getMatchCondition(),x -> x.getValue() instanceof Map
+            Map<String,Object> parameterizationMap = Maps.filterEntries(queryMatchConditionData,x -> x.getValue() instanceof Map
                     && !Maps.filterKeys((Map<String,Object>)x.getValue(),z -> z.contains("$")).isEmpty());
             if(!parameterizationMap.isEmpty()){
                parameterizationMap.forEach((x,y) -> {
                   if(y instanceof Map){
                       Map<String,Object> tempMap = Maps.filterEntries((Map<String,Object>)y,z -> z.getKey().contains("$"));
                       if(!tempMap.isEmpty()){
-                          Map<String,Object> unReplacedMap = (Map<String,Object>)mongoQueryData.getMatchCondition().get(x);
+                          Map<String,Object> unReplacedMap = (Map<String,Object>)queryMatchConditionData.get(x);
                           tempMap.forEach((k,m) -> {
                               unReplacedMap.replace(k,m,"#");
                               tempResult.add(m);
@@ -126,7 +125,6 @@ public class MongoRepository {
                   }
                });
             }
-        }
         return tempResult.toArray();
     }
     /**
@@ -143,6 +141,7 @@ public class MongoRepository {
         //增加定制化性能监控汇报
         boolean result = PerformanceStatisticContainer.addWithReturn(() -> {
             boolean processResult = false;
+            Object[] paramList = processQueryCondition(mongoData.getMatchCondition());
             switch (mongoData.getOperationType()) {
                 case CREATE:
                     try {
@@ -153,19 +152,19 @@ public class MongoRepository {
                     }
                     break;
                 case UPDATE:
-                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()),paramList)
                             .multi()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
                     break;
                 case UPSERT:
-                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition()))
+                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()),paramList)
                             .upsert()
                             .with(MapUtil.makeObjFromMap(xData))
                             .getN() > 0).collect(Collectors.toList()).contains(false);
                     break;
                 case DELETE:
-                    processResult = collection.remove(MapUtil.makeJsonStringFromMap(mongoData.getMatchCondition())).wasAcknowledged();
+                    processResult = collection.remove(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()),paramList).wasAcknowledged();
                     break;
                 default:
                     throw new IllegalArgumentException("mongo 操作类型不正确");
