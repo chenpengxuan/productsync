@@ -39,7 +39,7 @@
 			   a.dEndTime AS 'end',
 			   a.dAddTime AS 'add',
 			   a.dReadyPutawayProductSort AS 'sort',
-			   CAST ((CASE a.iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'
+			   CAST ((CASE a.iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop',
 			   a.iSellStatus AS 'status',
 			   p.iBrandId AS 'bid',
 			   p.sBrand AS 'ebrand',
