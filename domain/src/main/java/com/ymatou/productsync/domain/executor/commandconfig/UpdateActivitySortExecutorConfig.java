@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,9 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig{
         List<MongoData> mongoDataList = new ArrayList<>();
         sortInfoList.parallelStream().forEach(sortInfo -> {
             List<Map<String,Object>> tempUpdateData = new ArrayList<>();
-            tempUpdateData.add(sortInfo);
+            Map<String,Object> tempMap = new HashMap();
+            tempMap.put("sort",sortInfo.get("sort"));
+            tempUpdateData.add(tempMap);
             mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(sortInfo.get("spid").toString(),activityId),tempUpdateData));
         });
         return mongoDataList;
