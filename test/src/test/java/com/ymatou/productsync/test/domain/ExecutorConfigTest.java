@@ -1,13 +1,11 @@
 package com.ymatou.productsync.test.domain;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.commandconfig.*;
 import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
-import com.ymatou.productsync.domain.sqlrepo.TestCommandQuery;
-import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
+import com.ymatou.productsync.domain.mongorepo.MongoRepository;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.apache.http.util.Asserts;
 import org.junit.Test;
@@ -16,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 场景业务指令器test

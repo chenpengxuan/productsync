@@ -74,7 +74,7 @@ public class MongoRepository {
         switch (mongoQueryData.getOperationType()) {
             case SELECTSINGLE:
                 if (mongoQueryData.getMatchCondition() != null) {
-                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"",""),paramList).as(HashMap.class);
+                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"#\"","#"),paramList).as(HashMap.class);
                 } else {
                     tempMap = collection.findOne().as(HashMap.class);
                 }
@@ -85,9 +85,9 @@ public class MongoRepository {
             case SELECTMANY:
                 if (mongoQueryData.getMatchCondition() != null) {
                     if(mongoQueryData.getDistinctKey() != null && !mongoQueryData.getDistinctKey().isEmpty()) {
-                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"",""),paramList).map(x -> (HashMap<String,Object>)x.toMap()).iterator());
+                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"#\"","#"),paramList).map(x -> (HashMap<String,Object>)x.toMap()).iterator());
                     }else{
-                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>)collection.find(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"",""),paramList).as(tempMap.getClass()).iterator());
+                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>)collection.find(MapUtil.makeJsonStringFromMap(mongoQueryData.getMatchCondition()).replaceAll("\"#\"","#"),paramList).as(tempMap.getClass()).iterator());
                     }
                 } else {
                     mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find().as(tempMap.getClass()).iterator());
