@@ -11,10 +11,10 @@ import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
+import com.ymatou.productsync.infrastructure.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -77,7 +77,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
                 .parallelStream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", new Timestamp(new Date().getTime()));
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", Utils.getNow());
         }
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 

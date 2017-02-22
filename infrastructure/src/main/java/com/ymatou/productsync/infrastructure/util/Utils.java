@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -158,6 +159,14 @@ public class Utils {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, day);
         return calendar.getTime();
+    }
+
+    /**
+     * 获取当前时间时间戳
+     * @return
+     */
+    public static Timestamp getNow(){
+        return new Timestamp(new Date().getTime());
     }
 
     /**
