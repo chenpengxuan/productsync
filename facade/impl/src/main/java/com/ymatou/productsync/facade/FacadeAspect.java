@@ -88,10 +88,10 @@ public class FacadeAspect {
             resp = joinPoint.proceed(new Object[]{req});
         }
         catch (Throwable e) {
+            logger.error("Unknown error in executing request:{}", req, e);
             //前端可能将错误msg直接抛给用户
             resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
             commandExecutor.updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.FAILED);
-            logger.error("Unknown error in executing request:{}", req, e);
         } finally {
             long consumedTime = System.currentTimeMillis() - startTime;
             logger.info("Resp:{}. Finished:{}. Consumed:{}ms.", resp, getRequestFlag(req), consumedTime);
