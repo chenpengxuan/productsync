@@ -60,6 +60,14 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @Autowired
     private MessageBusDispatcher messageBusDispatcher;
 
+    @Override
+    @GET
+    @Path("/{warmup:(?i:warmup)}")
+    @Produces({MediaType.TEXT_PLAIN})
+    public String warmUp() {
+        return "ok";
+    }
+
     /**
      * 根据业务场景指令同步相关信息
      *

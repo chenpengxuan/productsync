@@ -35,4 +35,10 @@ public interface SyncCommandFacade {
      * 补单操作
      */
     void compensateCommand();
+
+    /**
+     * 点火
+     * @return
+     */
+    String warmUp();
 }
