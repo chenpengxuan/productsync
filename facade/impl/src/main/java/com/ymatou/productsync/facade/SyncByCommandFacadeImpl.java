@@ -110,7 +110,8 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @GET
     @Path("/{cache:(?i:cache)}/{updateproductsnapshot:(?i:updateproductsnapshot)}")
     @Override
-    @Produces({MediaType.TEXT_PLAIN})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.TEXT_PLAIN)
     public BaseResponse updateProductSnapShot(@QueryParam("productId:(?i:productId)") String productId,@QueryParam("snapshotVersion:(?i:snapshotVersion)") String snapshotVersion){
         if (productId == null
                 || productId.isEmpty()
