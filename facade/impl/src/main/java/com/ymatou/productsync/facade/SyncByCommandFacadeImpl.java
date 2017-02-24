@@ -14,7 +14,6 @@ import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import com.ymatou.productsync.infrastructure.config.props.BizProps;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import com.ymatou.productsync.infrastructure.util.Utils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +124,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
         List<Map<String,Object>> updateData = new ArrayList<>();
         Map<String,Object> tempMap = new HashMap();
         tempMap.put("ver",snapshotVersion);
-        tempMap.put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+        tempMap.put("verupdate", Utils.getNow());
         updateData.add(tempMap);
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),updateData));
         try{
