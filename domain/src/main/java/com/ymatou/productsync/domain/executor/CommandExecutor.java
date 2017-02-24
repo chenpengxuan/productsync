@@ -39,21 +39,25 @@ public class CommandExecutor {
      * @param transactionId 业务凭据id
      */
     public void updateTransactionInfo(int transactionId, SyncStatusEnum status){
-        TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
-        if(transactionInfo == null){
-            logger.error("没有找到对应的业务凭据信息，transactionId为{},",transactionId);
-            return;
-        }
-        //针对是失败状态
-        transactionInfo.setNewRetryTimes(
-        transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()//业务异常
-        || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode()//系统异常
-        ? transactionInfo.getNewRetryTimes() + 1:transactionInfo.getNewRetryTimes());
-        transactionInfo.setNewTranStatus(status.getCode());
-        transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+        try {
+            TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
+            if (transactionInfo == null) {
+                logger.error("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
+                return;
+            }
+            //针对是失败状态
+            transactionInfo.setNewRetryTimes(
+                    transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()//业务异常
+                            || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode()//系统异常
+                            ? transactionInfo.getNewRetryTimes() + 1 : transactionInfo.getNewRetryTimes());
+            transactionInfo.setNewTranStatus(status.getCode());
+            transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
 
-        if(commandQuery.updateTransactionInfo(transactionInfo) <= 0){
-            logger.error("更新商品业务凭据发生异常，transactionId为{},",transactionId);
+            if (commandQuery.updateTransactionInfo(transactionInfo) <= 0) {
+                logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId);
+            }
+        }catch (Exception ex){
+            logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId,ex);
         }
     }
 

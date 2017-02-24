@@ -1,8 +1,7 @@
 package com.ymatou.productsync.test.domain;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.commandconfig.*;
-import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
+import com.ymatou.productsync.domain.executor.commandconfig.CatalogStockChangeExecutorConfig;
 import com.ymatou.productsync.domain.sqlrepo.TestCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
@@ -47,8 +46,8 @@ public class CatalogStockChangeTest {
     @Test
     public void testCatalogStockChangeException() {
         SyncByCommandReq req = new SyncByCommandReq();
-//        #2 不存在的商品规格库存测试
-        req.setProductId("7577884f-8606-4571-ba52-4881e89e660cc");
+//        #2 超多规格库存测试
+        req.setProductId("520f6853-08c3-42be-8e3b-ec0b171ae6c1");
         try {
             boolean success1 = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
         } catch (BizException ex) {
