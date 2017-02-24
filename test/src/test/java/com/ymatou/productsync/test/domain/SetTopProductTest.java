@@ -54,15 +54,11 @@ public class SetTopProductTest {
         Asserts.check(success2, "正常取消设置橱窗推荐产品fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     //#3操作不存在的商品
     public void testSetTopProductExeception() {
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId("edc21ac6-5fc9-494c-9f36-110b841f75a00");
-        try {
-            boolean success3 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        boolean success3 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
     }
 }

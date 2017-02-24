@@ -44,18 +44,14 @@ public class ProductPutoutTest {
         Asserts.check(check, "");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testProductPutoutException() {
         //不带直播id场景
-        try {
-            String productId2 = "c1ba2ba5-ee5b-4139-8731-99127715ffb0";
-            SyncByCommandReq req2 = new SyncByCommandReq();
-            req2.setProductId(productId2);
-            //List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);
-            boolean checkOk = commandExecutor.executeCommand(req2, productPutoutExecutorConfig);
-            Asserts.check(checkOk, "");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        String productId2 = "c1ba2ba5-ee5b-4139-8731-99127715ffb0";
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId2);
+        //List<MongoData> update2= productPutoutExecutorConfig.loadSourceData(0,productId);
+        boolean checkOk = commandExecutor.executeCommand(req2, productPutoutExecutorConfig);
+        Asserts.check(checkOk, "");
     }
 }

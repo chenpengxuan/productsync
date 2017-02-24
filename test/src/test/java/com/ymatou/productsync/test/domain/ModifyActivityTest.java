@@ -38,18 +38,14 @@ public class ModifyActivityTest {
         Asserts.check(isOk, "修改直播fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testModifyActivityException() {
         //无效的直播Id
-        try {
-            long activityId2 = 0;
-            SyncByCommandReq req2 = new SyncByCommandReq();
-            req2.setActivityId(activityId2);
-            boolean isOk2 = commandExecutor.executeCommand(req2, modifyActivityExecutorConfig);
-            Asserts.check(!isOk2, "");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        long activityId2 = 0;
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setActivityId(activityId2);
+        boolean isOk2 = commandExecutor.executeCommand(req2, modifyActivityExecutorConfig);
+        Asserts.check(!isOk2, "");
     }
 
     @Test

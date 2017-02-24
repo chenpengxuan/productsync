@@ -43,18 +43,14 @@ public class ProductStockChangeTest {
         Asserts.check(check, "测试商品库存增减,价格修改fail!");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void TestProductStockChangeException() {
         //不存在的商品id，exception
-        try {
-            String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
-            SyncByCommandReq req2 = new SyncByCommandReq();
-            req2.setProductId(productId2);
-            //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
-            boolean check2 = commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
-            Asserts.check(!check2, "测试不存在的商品id商品库存增减,价格修改fail!");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId2);
+        //List<MongoData> update2 = productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check2 = commandExecutor.executeCommand(req2, productStockChangeExecutorConfig);
+        Asserts.check(!check2, "测试不存在的商品id商品库存增减,价格修改fail!");
     }
 }

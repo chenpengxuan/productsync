@@ -82,7 +82,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //创建规格信息 先删除再更新
-        mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId),null));
+        mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), null));
         mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList, new String[]{"name", "pic", "value"}, "props", "cid")));
 
         //创建商品图文描述信息
@@ -92,7 +92,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         tempDescMap.put("pics", sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
         sqlProductDescDataList.clear();
         sqlProductDescDataList.add(tempDescMap);
-        mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId),sqlProductDescDataList));
+        mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景
         if (activityId > 0) {
@@ -109,10 +109,10 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempLiveProductMap.put("brand", productMap.get("brand"));
             tempLiveProductMap.put("ebrand", productMap.get("ebrand"));
             tempLiveProductMap.put("comments", 0);
-            mongoDataList.add(MongoDataBuilder.createProductLiveUpsert(MongoQueryBuilder.queryProductIdAndLiveId(productId,activityId),sqlProductInLiveDataList));
+            mongoDataList.add(MongoDataBuilder.createProductLiveUpsert(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), sqlProductInLiveDataList));
 
             //更新直播信息
-            Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).toArray();
+            Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
             sqlLiveDataList.clear();
             Map<String, Object> tempLiveMap = new HashMap<>();
             tempLiveMap.put("brands", brands);
