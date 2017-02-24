@@ -35,9 +35,7 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
             throw new BizException(ErrorCode.BIZFAIL, "getProductStockInfo为空");
         }
             sqlDataList.parallelStream().forEach(t -> {
-                String cid = t.get("cid").toString();
-                Map<String, Object> conditions = MongoQueryBuilder.queryProductId(productId);
-                conditions.put("cid", cid);
+                Map<String, Object> conditions = MongoQueryBuilder.queryProductIdAndCatalogId(productId,t.get("cid").toString());
                 mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(t)));
             });
         return mongoDataList;

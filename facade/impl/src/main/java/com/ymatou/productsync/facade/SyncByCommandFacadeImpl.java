@@ -14,7 +14,6 @@ import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import com.ymatou.productsync.infrastructure.config.props.BizProps;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import com.ymatou.productsync.infrastructure.util.Utils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,9 +108,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      */
     @GET
     @Path("/{cache:(?i:cache)}/{updateproductsnapshot:(?i:updateproductsnapshot)}")
-    @Override
     @Produces(MediaType.APPLICATION_JSON)
-    public BaseResponse updateProductSnapShot(@QueryParam("productId:(?i:productId)") String productId,@QueryParam("snapshotVersion:(?i:snapshotVersion)") String snapshotVersion){
+    @Override
+    public BaseResponse updateProductSnapShot(@QueryParam("productId") String productId,@QueryParam("snapshotVersion") String snapshotVersion){
         if (productId == null
                 || productId.isEmpty()
                 || snapshotVersion == null
@@ -125,7 +124,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
         List<Map<String,Object>> updateData = new ArrayList<>();
         Map<String,Object> tempMap = new HashMap();
         tempMap.put("ver",snapshotVersion);
-        tempMap.put("verupdate", new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
+        tempMap.put("verupdate", Utils.getNow());
         updateData.add(tempMap);
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),updateData));
         try{
@@ -146,6 +145,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     public void compensateCommand(){
         List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
         if(transactionInfoList != null && !transactionInfoList.isEmpty()){
+            DEFAULT_LOGGER.info ("compensateCount is  "+transactionInfoList.size());
             List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
                 SyncByCommandReq tempReq = new SyncByCommandReq();
                 tempReq.setTransactionId(x.getTransactionId());
@@ -157,6 +157,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             CompletableFuture.runAsync(() ->
                     syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq))
             );
+        }else
+        {
+              DEFAULT_LOGGER.info ("compensateCount is 0 ");
         }
     }
 
