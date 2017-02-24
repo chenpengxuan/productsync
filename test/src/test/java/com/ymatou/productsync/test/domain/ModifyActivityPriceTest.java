@@ -45,31 +45,21 @@ public class ModifyActivityPriceTest {
         Asserts.check(success1, "测试正常修改商品活动价fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testModifyActivityPriceNpException() {
 //        #2测试活动商品没有的情况
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(0);
-        try {
-            boolean success2 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
-            Asserts.check(success2, "测试活动商品没有的情况fail！");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        boolean success2 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testModifyActivityPriceNcException() {
 //        #3测试活动商品规格没有的情况
         SyncByCommandReq req = new SyncByCommandReq();
         List<Map<String, Object>> query3 = commandQuery.getInvalidActivityProduct();
         Map<String, Object> prod1 = query3.stream().findFirst().orElse(Collections.emptyMap());
         req.setActivityId(Integer.parseInt(prod1.get("iProductInActivityId").toString()));
-        try {
-            boolean success3 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
-            Asserts.check(success3, "测试活动商品规格没有的情况fail!");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        boolean success3 = commandExecutor.executeCommand(req, modifyActivityPriceExecutorConfig);
     }
 }

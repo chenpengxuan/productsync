@@ -44,15 +44,11 @@ public class CatalogStockChangeTest {
         Asserts.check(success, "正常商品规格库存测试fail!");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testCatalogStockChangeException() {
         SyncByCommandReq req = new SyncByCommandReq();
 //        #2 不存在的商品规格库存测试
         req.setProductId("7577884f-8606-4571-ba52-4881e89e660cc");
-        try {
-            boolean success1 = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        boolean success1 = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
     }
 }

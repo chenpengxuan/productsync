@@ -49,17 +49,12 @@ public class DeleteProductTest {
         Asserts.check(checkOk, "从直播中删除商品fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testDeleteProductException() {
         //pc删商品,不带直播id
-        try {
-            String productId2 = "7577884f-8606-4571-ba52-4881e89e660c";
-            SyncByCommandReq req2 = new SyncByCommandReq();
-            req2.setProductId(productId2);
-            boolean checkRet = commandExecutor.executeCommand(req2, deleteProductExecutorConfig);
-            Asserts.check(checkRet, "从直播中删除商品fail！");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        String productId2 = "7577884f-8606-4571-ba52-4881e89e660c";
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId2);
+        boolean checkRet = commandExecutor.executeCommand(req2, deleteProductExecutorConfig);
     }
 }

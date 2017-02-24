@@ -1,4 +1,5 @@
 package com.ymatou.productsync.test.domain;
+
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.AutoOnShelfProductExecutorConfig;
 import com.ymatou.productsync.domain.executor.commandconfig.BatchSetOnShelfExecutorConfig;
@@ -18,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Created by zhangyong on 2017/2/22.
  */
@@ -55,16 +57,11 @@ public class ModifyBrandAndCategoryTest {
         Asserts.check(success2, "直播商品修改分类品牌fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testModifyBrandAndCategoryException() {
         SyncByCommandReq req = new SyncByCommandReq();
 //        #3不存在商品
         req.setProductId("7577884f-8606-4571-ba52-4881e89e660cc");
-        try {
-            commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
-        } catch (
-                BizException ex) {
-            Asserts.check(true, "");
-        }
+        commandExecutor.executeCommand(req, modifyBrandAndCategoryExecutorConfig);
     }
 }

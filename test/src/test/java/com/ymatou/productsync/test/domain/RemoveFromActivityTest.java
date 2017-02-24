@@ -42,20 +42,16 @@ public class RemoveFromActivityTest {
         Asserts.check(check, "测试商品移除直播fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testRemoveFromActivityException() {
-        try {
-            //测试一个不存在的直播id
-            long activityId2 = 1;
-            String productId = "5fbcbc07-16fc-4186-9729-90ba7ba53e57";
-            SyncByCommandReq req2 = new SyncByCommandReq();
-            req2.setProductId(productId);
-            req2.setActivityId(activityId2);
-            //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
-            boolean check2 = commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
-            Asserts.check(check2, "测试一个不存在的直播,商品移除直播fail");
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        //测试一个不存在的直播id
+        long activityId2 = 1;
+        String productId = "5fbcbc07-16fc-4186-9729-90ba7ba53e57";
+        SyncByCommandReq req2 = new SyncByCommandReq();
+        req2.setProductId(productId);
+        req2.setActivityId(activityId2);
+        //List<MongoData> update= productStockChangeExecutorConfig.loadSourceData(0,productId);
+        boolean check2 = commandExecutor.executeCommand(req2, removeFromActivityExecutorConfig);
+        Asserts.check(check2, "测试一个不存在的直播,商品移除直播fail");
     }
 }
