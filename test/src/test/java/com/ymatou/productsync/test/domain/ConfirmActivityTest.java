@@ -42,16 +42,12 @@ public class ConfirmActivityTest {
         Asserts.check(issucess, "测试确认直播车fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testConfirmActivityException() {
         SyncByCommandReq req = new SyncByCommandReq();
         //#2sql没有的直播
         long nActivityId = 1572420;
         req.setActivityId(nActivityId);
-        try {
-            commandExecutor.executeCommand(req, confirmActivityExecutorConfig);
-        } catch (BizException ex) {
-            Asserts.check(ex.getMessage() == "getActivityInfo为空", "测试没有的直播确认fail！");
-        }
+        commandExecutor.executeCommand(req, confirmActivityExecutorConfig);
     }
 }

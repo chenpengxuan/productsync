@@ -26,6 +26,11 @@ public class BizProps {
      */
     private int retryLimit;
 
+    /**
+     * 业务异常告警开关
+     */
+    private boolean bizExceptionWarning;
+
     @DisconfFileItem(name = "readCount")
     public int getReadCount() {
         return readCount;
@@ -51,5 +56,14 @@ public class BizProps {
 
     public void setRetryLimit(int retryLimit) {
         this.retryLimit = retryLimit;
+    }
+
+    @DisconfFileItem(name = "bizExceptionWarning")
+    public boolean isBizExceptionWarning() {
+        return bizExceptionWarning;
+    }
+
+    public void setBizExceptionWarning(boolean bizExceptionWarning) {
+        this.bizExceptionWarning = bizExceptionWarning;
     }
 }

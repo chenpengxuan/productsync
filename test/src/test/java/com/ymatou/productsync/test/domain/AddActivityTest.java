@@ -42,16 +42,12 @@ public class AddActivityTest {
         Asserts.check(issuccess, "测试添加直播fail!");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testAddActivityException() {
         //#2sql没有的直播
         SyncByCommandReq req = new SyncByCommandReq();
         long nActivityId = 1572420;
         req.setActivityId(nActivityId);
-        try {
-            commandExecutor.executeCommand(req, addActivityExecutorConfig);
-        } catch (BizException ex) {
-            Asserts.check(ex.getMessage() == "getActivityInfo为空", "操作不存在的直播添加测试fail！");
-        }
+        commandExecutor.executeCommand(req, addActivityExecutorConfig);
     }
 }

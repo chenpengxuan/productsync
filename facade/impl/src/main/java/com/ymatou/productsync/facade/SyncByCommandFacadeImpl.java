@@ -11,6 +11,7 @@ import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
+import com.ymatou.productsync.infrastructure.config.props.BizProps;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.joda.time.DateTime;
@@ -59,6 +60,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      */
     @Autowired
     private MessageBusDispatcher messageBusDispatcher;
+
+    @Autowired
+    private BizProps bizProps;
 
     @Override
     @GET
@@ -186,7 +190,11 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             return BaseResponse.newSuccessInstance();
         } catch (BizException bizException) {
             executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
-            DEFAULT_LOGGER.error("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(),bizException);
+            if(bizProps.isBizExceptionWarning()) {
+                DEFAULT_LOGGER.error("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
+            }else{
+                DEFAULT_LOGGER.debug("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
+            }
             BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
         }
         //执行成功的并且是商品相关操作

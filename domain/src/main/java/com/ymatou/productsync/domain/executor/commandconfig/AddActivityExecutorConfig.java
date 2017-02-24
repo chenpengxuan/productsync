@@ -39,16 +39,14 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
             }
             List<Map<String, Object>> products = commandQuery.getProductInfoByActivityId(activityId);
             if (products != null && !products.isEmpty()) {
-                products.stream().forEach(t -> t.remove("dAddTime"));
-                Object[] brands = products.parallelStream().distinct().map(t -> t.get("sBrand")).toArray();
+                Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
                 activity.put("brands", brands);
             }
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("lid", activityId);
-            mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId),sqlDataList));
-        }else
-        {
-            throw new BizException(ErrorCode.BIZFAIL,"getActivityInfo为空");
+            mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId), sqlDataList));
+        } else {
+            throw new BizException(ErrorCode.BIZFAIL, "getActivityInfo为空");
         }
         return mongoDataList;
     }

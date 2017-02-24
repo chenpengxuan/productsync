@@ -47,16 +47,12 @@ public class CreateActivityTest {
         Asserts.check(issuccess, "正常创建直播fail！");
     }
 
-    @Test
+    @Test(expected = BizException.class)
     public void testCreateActivityException() {
         //#2sql没有的直播
         SyncByCommandReq req = new SyncByCommandReq();
         long nActivityId = 1572420;
         req.setActivityId(nActivityId);
-        try {
-            commandExecutor.executeCommand(req, createActivityExecutorConfig);
-        } catch (BizException ex) {
-            Asserts.check(true, "");
-        }
+        commandExecutor.executeCommand(req, createActivityExecutorConfig);
     }
 }
