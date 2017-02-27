@@ -205,13 +205,14 @@ public interface CommandQuery {
 
     /**
      * 获取需要补单的信息
+     *
      * @param readCount
      * @param timeLimit
      * @param retryLimit
      * @return
      */
     @TargetDataSource("productDataSource")
-    List<TransactionInfo> getCompensationInfo(@Param("readCount") int readCount,@Param("timeLimit") int timeLimit,@Param("retryLimit") int retryLimit);
+    List<TransactionInfo> getCompensationInfo(@Param("readCount") int readCount, @Param("timeLimit") int timeLimit, @Param("retryLimit") int retryLimit);
 
     /**
      * 获取商品橱窗推荐状态
@@ -221,4 +222,12 @@ public interface CommandQuery {
      */
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getProductOnOffTop(@Param("productId") String productId);
+
+    /**
+     * 根据productid获取商品开始结束时间
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductTime(@Param("productId") String productId);
 }

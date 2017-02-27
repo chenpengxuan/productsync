@@ -3,11 +3,14 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
+import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
-import net.sourceforge.jtds.jdbc.DateTime;
+import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
+import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.facade.model.ErrorCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -15,6 +18,9 @@ import java.util.*;
  */
 @Component("autoOnShelfProductExecutorConfig")
 public class AutoOnShelfProductExecutorConfig implements ExecutorConfig {
+    @Autowired
+    private CommandQuery commandQuery;
+
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.AutoOnShelf;
@@ -22,15 +28,11 @@ public class AutoOnShelfProductExecutorConfig implements ExecutorConfig {
 
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
-        Map<String, Object> matchConditionInfo = new HashMap();
-        matchConditionInfo.put("spid", productId);
-        List<Map<String, Object>> updateData = new ArrayList<>();
-        Map<String, Object> update = new HashMap();
-        Date date = new Date();
-        update.put("start", new Timestamp(date.getTime()));
-        update.put("end", new Timestamp(date.getTime() + 7 * 24 * 60 * 60 * 1000));
-        updateData.add(update);
-        mongoDataList.add(MongoDataBuilder.createProductUpdate(matchConditionInfo, updateData));
+        List<Map<String, Object>> sqlDataList = commandQuery.getProductTime(productId);
+        if (sqlDataList == null || sqlDataList.isEmpty()) {
+            throw new BizException(ErrorCode.BIZFAIL, "getProductTime 为空");
+        }
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
         return mongoDataList;
     }
 }

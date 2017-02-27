@@ -41,7 +41,7 @@ public class AutoOnShelfTest {
         Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
         SyncByCommandReq req = new SyncByCommandReq();
         //req.setProductId(prod.get("sProductId").toString());
-        req.setProductId("a8d61674-ddcf-4d5c-af3d-9a7ddba00923");
+        req.setProductId("c1ba2ba5-ee5b-4139-8731-99127715ffb0");
         boolean success = commandExecutor.executeCommand(req, autoOnShelfProductExecutorConfig);
         Asserts.check(success, "测试商品自动上架fail！");
     }

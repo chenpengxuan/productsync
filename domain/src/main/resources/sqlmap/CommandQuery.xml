@@ -361,7 +361,7 @@ SELECT  DISTINCT
     <select id="getProductUser" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         select  iUserId as 'userId'
-        from Ymt_Products
+        from Ymt_Products WITH(NOLOCK)
         WHERE iAction =0 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
 
@@ -423,5 +423,10 @@ SELECT  DISTINCT
         SELECT CAST ((CASE IsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'
         FROM dbo.Ymt_Products
         WHERE sProductId= #{productId}
+    </select>
+
+    <!--根据productid获取商品开始结束时间-->
+    <select id="getProductTime" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+        select validStart as 'start',validEnd  as 'end' from Ymt_Products with(nolock) where sProductId =#{productId}
     </select>
 </mapper>
