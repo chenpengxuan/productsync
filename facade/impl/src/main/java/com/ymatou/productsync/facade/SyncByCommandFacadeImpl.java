@@ -159,7 +159,10 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                     return tempReq;
                 }).collect(Collectors.toList());
                 CompletableFuture.runAsync(() ->
-                        syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq))
+                        syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> {
+                            executor.updateTransactionInfo(syncByCommandReq.getTransactionId());
+                            executeCommand(syncByCommandReq);
+                        })
                 );
             } else {
                 DEFAULT_LOGGER.info("compensateCount is 0 ");
