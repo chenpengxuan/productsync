@@ -399,9 +399,9 @@ SELECT  DISTINCT
         FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
         WHERE
         <![CDATA[
-        ([NewTranStatus] = 0 AND CreateTime < DATEADD(MINUTE,${timeLimit},GETDATE()))
+        (([NewTranStatus] = 0 AND CreateTime < DATEADD(MINUTE,${timeLimit},GETDATE()))
         OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
-        AND [NewRetryTimes] <= ${retryLimit}
+        AND [NewRetryTimes] <= ${retryLimit})
         ]]>
         AND CreateTime > DATEADD(HOUR,${timeLimit},GETDATE())
         ORDER BY CreateTime DESC
