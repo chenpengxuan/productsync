@@ -38,9 +38,9 @@ public class UpdateProductsInfoExecutorConfig implements ExecutorConfig{
             throw new BizException(ErrorCode.BIZFAIL,"getProductDescInfo为空");
         }
         Map<String, Object> tempMap = new HashMap<>();
-        tempMap.putAll(sqlProductDescDataList.parallelStream().findFirst().orElse(Collections.emptyMap()));
+        tempMap.putAll(sqlProductDescDataList.stream().findFirst().orElse(Collections.emptyMap()));
         tempMap.remove("pic");
-        tempMap.put("pics", sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
+        tempMap.put("pics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
         sqlProductDescDataList.clear();
         sqlProductDescDataList.add(tempMap);
         List<MongoData> mongoDataList = new ArrayList<>();

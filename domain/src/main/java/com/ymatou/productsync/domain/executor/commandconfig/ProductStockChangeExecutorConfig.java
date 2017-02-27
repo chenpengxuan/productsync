@@ -42,7 +42,7 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         }
         final double[] minPrice = {Double.MAX_VALUE};
         final double[] maxPrice = {Double.MIN_VALUE};
-        catalogList.parallelStream().forEach(catalog -> {
+        catalogList.stream().forEach(catalog -> {
             double price = Double.parseDouble(catalog.get("price").toString());
             minPrice[0] = Double.min(price, minPrice[0]);
             maxPrice[0] = Double.max(price, maxPrice[0]);

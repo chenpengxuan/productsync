@@ -46,7 +46,7 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
         if (products != null && !products.isEmpty()) {
             products.stream().forEach(t -> t.remove("dAddTime"));
-            Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+            Object[] brands = products.stream().map(t -> t.get("sBrand")).distinct().toArray();
             lives.put("brands", brands);
         }
         else{

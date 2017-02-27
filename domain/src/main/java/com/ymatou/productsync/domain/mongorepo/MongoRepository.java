@@ -153,13 +153,13 @@ public class MongoRepository {
                         }
                         break;
                     case UPDATE:
-                        processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
+                        processResult = !mongoData.getUpdateData().stream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
                                 .multi()
                                 .with(MapUtil.makeObjFromMap(xData))
                                 .getN() > 0).collect(Collectors.toList()).contains(false);
                         break;
                     case UPSERT:
-                        processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
+                        processResult = !mongoData.getUpdateData().stream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
                                 .upsert()
                                 .with(MapUtil.makeObjFromMap(xData))
                                 .getN() > 0).collect(Collectors.toList()).contains(false);

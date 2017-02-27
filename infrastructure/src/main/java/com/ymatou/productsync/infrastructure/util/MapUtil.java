@@ -82,7 +82,7 @@ public class MapUtil {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
         }
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
-        return mapList.parallelStream().map(x -> JSON.toJSON(x)).toArray();
+        return mapList.stream().map(x -> JSON.toJSON(x)).toArray();
     }
 
     /**
@@ -92,7 +92,7 @@ public class MapUtil {
      * @return
      */
     public static List<Map<String, Object>> mapToList(Map<String, Object> map) {
-        return Stream.of(map).parallel().collect(Collectors.toList());
+        return Stream.of(map).collect(Collectors.toList());
     }
 
 
@@ -105,7 +105,7 @@ public class MapUtil {
      */
     public static void mapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
         if (mapList == null) {return;}
-        Map<String, Object> map = mapList.parallelStream().findFirst().orElse(Collections.emptyMap());
+        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
         if (map != null && map.containsKey(field)) {
             map.replace(field, map.get(field), map.get(field).toString().split(seperator));
         }
@@ -143,7 +143,7 @@ public class MapUtil {
                 }
                 tempDataList.add(tempMap);
             } else {
-                List<Map<String, Object>> tempNestedDataList = (List<Map<String, Object>>) tempDataList.parallelStream()
+                List<Map<String, Object>> tempNestedDataList = (List<Map<String, Object>>) tempDataList.stream()
                         .filter(x -> x.containsValue(data.get(checkKey))).findFirst()
                         .orElse(Collections.emptyMap()).get(nestedObjKey);
                 Map<String, Object> tempPropertyMap = new HashMap<>();

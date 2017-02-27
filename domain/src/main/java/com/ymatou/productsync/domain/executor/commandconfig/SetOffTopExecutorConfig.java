@@ -52,7 +52,7 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
 //            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductInfoByActivityId 为空");
 //        }
 //        products.stream().forEach(t -> t.remove("dAddTime"));
-//        Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+//        Object[] brands = products.stream().map(t -> t.get("sBrand")).distinct().toArray();
 //        lives.put("brands", brands);
 //
 //        //更新直播

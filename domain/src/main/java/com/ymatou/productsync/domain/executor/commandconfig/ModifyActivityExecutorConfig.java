@@ -59,7 +59,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
         if (products != null && !products.isEmpty()) {
             products.stream().forEach(t -> t.remove("dAddTime"));
-            Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+            Object[] brands = products.stream().map(t -> t.get("sBrand")).distinct().toArray();
             activity.put("brands", brands);
         }
 
@@ -71,14 +71,14 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> liveProductMapList = commandQuery.getLiveProductByActivityId(activityId);
         List<Map<String, Object>> productMapList = commandQuery.getProductNewTimeByActivityId(activityId);
         if (liveProductMapList != null) {
-            liveProductMapList.parallelStream().forEach(liveProductItem -> {
+            liveProductMapList.stream().forEach(liveProductItem -> {
                 Object pid = liveProductItem.get("spid");
                 Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(pid.toString(),activityId);
                 MongoData liveProductMongoData = MongoDataBuilder.createLiveProductUpdate(liveProductCondition, MapUtil.mapToList(liveProductItem));
                 ///2.商品数据更新
-                if (productMapList != null && productMapList.parallelStream().anyMatch(p -> p.containsValue(pid))) {
+                if (productMapList != null && productMapList.stream().anyMatch(p -> p.containsValue(pid))) {
                     Map<String, Object> pidCondition = MongoQueryBuilder.queryProductId(pid.toString());
-                    List<Map<String, Object>> productData = productMapList.parallelStream().filter(p -> p.containsValue(pid)).collect(Collectors.toList());
+                    List<Map<String, Object>> productData = productMapList.stream().filter(p -> p.containsValue(pid)).collect(Collectors.toList());
                     MongoData productMongoData = MongoDataBuilder.createProductUpdate(pidCondition, productData);
                     mongoDataList.add(productMongoData);
                 }

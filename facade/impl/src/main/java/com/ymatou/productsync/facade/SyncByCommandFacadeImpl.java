@@ -150,7 +150,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
             if (transactionInfoList != null && !transactionInfoList.isEmpty()) {
                 DEFAULT_LOGGER.info("compensateCount is  " + transactionInfoList.size());
-                List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
+                List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.stream().map(x -> {
                     SyncByCommandReq tempReq = new SyncByCommandReq();
                     tempReq.setTransactionId(x.getTransactionId());
                     tempReq.setActivityId(x.getLiveId());
@@ -159,7 +159,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                     return tempReq;
                 }).collect(Collectors.toList());
                 CompletableFuture.runAsync(() ->
-                        syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> {
+                        syncByCommandReqList.stream().forEach(syncByCommandReq -> {
                             executor.updateTransactionInfo(syncByCommandReq.getTransactionId());
                             executeCommand(syncByCommandReq);
                         })

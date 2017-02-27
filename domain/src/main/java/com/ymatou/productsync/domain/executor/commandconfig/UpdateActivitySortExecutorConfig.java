@@ -40,7 +40,7 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig{
             throw new BizException(ErrorCode.BIZFAIL,"getProductsLiveSort为空");
         }
         List<MongoData> mongoDataList = new ArrayList<>();
-        sortInfoList.parallelStream().forEach(sortInfo -> {
+        sortInfoList.stream().forEach(sortInfo -> {
             List<Map<String,Object>> tempUpdateData = new ArrayList<>();
             Map<String,Object> tempMap = new HashMap();
             tempMap.put("sort",sortInfo.get("sort"));

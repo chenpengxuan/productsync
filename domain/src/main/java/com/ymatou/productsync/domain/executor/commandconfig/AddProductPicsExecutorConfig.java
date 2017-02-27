@@ -40,10 +40,10 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
             throw new BizException(ErrorCode.BIZFAIL, "getProductPictureList 为空");
         }
 
-        Object[] pics = tempSqlDataList.parallelStream().map(t -> t.get("pics")).toArray();
+        Object[] pics = tempSqlDataList.stream().map(t -> t.get("pics")).toArray();
         tempSqlDataList.stream().findFirst().orElse(Collections.emptyMap()).replace("pics", pics);
         List<Map<String,Object>> sqlDataList = new ArrayList<>();
-        sqlDataList.add(tempSqlDataList.parallelStream().findFirst().orElse(Collections.emptyMap()));
+        sqlDataList.add(tempSqlDataList.stream().findFirst().orElse(Collections.emptyMap()));
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
         return mongoDataList;
     }

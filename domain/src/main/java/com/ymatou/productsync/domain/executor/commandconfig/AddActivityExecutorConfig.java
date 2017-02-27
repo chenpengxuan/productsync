@@ -28,18 +28,18 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getActivityInfo(activityId);
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
-            Map<String, Object> activity = sqlDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
+            Map<String, Object> activity = sqlDataList.stream().findFirst().orElse(Collections.emptyMap());
             int countryId = Integer.parseInt(activity.get("iCountryId").toString());
             activity.remove("iCountryId");
             List<Map<String, Object>> country = commandQuery.getCountryInfo(countryId);
             if (country != null && !country.isEmpty()) {
-                Map<String, Object> con = country.parallelStream().findFirst().orElse(Collections.emptyMap());
+                Map<String, Object> con = country.stream().findFirst().orElse(Collections.emptyMap());
                 activity.put("country", con.get("sCountryNameZh"));
                 activity.put("flag", con.get("sFlag"));
             }
             List<Map<String, Object>> products = commandQuery.getProductInfoByActivityId(activityId);
             if (products != null && !products.isEmpty()) {
-                Object[] brands = products.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+                Object[] brands = products.stream().map(t -> t.get("sBrand")).distinct().toArray();
                 activity.put("brands", brands);
             }
             Map<String, Object> matchConditionInfo = new HashMap();

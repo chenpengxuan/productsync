@@ -75,9 +75,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         tempProductDataMap.replace("newdesc", tempProductDataMap.get("newdesc"), ((int) tempProductDataMap.get("newdesc")) == 1);
         //针对添加商品进直播的情况不能覆盖版本号,如果商品已经存在的话，则不更新商品快照信息
         if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
-                .parallelStream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1001");
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", Utils.getNow());
+                .stream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
+            sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap()).put("ver", "1001");
+            sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap()).put("verupdate", Utils.getNow());
         }
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
@@ -87,9 +87,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
 
         //创建商品图文描述信息
         Map<String, Object> tempDescMap = new HashMap<>();
-        tempDescMap.putAll(sqlProductDescDataList.parallelStream().findFirst().orElse(Collections.emptyMap()));
+        tempDescMap.putAll(sqlProductDescDataList.stream().findFirst().orElse(Collections.emptyMap()));
         tempDescMap.remove("pic");
-        tempDescMap.put("pics", sqlProductDescDataList.parallelStream().map(x -> x.get("pic")).toArray());
+        tempDescMap.put("pics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
         sqlProductDescDataList.clear();
         sqlProductDescDataList.add(tempDescMap);
         mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
@@ -97,8 +97,8 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //针对添加是商品进直播与直播中添加商品的场景
         if (activityId > 0) {
             //创建直播商品信息
-            Map<String, Object> tempLiveProductMap = sqlProductInLiveDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
-            Map<String, Object> productMap = sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap());
+            Map<String, Object> tempLiveProductMap = sqlProductInLiveDataList.stream().findFirst().orElse(Collections.emptyMap());
+            Map<String, Object> productMap = sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap());
             tempLiveProductMap.put("bid", productMap.get("bid"));
             tempLiveProductMap.put("mcatid", productMap.get("mcatid"));
             tempLiveProductMap.put("mcatname", productMap.get("mcatname"));
@@ -112,7 +112,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             mongoDataList.add(MongoDataBuilder.createProductLiveUpsert(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), sqlProductInLiveDataList));
 
             //更新直播信息
-            Object[] brands = sqlLiveDataList.parallelStream().map(t -> t.get("sBrand")).distinct().toArray();
+            Object[] brands = sqlLiveDataList.stream().map(t -> t.get("sBrand")).distinct().toArray();
             sqlLiveDataList.clear();
             Map<String, Object> tempLiveMap = new HashMap<>();
             tempLiveMap.put("brands", brands);

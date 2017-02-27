@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
+import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
@@ -12,7 +13,10 @@ import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 修改分类品牌
@@ -38,12 +42,11 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
         }
         List<Map<String, Object>> liveproducts = commandQuery.getValidLiveByProductId(productId);
         if (liveproducts != null && !liveproducts.isEmpty()) {
-            Object[] activityids = liveproducts.parallelStream().map(t -> t.get("iActivityId")).toArray();
-            Arrays.stream(activityids).parallel().forEach(t -> {
+            Lists.newArrayList(liveproducts.stream().map(t -> t.get("iActivityId")).iterator()).stream().forEach(t -> {
                 Long lid = Long.parseLong(t.toString());
                 List<Map<String, Object>> products = commandQuery.getProductInfoByActivityIdForBrandAndCategory(lid);
-                Object[] brands = products.parallelStream().distinct().map(x -> Strings.isNullOrEmpty(x.get("sBrand").toString()) ? x.get("sBrandEn") : x.get("sBrand")).toArray();
-                Map<String, Object> liveproduct = liveproducts.parallelStream().findFirst().orElse(Collections.emptyMap());
+                Object[] brands = products.stream().distinct().map(x -> Strings.isNullOrEmpty(x.get("sBrand").toString()) ? x.get("sBrandEn") : x.get("sBrand")).toArray();
+                Map<String, Object> liveproduct = liveproducts.stream().findFirst().orElse(Collections.emptyMap());
                 liveproduct.remove("iActivityId");
                 liveproduct.put("brands", brands);// FIXME: 2017/2/8  需要测试(brands == null || brands.Count() == 0) ? null : brands)
                 mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(lid), liveproducts));
