@@ -144,25 +144,31 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @GET
     @Path("/{cache:(?i:cache)}/{compensatecommand:(?i:compensatecommand)}")
     @Override
-    public void compensateCommand(){
-        List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
-        if(transactionInfoList != null && !transactionInfoList.isEmpty()){
-            DEFAULT_LOGGER.info ("compensateCount is  "+transactionInfoList.size());
-            List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
-                SyncByCommandReq tempReq = new SyncByCommandReq();
-                tempReq.setTransactionId(x.getTransactionId());
-                tempReq.setActivityId(x.getLiveId());
-                tempReq.setProductId(x.getProductId());
-                tempReq.setActionType(x.getActionType());
-                return tempReq;
-            }).collect(Collectors.toList());
-            CompletableFuture.runAsync(() ->
-                    syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq))
-            );
-        }else
-        {
-              DEFAULT_LOGGER.info ("compensateCount is 0 ");
+    @Produces(MediaType.APPLICATION_JSON)
+    public BaseResponse compensateCommand(){
+        try {
+            List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
+            if (transactionInfoList != null && !transactionInfoList.isEmpty()) {
+                DEFAULT_LOGGER.info("compensateCount is  " + transactionInfoList.size());
+                List<SyncByCommandReq> syncByCommandReqList = transactionInfoList.parallelStream().map(x -> {
+                    SyncByCommandReq tempReq = new SyncByCommandReq();
+                    tempReq.setTransactionId(x.getTransactionId());
+                    tempReq.setActivityId(x.getLiveId());
+                    tempReq.setProductId(x.getProductId());
+                    tempReq.setActionType(x.getActionType());
+                    return tempReq;
+                }).collect(Collectors.toList());
+                CompletableFuture.runAsync(() ->
+                        syncByCommandReqList.parallelStream().forEach(syncByCommandReq -> executeCommand(syncByCommandReq))
+                );
+            } else {
+                DEFAULT_LOGGER.info("compensateCount is 0 ");
+            }
+        }catch (Exception ex){
+            DEFAULT_LOGGER.error("补单发生异常",ex);
+            return BaseResponse.newFailInstance(ErrorCode.FAIL);
         }
+        return BaseResponse.newSuccessInstance();
     }
 
     /**
