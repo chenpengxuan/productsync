@@ -2,8 +2,6 @@ package com.ymatou.productsync.test.domain;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.executor.commandconfig.ModifyActivityExecutorConfig;
-import com.ymatou.productsync.domain.executor.commandconfig.ModifyActivityPriceExecutorConfig;
-import com.ymatou.productsync.domain.sqlrepo.TestCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;

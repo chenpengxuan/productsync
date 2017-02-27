@@ -115,7 +115,7 @@ public enum CmdTypeEnum {
     /**
      * 修改商品活动价，老库是查询的，无需修改
      */
-    ModifyActivityPrice,
+//    ModifyActivityPrice,
 
 //    直播部分
     /**

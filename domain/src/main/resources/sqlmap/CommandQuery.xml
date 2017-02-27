@@ -296,6 +296,7 @@ SELECT  DISTINCT
                     from Ymt_Catalogs WITH(NOLOCK)
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
+
     <!--取待同步的活动商品 -->
     <select id="getActivityProducts" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 

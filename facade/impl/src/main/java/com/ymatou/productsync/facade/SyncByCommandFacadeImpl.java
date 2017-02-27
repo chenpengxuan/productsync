@@ -142,7 +142,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      * 补单功能
      */
     @GET
-    @Path("/{cache:(?i:cache)}/{compensateCommand:(?i:compensateCommand)}")
+    @Path("/{cache:(?i:cache)}/{compensatecommand:(?i:compensatecommand)}")
     @Override
     public void compensateCommand(){
         List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
@@ -213,7 +213,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                 }
             }
             return BaseResponse.newFailInstance(ErrorCode.FAIL);
-        },"QuerySqlData_" + config.getCommand().name(), Constants.APP_ID);
+        },"QuerySqlData_" + (config != null ? config.getCommand().name():""), Constants.APP_ID);
         return result;
     }
 }
