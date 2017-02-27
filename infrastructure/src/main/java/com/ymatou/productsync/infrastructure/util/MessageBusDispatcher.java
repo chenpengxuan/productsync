@@ -29,7 +29,7 @@ public class MessageBusDispatcher {
      * @param actionType
      * @throws MessageBusException
      */
-    public void PublishAsync(String productId, String actionType) throws MessageBusException {
+    public void publishAsync(String productId, String actionType) throws MessageBusException {
         Message publishMessage = new Message();
         publishMessage.setAppId(Constants.SNAPSHOP_MQ_ID);
         publishMessage.setCode(Constants.SNAPSHOP_MQ_CODE);

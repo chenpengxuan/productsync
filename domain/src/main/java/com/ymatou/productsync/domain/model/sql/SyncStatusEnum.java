@@ -27,12 +27,6 @@ public enum SyncStatusEnum {
     INIT(0),
 
     /**
-     * 处理中
-     */
-    PROCESSING(1),
-
-
-    /**
      * 成功
      */
     SUCCESS(2),

@@ -76,7 +76,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //针对添加商品进直播的情况不能覆盖版本号,如果商品已经存在的话，则不更新商品快照信息
         if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
                 .parallelStream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
-            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1.001");
+            sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("ver", "1001");
             sqlProductDataList.parallelStream().findFirst().orElse(Collections.emptyMap()).put("verupdate", Utils.getNow());
         }
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));

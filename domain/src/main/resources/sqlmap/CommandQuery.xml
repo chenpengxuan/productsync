@@ -398,11 +398,12 @@ SELECT  DISTINCT
         ,[NewUpdateTime]
         FROM [dbo].[BusinessCredentialInfo] WITH(NOLOCK)
         WHERE
-        [NewTranStatus] = 0 AND CreateTime > DATEADD(MINUTE,${timeLimit},GETDATE())
+        <![CDATA[
+        ([NewTranStatus] = 0 AND CreateTime < DATEADD(MINUTE,${timeLimit},GETDATE()))
         OR ([NewTranStatus] = -3 OR [NewTranStatus] = -1)
-         <![CDATA[
         AND [NewRetryTimes] <= ${retryLimit}
         ]]>
+        AND CreateTime > DATEADD(HOUR,${timeLimit},GETDATE())
         ORDER BY CreateTime DESC
     </select>
 
@@ -419,6 +420,8 @@ SELECT  DISTINCT
     <!--根据productid获取商品橱窗推荐状态-->
     <select id="getProductOnOffTop"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-        SELECT CAST ((CASE IsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'  FROM dbo.Ymt_Products WHERE sProductId= #{productId}
+        SELECT CAST ((CASE IsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'
+        FROM dbo.Ymt_Products
+        WHERE sProductId= #{productId}
     </select>
 </mapper>

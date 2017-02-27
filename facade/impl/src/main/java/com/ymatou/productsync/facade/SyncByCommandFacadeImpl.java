@@ -2,6 +2,7 @@ package com.ymatou.productsync.facade;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.ymatou.messagebus.client.MessageBusException;
+import com.ymatou.performancemonitorclient.PerformanceStatisticContainer;
 import com.ymatou.productsync.domain.executor.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
@@ -12,6 +13,7 @@ import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import com.ymatou.productsync.infrastructure.config.props.BizProps;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.slf4j.Logger;
@@ -170,45 +172,48 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      */
     private BaseResponse executeCommand(SyncByCommandReq req) {
         ExecutorConfig config = executorConfigFactory.getCommand(req.getActionType());
-        if (config == null) {
-            executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
-            DEFAULT_LOGGER.info("发生业务指令异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId());
-            BaseResponse response = BaseResponse.newSuccessInstance();
-            response.setMessage("没有对应场景，场景指令不正确");
-            return response;
-        }
-        boolean syncSuccess = false;
-        try {
-            if(executor.checkNeedProcessCommand(req.getTransactionId())) {
-                syncSuccess = executor.executeCommand(req, config);
-                return syncSuccess ? BaseResponse.newSuccessInstance():BaseResponse.newFailInstance(ErrorCode.FAIL);
+        //增加定制化性能监控汇报
+        BaseResponse result = PerformanceStatisticContainer.addWithReturn(() -> {
+            if (config == null) {
+                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
+                DEFAULT_LOGGER.info("发生业务指令异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId());
+                BaseResponse response = BaseResponse.newSuccessInstance();
+                response.setMessage("没有对应场景，场景指令不正确");
+                return response;
             }
-        }catch (IllegalArgumentException argException) {
-            executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
-            DEFAULT_LOGGER.info("发生业务参数级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), argException.getMessage());
-            return BaseResponse.newSuccessInstance();
-        } catch (BizException bizException) {
-            executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
-            if(bizProps.isBizExceptionWarning()) {
-                DEFAULT_LOGGER.error("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
-            }else{
-                DEFAULT_LOGGER.debug("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
-            }
-            BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
-        }
-        //执行成功的并且是商品相关操作
-        if (syncSuccess && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
+            boolean syncSuccess = false;
             try {
-                messageBusDispatcher.PublishAsync(req.getProductId(), req.getActionType());
+                if (executor.checkNeedProcessCommand(req.getTransactionId())) {
+                    syncSuccess = executor.executeCommand(req, config);
+                    return syncSuccess ? BaseResponse.newSuccessInstance() : BaseResponse.newFailInstance(ErrorCode.FAIL);
+                }
+            } catch (IllegalArgumentException argException) {
+                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
+                DEFAULT_LOGGER.info("发生业务参数级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), argException.getMessage());
                 return BaseResponse.newSuccessInstance();
-            } catch (MessageBusException e) {
-                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.SUCCESS);
-                //目前商品部分业务相关指令消息的分发只是针对商品快照，如果发生消息总线异常，则只是记录到异常日志
-                DEFAULT_LOGGER.error("同步服务发送消息发生异常,transactionId为{},productId为{},actionType为{}",
-                        req.getTransactionId(), req.getProductId(), req.getActionType(), e);
-                return BaseResponse.newSuccessInstance();
-            } 
-        }
-        return BaseResponse.newFailInstance(ErrorCode.FAIL);
+            } catch (BizException bizException) {
+                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
+                if (bizProps.isBizExceptionWarning()) {
+                    DEFAULT_LOGGER.error("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
+                } else {
+                    DEFAULT_LOGGER.debug("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
+                }
+                return BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
+            }
+            //执行成功的并且是商品相关操作
+            if (syncSuccess && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
+                try {
+                    messageBusDispatcher.publishAsync(req.getProductId(), req.getActionType());
+                    return BaseResponse.newSuccessInstance();
+                } catch (MessageBusException e) {
+                    //目前商品部分业务相关指令消息的分发只是针对商品快照，如果发生消息总线异常，则只是记录到异常日志
+                    DEFAULT_LOGGER.error("同步服务发送消息发生异常,transactionId为{},productId为{},actionType为{}",
+                            req.getTransactionId(), req.getProductId(), req.getActionType(), e);
+                    return BaseResponse.newSuccessInstance();
+                }
+            }
+            return BaseResponse.newFailInstance(ErrorCode.FAIL);
+        },"QuerySqlData_" + config.getCommand().name(), Constants.APP_ID);
+        return result;
     }
 }

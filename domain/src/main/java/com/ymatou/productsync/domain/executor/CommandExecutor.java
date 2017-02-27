@@ -92,7 +92,6 @@ public class CommandExecutor {
      * @param config
      */
     public boolean executeCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException{
-            updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.PROCESSING);
             boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
             updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
             return isSuccess;
