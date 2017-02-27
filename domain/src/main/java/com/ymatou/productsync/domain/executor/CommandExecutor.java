@@ -38,7 +38,7 @@ public class CommandExecutor {
      *
      * @param transactionId 业务凭据id
      */
-    public void updateTransactionInfo(int transactionId, SyncStatusEnum status){
+    public void updateTransactionInfo(int transactionId, SyncStatusEnum status) {
         try {
             TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
             if (transactionInfo == null) {
@@ -56,33 +56,40 @@ public class CommandExecutor {
             if (commandQuery.updateTransactionInfo(transactionInfo) <= 0) {
                 logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId);
             }
-        }catch (Exception ex){
-            logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId,ex);
+        } catch (Exception ex) {
+            logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId, ex);
         }
     }
 
     /**
      * 获取待补单业务列表
+     *
      * @return
      */
-    public List<TransactionInfo> getCompensationInfo(){
-        return commandQuery.getCompensationInfo(bizProps.getReadCount(),bizProps.getTimeLimit(),bizProps.getRetryLimit());
+    public List<TransactionInfo> getCompensationInfo() {
+        return commandQuery.getCompensationInfo(bizProps.getReadCount(), bizProps.getMinuteLimit(), bizProps.getHourLimit(), bizProps.getRetryLimit());
     }
 
     /**
      * 检查业务凭据信息合法性
+     *
      * @param transactionId
      * @return
      */
-    public boolean checkNeedProcessCommand(int transactionId){
-        TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
-        if(transactionInfo == null){
-            logger.error("没有找到对应的业务凭据信息，transactionId为{},",transactionId);
-            return true;//如果没有找到对应的业务凭据信息，保证业务链路正常执行下去
+    public boolean checkNeedProcessCommand(int transactionId) {
+        try {
+            TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
+            if (transactionInfo == null) {
+                logger.error("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
+                return true;//如果没有找到对应的业务凭据信息，保证业务链路正常执行下去
+            }
+            return transactionInfo.getNewTranStatus() == SyncStatusEnum.INIT.getCode()
+                    || transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()
+                    || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode();
+        } catch (Exception ex) {
+            logger.error("查询业务凭据发生异常,transactionId为{},", transactionId, ex);
+            return true;
         }
-        return transactionInfo.getNewTranStatus() == SyncStatusEnum.INIT.getCode()
-                ||transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()
-                || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode();
     }
 
     /**
@@ -91,9 +98,9 @@ public class CommandExecutor {
      * @param req
      * @param config
      */
-    public boolean executeCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException,BizException{
-            boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
-            updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
-            return isSuccess;
+    public boolean executeCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException, BizException {
+        boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
+        updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
+        return isSuccess;
     }
 }

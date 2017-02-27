@@ -19,7 +19,12 @@ public class BizProps {
     /**
      * 补单初始状态重试时间限制
      */
-    private int timeLimit;
+    private int minuteLimit;
+
+    /**
+     * 补单创建时间范围限制
+     */
+    private int hourLimit;
 
     /**
      * 重试次数限制
@@ -40,15 +45,6 @@ public class BizProps {
         this.readCount = readCount;
     }
 
-    @DisconfFileItem(name = "timeLimit")
-    public int getTimeLimit() {
-        return timeLimit;
-    }
-
-    public void setTimeLimit(int timeLimit) {
-        this.timeLimit = timeLimit;
-    }
-
     @DisconfFileItem(name = "retryLimit")
     public int getRetryLimit() {
         return retryLimit;
@@ -61,6 +57,24 @@ public class BizProps {
     @DisconfFileItem(name = "bizExceptionWarning")
     public boolean isBizExceptionWarning() {
         return bizExceptionWarning;
+    }
+
+    @DisconfFileItem(name = "minuteLimit")
+    public int getMinuteLimit() {
+        return minuteLimit;
+    }
+
+    public void setMinuteLimit(int minuteLimit) {
+        this.minuteLimit = minuteLimit;
+    }
+
+    @DisconfFileItem(name = "hourLimit")
+    public int getHourLimit() {
+        return hourLimit;
+    }
+
+    public void setHourLimit(int hourLimit) {
+        this.hourLimit = hourLimit;
     }
 
     public void setBizExceptionWarning(boolean bizExceptionWarning) {

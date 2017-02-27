@@ -20,7 +20,6 @@ public enum SyncStatusEnum {
      */
     FAILED(-1),
 
-
     /**
      * 初始
      */

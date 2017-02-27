@@ -133,44 +133,49 @@ public class MongoRepository {
      * @return
      */
     private boolean processMongoData(MongoData mongoData) throws IllegalArgumentException {
-        if (mongoData.getTableName().isEmpty()) {
-            throw new IllegalArgumentException("mongo table name 不能为空");
+        if (mongoData == null || mongoData.getTableName().isEmpty()) {
+            throw new IllegalArgumentException("mongoData 或者 mongo table name 不能为空");
         }
-        MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
-        //增加定制化性能监控汇报
-        boolean result = PerformanceStatisticContainer.addWithReturn(() -> {
-            boolean processResult = false;
-            Object[] paramList = processQueryCondition(mongoData.getMatchCondition());
-            switch (mongoData.getOperationType()) {
-                case CREATE:
-                    try {
-                        processResult = collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
-                    } catch (DuplicateKeyException ex) {
-                        logger.info("{}mongo插入操作发生重复键异常", mongoData.getUpdateData());
-                        processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
-                    }
-                    break;
-                case UPDATE:
-                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()),paramList)
-                            .multi()
-                            .with(MapUtil.makeObjFromMap(xData))
-                            .getN() > 0).collect(Collectors.toList()).contains(false);
-                    break;
-                case UPSERT:
-                    processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()),paramList)
-                            .upsert()
-                            .with(MapUtil.makeObjFromMap(xData))
-                            .getN() > 0).collect(Collectors.toList()).contains(false);
-                    break;
-                case DELETE:
-                    processResult = collection.remove(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()),paramList).wasAcknowledged();
-                    break;
-                default:
-                    throw new IllegalArgumentException("mongo 操作类型不正确");
-            }
-            return processResult;
-        }, "processMongoData_" + mongoData.getOperationType().name() + "_" + mongoData.getTableName(), Constants.APP_ID);
-        logger.info("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{},操作结果为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()),result);
+        boolean result = false;
+        try {
+            MongoCollection collection = jongoClient.getCollection(mongoData.getTableName());
+            //增加定制化性能监控汇报
+            result = PerformanceStatisticContainer.addWithReturn(() -> {
+                boolean processResult = false;
+                Object[] paramList = processQueryCondition(mongoData.getMatchCondition());
+                switch (mongoData.getOperationType()) {
+                    case CREATE:
+                        try {
+                            processResult = collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
+                        } catch (DuplicateKeyException ex) {
+                            logger.info("{}mongo插入操作发生重复键异常", mongoData.getUpdateData());
+                            processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
+                        }
+                        break;
+                    case UPDATE:
+                        processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
+                                .multi()
+                                .with(MapUtil.makeObjFromMap(xData))
+                                .getN() > 0).collect(Collectors.toList()).contains(false);
+                        break;
+                    case UPSERT:
+                        processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
+                                .upsert()
+                                .with(MapUtil.makeObjFromMap(xData))
+                                .getN() > 0).collect(Collectors.toList()).contains(false);
+                        break;
+                    case DELETE:
+                        processResult = collection.remove(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList).wasAcknowledged();
+                        break;
+                    default:
+                        throw new IllegalArgumentException("mongo 操作类型不正确");
+                }
+                return processResult;
+            }, "processMongoData_" + mongoData.getOperationType().name() + "_" + mongoData.getTableName(), Constants.APP_ID);
+            logger.info("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{},操作结果为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()), result);
+        }catch (Exception ex){
+            logger.error("processMongoData 发生异常",ex);
+        }
         return result;
     }
 }
