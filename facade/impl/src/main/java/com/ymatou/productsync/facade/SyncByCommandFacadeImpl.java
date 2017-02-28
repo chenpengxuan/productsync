@@ -141,11 +141,10 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     /**
      * 补单功能
      */
-    @GET
+    @POST
     @Path("/{cache:(?i:cache)}/{compensatecommand:(?i:compensatecommand)}")
     @Override
-    @Produces(MediaType.APPLICATION_JSON)
-    public BaseResponse compensateCommand(){
+    public String compensateCommand(){
         try {
             List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
             if (transactionInfoList != null && !transactionInfoList.isEmpty()) {
@@ -169,9 +168,9 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             }
         }catch (Exception ex){
             DEFAULT_LOGGER.error("补单发生异常",ex);
-            return BaseResponse.newFailInstance(ErrorCode.FAIL);
+            return "fail";
         }
-        return BaseResponse.newSuccessInstance();
+        return "ok";
     }
 
     /**

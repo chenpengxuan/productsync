@@ -34,7 +34,7 @@ public interface SyncCommandFacade {
     /**
      * 补单操作
      */
-    BaseResponse compensateCommand();
+    String compensateCommand();
 
     /**
      * 点火
