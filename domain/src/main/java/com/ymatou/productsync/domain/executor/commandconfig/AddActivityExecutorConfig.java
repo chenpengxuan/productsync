@@ -30,7 +30,7 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlDataList = commandQuery.getActivityInfo(activityId);
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
             Map<String, Object> activity = sqlDataList.stream().findFirst().orElse(Collections.emptyMap());
-            int countryId = Integer.parseInt(activity.get("iCountryId").toString());
+            int countryId = Integer.parseInt(activity.get("iCountryId") != null ? activity.get("iCountryId").toString():"0");
             activity.remove("iCountryId");
             List<Map<String, Object>> country = commandQuery.getCountryInfo(countryId);
             if (country != null && !country.isEmpty()) {

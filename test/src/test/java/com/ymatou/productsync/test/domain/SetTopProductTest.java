@@ -38,7 +38,7 @@ public class SetTopProductTest {
         SyncByCommandReq req = new SyncByCommandReq();
         List<Map<String, Object>> tproducts = commandQuery.getTopProduct();
         Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
-        req.setProductId(prod.get("sProductId").toString());
+        req.setProductId(prod.get("sProductId") != null ? prod.get("sProductId").toString():"");
         boolean success1 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
         Asserts.check(success1, "正常设置橱窗推荐商品fail！");
     }
@@ -49,7 +49,7 @@ public class SetTopProductTest {
         SyncByCommandReq req = new SyncByCommandReq();
         List<Map<String, Object>> ntprods = commandQuery.getNotTopProduct();
         Map<String, Object> nprod = ntprods.stream().findFirst().orElse(Collections.emptyMap());
-        req.setProductId(nprod.get("sProductId").toString());
+        req.setProductId(nprod.get("sProductId") != null ? nprod.get("sProductId").toString():"");
         boolean success2 = commandExecutor.executeCommand(req, setTopProductExecutorConfig);
         Asserts.check(success2, "正常取消设置橱窗推荐产品fail！");
     }

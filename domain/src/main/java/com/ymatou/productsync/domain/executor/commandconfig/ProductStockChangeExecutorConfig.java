@@ -45,10 +45,10 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         final double[] minPrice = {Double.MAX_VALUE};
         final double[] maxPrice = {Double.MIN_VALUE};
         catalogList.stream().forEach(catalog -> {
-            double price = Double.parseDouble(catalog.get("price").toString());
+            double price = Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString():"0");
             minPrice[0] = Double.min(price, minPrice[0]);
             maxPrice[0] = Double.max(price, maxPrice[0]);
-            Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid").toString());
+            Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid") != null ? catalog.get("spid").toString():"");
             conditions.put("cid", catalog.get("cid"));
             mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(catalog)));
         });

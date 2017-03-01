@@ -99,15 +99,26 @@ public class MapUtil {
     /**
      * 将maplist中的字符串转换为数组
      *
+     * @param map
+     * @param field
+     * @param seperator
+     */
+    public static void mapFieldToStringArray(Map<String, Object> map, String field, String seperator) {
+        if (map != null && map.containsKey(field) && map.get(field) != null) {
+            map.replace(field, map.get(field), map.get(field).toString().split(seperator));
+        }
+    }
+
+    /**
+     * 将maplist中的字符串转换为数组
+     *
      * @param mapList
      * @param field
      * @param seperator
      */
     public static void mapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
-        if (mapList == null) {return;}
-        Map<String, Object> map = mapList.stream().findFirst().orElse(Collections.emptyMap());
-        if (map != null && map.containsKey(field)) {
-            map.replace(field, map.get(field), map.get(field).toString().split(seperator));
+        if(mapList != null && !mapList.isEmpty()){
+            mapList.stream().forEach(x -> mapFieldToStringArray(x,field,seperator));
         }
     }
 

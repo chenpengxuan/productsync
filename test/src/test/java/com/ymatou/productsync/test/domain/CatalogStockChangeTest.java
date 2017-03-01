@@ -38,7 +38,7 @@ public class CatalogStockChangeTest {
 //        #1 正常商品规格库存测试
         List<Map<String, Object>> tproducts = commandQuery.getProduct();
         Map<String, Object> prod = tproducts.stream().findFirst().orElse(Collections.emptyMap());
-        req.setProductId(prod.get("sProductId").toString());
+        req.setProductId(prod.get("sProductId") != null ? prod.get("sProductId").toString():"");
         boolean success = commandExecutor.executeCommand(req, catalogStockChangeExecutorConfig);
         Asserts.check(success, "正常商品规格库存测试fail!");
     }
