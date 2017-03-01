@@ -57,9 +57,6 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         if (sqlCatalogDataList == null || sqlCatalogDataList.isEmpty()) {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductCatalogInfo为空");
         }
-        if (sqlProductDescDataList == null || sqlProductDescDataList.isEmpty()) {
-            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductDescInfo为空");
-        }
         if (activityId > 0 && (sqlProductInLiveDataList == null || sqlProductInLiveDataList.isEmpty())) {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductLiveInfo为空");
         }
@@ -86,13 +83,15 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList, new String[]{"name", "pic", "value"}, "props", "cid")));
 
         //创建商品图文描述信息
-        Map<String, Object> tempDescMap = new HashMap<>();
-        tempDescMap.putAll(sqlProductDescDataList.stream().findFirst().orElse(Collections.emptyMap()));
-        tempDescMap.remove("pic");
-        tempDescMap.put("pics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
-        sqlProductDescDataList.clear();
-        sqlProductDescDataList.add(tempDescMap);
-        mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
+        if (sqlProductDescDataList != null && !sqlProductDescDataList.isEmpty()) {
+            Map<String, Object> tempDescMap = new HashMap<>();
+            tempDescMap.putAll(sqlProductDescDataList.stream().findFirst().orElse(Collections.emptyMap()));
+            tempDescMap.remove("pic");
+            tempDescMap.put("pics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
+            sqlProductDescDataList.clear();
+            sqlProductDescDataList.add(tempDescMap);
+            mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
+        }
 
         //针对添加是商品进直播与直播中添加商品的场景
         if (activityId > 0) {
