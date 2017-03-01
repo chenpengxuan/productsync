@@ -5,9 +5,9 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +33,11 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig{
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         if(activityId <= 0){
-            throw new BizException(ErrorCode.BIZFAIL,"直播id必须大于0");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(),"直播id必须大于0");
         }
         List<Map<String,Object>> sortInfoList = commandQuery.getProductsLiveSort(activityId);
         if(sortInfoList == null || sortInfoList.isEmpty()){
-            throw new BizException(ErrorCode.BIZFAIL,"getProductsLiveSort为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(),"getProductsLiveSort为空");
         }
         List<MongoData> mongoDataList = new ArrayList<>();
         sortInfoList.stream().forEach(sortInfo -> {

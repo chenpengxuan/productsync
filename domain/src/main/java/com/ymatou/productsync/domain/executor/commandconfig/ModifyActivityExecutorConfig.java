@@ -5,10 +5,10 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         ///1.直播数据更新
         List<Map<String, Object>> mapList = liveCommandQuery.getActivityInfo(activityId);
         if (mapList == null || mapList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getActivityInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getActivityInfo为空");
         }
 
         //处理brands,country,flag

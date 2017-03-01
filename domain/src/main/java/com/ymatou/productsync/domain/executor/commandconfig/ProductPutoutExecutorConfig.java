@@ -6,16 +6,15 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.sellerquery.facade.OrderProductInfoFacade;
 import com.ymatou.sellerquery.facade.model.req.GetOrderProductAmountInfosReq;
 import com.ymatou.sellerquery.facade.model.resp.GetOrderProductAmountInfosResp;
 import com.ymatou.sellerquery.facade.model.vo.OrderProductAmountInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,9 +28,11 @@ import java.util.*;
 @Component("productPutoutExecutorConfig")
 public class ProductPutoutExecutorConfig implements ExecutorConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductPutoutExecutorConfig.class);
     @Autowired
     private CommandQuery commandQuery;
+
+    @Autowired
+    private LogWrapper logWrapper;
 
     @Resource
     private OrderProductInfoFacade orderProductInfoFacade;
@@ -47,7 +48,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
         if (activityId <= 0) {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
             if (deleteProducts == null || deleteProducts.isEmpty()) {
-                throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getDeleteProducts 为空");
+                throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getDeleteProducts 为空");
             }
 
             //更新商品
@@ -68,7 +69,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             int productOrderCount = 0;
             List<Map<String, Object>> userIdSource = commandQuery.getProductUser(productId);
             if (userIdSource == null || userIdSource.isEmpty()) {
-                throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductUser 为空");
+                throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getProductUser 为空");
             }
             Map<String, Object> sellerMap = userIdSource.stream().findFirst().orElse(Collections.emptyMap());
             long sellerId = Long.parseLong(sellerMap.get("userId").toString());
@@ -84,7 +85,7 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                         productOrderCount = orderAmountMap.get(productId).getPaid();
                 }
             } catch (Exception ex) {
-                logger.error("商品下架调用订单数接口getOrderProductAmountInfos异常", ex);
+                logWrapper.recordErrorLog("商品下架调用订单数接口getOrderProductAmountInfos异常", ex);
             }
 
             //商品下过单更新状态，否则下架后删除Mongo数据

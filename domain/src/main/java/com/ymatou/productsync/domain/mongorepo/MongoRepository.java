@@ -8,6 +8,7 @@ import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
 import com.ymatou.productsync.infrastructure.config.datasource.DynamicDataSourceAspect;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.jongo.Jongo;
@@ -29,6 +30,9 @@ public class MongoRepository {
     @Autowired
     private Jongo jongoClient;
 
+    @Autowired
+    private LogWrapper logWrapper;
+
     private final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
 
     /**
@@ -46,7 +50,7 @@ public class MongoRepository {
             try {
                 resultList.add(processMongoData(x));
             } catch (Exception ex) {
-                logger.error("processMongoData 操作发生异常,异常原因为：{}", ex.getMessage(), ex);
+                logWrapper.recordErrorLog("processMongoData 操作发生异常,异常原因为：{}", ex.getMessage(), ex);
             }
         });
         return !resultList.contains(false);
@@ -174,7 +178,7 @@ public class MongoRepository {
             }, "processMongoData_" + mongoData.getOperationType().name() + "_" + mongoData.getTableName(), Constants.APP_ID);
             logger.info("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{},操作结果为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()), result);
         }catch (Exception ex){
-            logger.error("processMongoData 发生异常",ex);
+            logWrapper.recordErrorLog("processMongoData 发生异常",ex);
         }
         return result;
     }

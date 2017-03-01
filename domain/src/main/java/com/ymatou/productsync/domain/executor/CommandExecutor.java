@@ -7,6 +7,7 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.infrastructure.config.props.BizProps;
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -33,6 +34,9 @@ public class CommandExecutor {
     @Autowired
     private BizProps bizProps;
 
+    @Autowired
+    private LogWrapper logWrapper;
+
     /**
      * 更新业务凭据状态设置
      *
@@ -42,17 +46,17 @@ public class CommandExecutor {
         try {
             TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
             if (transactionInfo == null) {
-                logger.error("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
+                logWrapper.recordErrorLog("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
                 return;
             }
             transactionInfo.setNewTranStatus(status.getCode());
             transactionInfo.setNewUpdateTime(new DateTime().toString(Utils.DEFAULT_DATE_FORMAT));
 
             if (commandQuery.updateTransactionInfo(transactionInfo) <= 0) {
-                logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId);
+                logWrapper.recordErrorLog("更新商品业务凭据发生异常，transactionId为{},", transactionId);
             }
         } catch (Exception ex) {
-            logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId, ex);
+            logWrapper.recordErrorLog("更新商品业务凭据发生异常，transactionId为{},", transactionId, ex);
         }
     }
 
@@ -64,16 +68,16 @@ public class CommandExecutor {
         try {
             TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
             if (transactionInfo == null) {
-                logger.error("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
+                logWrapper.recordErrorLog("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
                 return;
             }
             transactionInfo.setNewRetryTimes(transactionInfo.getNewRetryTimes() + 1);
 
             if (commandQuery.updateTransactionInfo(transactionInfo) <= 0) {
-                logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId);
+                logWrapper.recordErrorLog("更新商品业务凭据发生异常，transactionId为{},", transactionId);
             }
         } catch (Exception ex) {
-            logger.error("更新商品业务凭据发生异常，transactionId为{},", transactionId, ex);
+            logWrapper.recordErrorLog("更新商品业务凭据发生异常，transactionId为{},", transactionId, ex);
         }
     }
 
@@ -96,14 +100,14 @@ public class CommandExecutor {
         try {
             TransactionInfo transactionInfo = commandQuery.getTransactionInfo(transactionId);
             if (transactionInfo == null) {
-                logger.error("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
+                logWrapper.recordErrorLog("没有找到对应的业务凭据信息，transactionId为{},", transactionId);
                 return true;//如果没有找到对应的业务凭据信息，保证业务链路正常执行下去
             }
             return transactionInfo.getNewTranStatus() == SyncStatusEnum.INIT.getCode()
                     || transactionInfo.getNewTranStatus() == SyncStatusEnum.BizEXCEPTION.getCode()
                     || transactionInfo.getNewTranStatus() == SyncStatusEnum.FAILED.getCode();
         } catch (Exception ex) {
-            logger.error("查询业务凭据发生异常,transactionId为{},", transactionId, ex);
+            logWrapper.recordErrorLog("查询业务凭据发生异常,transactionId为{},", transactionId, ex);
             return true;
         }
     }

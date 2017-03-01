@@ -5,15 +5,17 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangyong on 2017/2/9.
@@ -32,7 +34,7 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getProductStockInfo(productId);
         if(sqlDataList == null || sqlDataList.isEmpty()){
-            throw new BizException(ErrorCode.BIZFAIL, "getProductStockInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductStockInfo为空");
         }
             sqlDataList.stream().forEach(t -> {
                 Map<String, Object> conditions = MongoQueryBuilder.queryProductIdAndCatalogId(productId,t.get("cid").toString());

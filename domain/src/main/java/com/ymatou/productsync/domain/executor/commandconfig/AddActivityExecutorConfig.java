@@ -2,9 +2,10 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,7 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
             matchConditionInfo.put("lid", activityId);
             mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId), sqlDataList));
         } else {
-            throw new BizException(ErrorCode.BIZFAIL, "getActivityInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getActivityInfo为空");
         }
         return mongoDataList;
     }

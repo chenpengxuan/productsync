@@ -1,22 +1,24 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chenfei on 2017/2/9.
@@ -38,7 +40,7 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         ///1.规格价格及库存更新
         List<Map<String, Object>> catalogList = commandQuery.getProductCatalogs(productId);
         if (catalogList == null || catalogList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, this.getCommand() + "-getProductCatalogs 为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getProductCatalogs 为空");
         }
         final double[] minPrice = {Double.MAX_VALUE};
         final double[] maxPrice = {Double.MIN_VALUE};

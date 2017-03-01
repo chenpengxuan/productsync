@@ -5,9 +5,9 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> tempSqlDataList = commandQuery.getProductPictureList(productId);
 
         if (tempSqlDataList == null || tempSqlDataList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductPictureList 为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductPictureList 为空");
         }
 
         Object[] pics = tempSqlDataList.stream().map(t -> t.get("pics")).toArray();

@@ -6,8 +6,6 @@
  */
 package com.ymatou.productsync.facade.model.resp;
 
-
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.PrintFriendliness;
 
 /**
@@ -21,9 +19,9 @@ public class BaseResponse extends PrintFriendliness {
 
     private boolean isSuccess = true;
 
-    private ErrorCode errorCode;
-
     private String errorMessage;
+
+    private int errorCode;
 
     private String message;
 
@@ -37,14 +35,15 @@ public class BaseResponse extends PrintFriendliness {
     public static BaseResponse newSuccessInstance() {
         BaseResponse result = new BaseResponse();
         result.setSuccess(true);
+        result.setMessage("处理成功");
         return result;
     }
 
-    public static BaseResponse newFailInstance(ErrorCode errorCode) {
+    public static BaseResponse newFailInstance(int errorCode,String message) {
         BaseResponse result = new BaseResponse();
         result.setSuccess(false);
         result.setErrorCode(errorCode);
-        result.setErrorMessage(errorCode == null ? "" : errorCode.getMessage());
+        result.setErrorMessage(message);
         return result;
     }
 
@@ -54,14 +53,6 @@ public class BaseResponse extends PrintFriendliness {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(ErrorCode errorCode) {
-        this.errorCode = errorCode;
     }
 
     public boolean isSuccess() {
@@ -78,5 +69,17 @@ public class BaseResponse extends PrintFriendliness {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 }

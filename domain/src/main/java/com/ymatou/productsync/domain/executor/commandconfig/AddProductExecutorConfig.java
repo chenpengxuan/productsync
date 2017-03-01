@@ -5,11 +5,11 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,19 +52,19 @@ public class AddProductExecutorConfig implements ExecutorConfig {
 
         //前置条件检查
         if (sqlProductDataList == null || sqlProductDataList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductDetailInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductDetailInfo为空");
         }
         if (sqlCatalogDataList == null || sqlCatalogDataList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductCatalogInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductCatalogInfo为空");
         }
         if (sqlProductDescDataList == null || sqlProductDescDataList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductDescInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductDescInfo为空");
         }
         if (activityId > 0 && (sqlProductInLiveDataList == null || sqlProductInLiveDataList.isEmpty())) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductLiveInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductLiveInfo为空");
         }
         if (activityId > 0 && (sqlLiveDataList == null || sqlLiveDataList.isEmpty())) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductInfoByActivityId为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductInfoByActivityId为空");
         }
 
         List<MongoData> mongoDataList = new ArrayList<>();

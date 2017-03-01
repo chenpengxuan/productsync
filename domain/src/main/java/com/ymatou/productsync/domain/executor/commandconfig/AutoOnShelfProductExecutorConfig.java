@@ -5,13 +5,15 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangyong on 2017/2/9.
@@ -30,7 +32,7 @@ public class AutoOnShelfProductExecutorConfig implements ExecutorConfig {
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getProductTime(productId);
         if (sqlDataList == null || sqlDataList.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductTime 为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductTime 为空");
         }
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
         return mongoDataList;

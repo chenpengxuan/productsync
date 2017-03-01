@@ -5,9 +5,9 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,11 +40,11 @@ public class SyncActivityProductExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlProducts = commandQuery.getActivityProducts(productInactivityId);
         List<Map<String, Object>> sqlCatalogs = commandQuery.getActivityProductCatalogs(productInactivityId);
         if (sqlProducts == null || sqlProducts.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getActivityProducts 为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getActivityProducts 为空");
         }
 
         if (sqlCatalogs == null || sqlCatalogs.isEmpty()) {
-            throw new BizException(ErrorCode.BIZFAIL, "getActivityProductCatalogs 为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getActivityProductCatalogs 为空");
         }
 
         sqlProducts.stream().findFirst().orElse(Collections.emptyMap()).put("catalogs", sqlCatalogs);

@@ -1,5 +1,6 @@
 package com.ymatou.productsync.infrastructure.config.datasource;
 
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -8,6 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,10 @@ import java.lang.reflect.Method;
 public class DynamicDataSourceAspect {
 
     private final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
+
+    @Autowired
+    private LogWrapper logWrapper;
+
     @Pointcut("execution(* com.ymatou.productsync.domain.sqlrepo.*Query.*(..))")
     public void executeRepository() {
     }
@@ -45,7 +51,7 @@ public class DynamicDataSourceAspect {
                 throw new Exception("缺少数据库注解");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logWrapper.recordErrorLog(e.getMessage(),e);
         }
     }
 

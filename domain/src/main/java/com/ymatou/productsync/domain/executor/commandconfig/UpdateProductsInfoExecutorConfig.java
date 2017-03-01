@@ -5,9 +5,9 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,12 +30,12 @@ public class UpdateProductsInfoExecutorConfig implements ExecutorConfig{
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         if(productId == null || productId.isEmpty()){
-            throw new BizException(ErrorCode.BIZFAIL,"productId不能为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(),"productId不能为空");
         }
         //商品图文描述
         List<Map<String, Object>> sqlProductDescDataList = commandQuery.getProductDescInfo(productId);
         if(sqlProductDescDataList == null || sqlProductDescDataList.isEmpty()){
-            throw new BizException(ErrorCode.BIZFAIL,"getProductDescInfo为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(),"getProductDescInfo为空");
         }
         Map<String, Object> tempMap = new HashMap<>();
         tempMap.putAll(sqlProductDescDataList.stream().findFirst().orElse(Collections.emptyMap()));

@@ -6,9 +6,9 @@ import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.executor.MongoDataBuilder;
 import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,14 +38,14 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
         if (sqlDataList != null && !sqlDataList.isEmpty()) {
             mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), sqlDataList));
         } else {
-            throw new BizException(ErrorCode.BIZFAIL, "getProductBrandAndCategory为空");
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductBrandAndCategory为空");
         }
         List<Map<String, Object>> liveproducts = commandQuery.getValidLiveByProductId(productId);
         if (liveproducts != null && !liveproducts.isEmpty()) {
             Lists.newArrayList(liveproducts.stream().map(t -> t.get("iActivityId")).iterator()).stream().forEach(t -> {
                 Long lid = Long.parseLong(t.toString());
                 List<Map<String, Object>> products = commandQuery.getProductInfoByActivityIdForBrandAndCategory(lid);
-                Object[] brands = products.stream().distinct().map(x -> Strings.isNullOrEmpty(x.get("sBrand").toString()) ? x.get("sBrandEn") : x.get("sBrand")).toArray();
+                Object[] brands = products.stream().distinct().map(x -> Strings.isNullOrEmpty(x.get("sBrand") != null ? x.get("sBrand").toString():"") ? x.get("sBrandEn") : x.get("sBrand")).toArray();
                 Map<String, Object> liveproduct = liveproducts.stream().findFirst().orElse(Collections.emptyMap());
                 liveproduct.remove("iActivityId");
                 liveproduct.put("brands", brands);// FIXME: 2017/2/8  需要测试(brands == null || brands.Count() == 0) ? null : brands)

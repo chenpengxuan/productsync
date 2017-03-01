@@ -1,8 +1,7 @@
 package com.ymatou.productsync.domain.executor;
 
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -17,7 +16,9 @@ import java.util.List;
  */
 @Component
 public class ExecutorConfigFactory {
-    private static Logger logger = LoggerFactory.getLogger(ExecutorConfigFactory.class);
+
+    @Autowired
+    private LogWrapper logWrapper;
 
     /**
      * 业务场景指令与对应指令器映射关系的容器
@@ -35,15 +36,15 @@ public class ExecutorConfigFactory {
     }
 
     public ExecutorConfig getCommand(String command) {
-        CmdTypeEnum cmdTypeEnum = null;
+        CmdTypeEnum cmdTypeEnum;
         try {
             cmdTypeEnum = CmdTypeEnum.valueOf(command);
         } catch (Exception ex) {
-            logger.error("Unknown sync command:{}", command, ex);
+            logWrapper.recordErrorLog("Unknown sync command:{}", command, ex);
             return null;
         }
         if (!hashMap.containsKey(cmdTypeEnum)) {
-            logger.error("Unknown sync command:{}", command);
+            logWrapper.recordErrorLog("Unknown sync command:{}", command);
             return null;
         }
         return hashMap.get(cmdTypeEnum);

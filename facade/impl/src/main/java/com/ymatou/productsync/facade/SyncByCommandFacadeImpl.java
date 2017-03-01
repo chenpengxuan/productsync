@@ -9,11 +9,11 @@ import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.facade.model.ErrorCode;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import com.ymatou.productsync.infrastructure.config.props.BizProps;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.slf4j.Logger;
@@ -41,6 +41,10 @@ import java.util.stream.Collectors;
 public class SyncByCommandFacadeImpl implements SyncCommandFacade {
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(SyncByCommandFacadeImpl.class);
+
+    @Autowired
+    private LogWrapper logWrapper;
+
     /**
      * 业务指令器工厂
      */
@@ -84,7 +88,8 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @Override
     @Consumes(MediaType.APPLICATION_JSON)
     public String syncByCommand(SyncByCommandReq req) {
-        return executeCommand(req).isSuccess() ? "ok":"fail";
+        BaseResponse response = executeCommand(req);
+        return response.isSuccess() ? "ok" : Utils.toJSONString(response);
     }
 
     /**
@@ -104,6 +109,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
 
     /**
      * 更新商品快照信息
+     *
      * @param productId
      * @param snapshotVersion
      * @return
@@ -112,29 +118,28 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @Path("/{cache:(?i:cache)}/{updateproductsnapshot:(?i:updateproductsnapshot)}")
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public BaseResponse updateProductSnapShot(@QueryParam("productId") String productId,@QueryParam("snapshotVersion") String snapshotVersion){
+    public BaseResponse updateProductSnapShot(@QueryParam("productId") String productId, @QueryParam("snapshotVersion") String snapshotVersion) {
         if (productId == null
                 || productId.isEmpty()
                 || snapshotVersion == null
                 || snapshotVersion.isEmpty()) {
-            DEFAULT_LOGGER.error("更新商品快照异常，异常原因为：参数不正确");
+            logWrapper.recordErrorLog("更新商品快照异常，异常原因为：参数不正确");
             BaseResponse response = BaseResponse.newSuccessInstance();
             response.setMessage("更新商品快照异常，异常原因为：参数不正确");
             return response;
         }
         List<MongoData> mongoDataList = new ArrayList<>();
-        List<Map<String,Object>> updateData = new ArrayList<>();
-        Map<String,Object> tempMap = new HashMap();
-        tempMap.put("ver",snapshotVersion);
+        List<Map<String, Object>> updateData = new ArrayList<>();
+        Map<String, Object> tempMap = new HashMap();
+        tempMap.put("ver", snapshotVersion);
         tempMap.put("verupdate", Utils.getNow());
         updateData.add(tempMap);
-        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),updateData));
-        try{
-        return mongoRepository.excuteMongo(mongoDataList) ? BaseResponse.newSuccessInstance():BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
-        }
-        catch(Exception ex){
-            DEFAULT_LOGGER.error("更新商品快照发生异常，异常原因为{}",ex.getMessage(),ex);
-            return BaseResponse.newFailInstance(ErrorCode.FAIL);
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), updateData));
+        try {
+            return mongoRepository.excuteMongo(mongoDataList) ? BaseResponse.newSuccessInstance() : BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "操作mongo失败");
+        } catch (Exception ex) {
+            logWrapper.recordErrorLog("更新商品快照发生异常，异常原因为{}", ex.getMessage(), ex);
+            return BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), ex.getMessage());
         }
     }
 
@@ -144,7 +149,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
     @POST
     @Path("/{cache:(?i:cache)}/{compensatecommand:(?i:compensatecommand)}")
     @Override
-    public String compensateCommand(){
+    public String compensateCommand() {
         try {
             List<TransactionInfo> transactionInfoList = executor.getCompensationInfo();
             if (transactionInfoList != null && !transactionInfoList.isEmpty()) {
@@ -166,15 +171,16 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             } else {
                 DEFAULT_LOGGER.info("compensateCount is 0 ");
             }
-        }catch (Exception ex){
-            DEFAULT_LOGGER.error("补单发生异常",ex);
-            return "fail";
+        } catch (Exception ex) {
+            logWrapper.recordErrorLog("补单发生异常", ex);
+            return ex != null ? Utils.toJSONString(ex) : "fail,发生异常，且异常对象ex为空";
         }
         return "ok";
     }
 
     /**
      * 同步
+     *
      * @param req
      * @return
      */
@@ -193,7 +199,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             try {
                 if (executor.checkNeedProcessCommand(req.getTransactionId())) {
                     syncSuccess = executor.executeCommand(req, config);
-                    return syncSuccess ? BaseResponse.newSuccessInstance() : BaseResponse.newFailInstance(ErrorCode.FAIL);
+                    return syncSuccess ? BaseResponse.newSuccessInstance() : BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "同步失败");
                 }
             } catch (IllegalArgumentException argException) {
                 executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.IllegalArgEXCEPTION);
@@ -201,12 +207,8 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                 return BaseResponse.newSuccessInstance();
             } catch (BizException bizException) {
                 executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
-                if (bizProps.isBizExceptionWarning()) {
-                    DEFAULT_LOGGER.error("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
-                } else {
-                    DEFAULT_LOGGER.debug("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
-                }
-                return BaseResponse.newFailInstance(ErrorCode.BIZFAIL);
+                logWrapper.recordErrorLog("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
+                return BaseResponse.newFailInstance(SyncStatusEnum.BizEXCEPTION.getCode(), "发生业务级异常");
             }
             //执行成功的并且是商品相关操作
             if (syncSuccess && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {
@@ -215,13 +217,13 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                     return BaseResponse.newSuccessInstance();
                 } catch (MessageBusException e) {
                     //目前商品部分业务相关指令消息的分发只是针对商品快照，如果发生消息总线异常，则只是记录到异常日志
-                    DEFAULT_LOGGER.error("同步服务发送消息发生异常,transactionId为{},productId为{},actionType为{}",
+                    logWrapper.recordErrorLog("同步服务发送消息发生异常,transactionId为{},productId为{},actionType为{}",
                             req.getTransactionId(), req.getProductId(), req.getActionType(), e);
                     return BaseResponse.newSuccessInstance();
                 }
             }
-            return BaseResponse.newFailInstance(ErrorCode.FAIL);
-        },"QuerySqlData_" + (config != null ? config.getCommand().name():""), Constants.APP_ID);
+            return BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "系统异常");
+        }, "QuerySqlData_" + (config != null ? config.getCommand().name() : ""), Constants.APP_ID);
         return result;
     }
 }

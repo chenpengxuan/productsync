@@ -10,10 +10,11 @@ package com.ymatou.productsync.facade;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.ymatou.productsync.domain.executor.CommandExecutor;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
-import com.ymatou.productsync.facade.model.ErrorCode;
+
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -46,7 +47,10 @@ public class FacadeAspect {
     @Autowired
     private CommandExecutor commandExecutor;
 
-    @Pointcut("execution(* com.ymatou.productsync.facade.*Facade.*(*)) && args(req)")
+    @Autowired
+    private LogWrapper logWrapper;
+
+    @Pointcut("execution(com.ymatou.productsync.facade.model.resp.BaseResponse com.ymatou.productsync.facade.*Facade.*(*)) && args(req)")
     public void executeFacade(SyncByCommandReq req) {
     }
 
@@ -57,16 +61,16 @@ public class FacadeAspect {
         Logger logger = DEFAULT_LOGGER;
 
         if (req == null) {
-            logger.error("{} Req: null", joinPoint.getSignature());
-            return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "request is null");
+            logWrapper.recordErrorLog("{} Req: null", joinPoint.getSignature());
+            return buildErrorResponse(joinPoint, SyncStatusEnum.IllegalArgEXCEPTION.getCode(), "request is null");
         }
 
         if (req.requireRequestId() && StringUtils.isEmpty(req.getRequestId())) {
-            return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "requestId not provided");
+            return buildErrorResponse(joinPoint, SyncStatusEnum.IllegalArgEXCEPTION.getCode(), "requestId not provided");
         }
 
         if (req.requireAppId() && StringUtils.isEmpty(req.getAppId())) {
-            return buildErrorResponse(joinPoint, ErrorCode.ILLEGAL_ARGUMENT, "appId not provided");
+            return buildErrorResponse(joinPoint, SyncStatusEnum.IllegalArgEXCEPTION.getCode(), "appId not provided");
         }
 
         long startTime = System.currentTimeMillis();
@@ -88,9 +92,9 @@ public class FacadeAspect {
             resp = joinPoint.proceed(new Object[]{req});
         }
         catch (Throwable e) {
-            logger.error("Unknown error in executing request:{}", req, e);
+            logWrapper.recordErrorLog("Unknown error in executing request:{}", req, e);
             //前端可能将错误msg直接抛给用户
-            resp = buildErrorResponse(joinPoint, ErrorCode.UNKNOWN, "系统异常，请稍后重试");
+            resp = buildErrorResponse(joinPoint, SyncStatusEnum.FAILED.getCode(), "系统异常，请稍后重试");
             commandExecutor.updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.FAILED);
         } finally {
             long consumedTime = System.currentTimeMillis() - startTime;
@@ -100,7 +104,7 @@ public class FacadeAspect {
         return resp;
     }
 
-    private BaseResponse buildErrorResponse(ProceedingJoinPoint joinPoint, ErrorCode errorCode, String errorMsg)
+    private BaseResponse buildErrorResponse(ProceedingJoinPoint joinPoint, int errorCode, String errorMsg)
             throws InstantiationException, IllegalAccessException {
 
         MethodSignature ms = (MethodSignature) joinPoint.getSignature();
