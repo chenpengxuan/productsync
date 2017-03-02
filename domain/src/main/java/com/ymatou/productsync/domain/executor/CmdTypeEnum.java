@@ -102,19 +102,19 @@ public enum CmdTypeEnum {
      */
     CatalogStockChange,
 
-    /**
-     * 交易更新商品活动库存
-     */
-    ActivityStockChange,
-
-    /**
-     * 活动审核调拨活动库存
-     */
-    ActivityStockTransfer,
-
-    /**
-     * 修改商品活动价，老库是查询的，无需修改
-     */
+//    /**
+//     * 交易更新商品活动库存
+//     */
+//    ActivityStockChange,
+//
+//    /**
+//     * 活动审核调拨活动库存
+//     */
+//    ActivityStockTransfer,
+//
+//    /**
+//     * 修改商品活动价，老库是查询的，无需修改
+//     */
 //    ModifyActivityPrice,
 
 //    直播部分

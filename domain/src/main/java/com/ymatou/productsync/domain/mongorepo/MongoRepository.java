@@ -160,13 +160,18 @@ public class MongoRepository {
                         processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
                                 .multi()
                                 .with(MapUtil.makeObjFromMap(xData))
-                                .getN() > 0).collect(Collectors.toList()).contains(false);
+                                .wasAcknowledged()).collect(Collectors.toList()).contains(false);
                         break;
                     case UPSERT:
-                        processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
-                                .upsert()
-                                .with(MapUtil.makeObjFromMap(xData))
-                                .getN() > 0).collect(Collectors.toList()).contains(false);
+                        try {
+                            processResult = !mongoData.getUpdateData().parallelStream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
+                                    .upsert()
+                                    .with(MapUtil.makeObjFromMap(xData))
+                                    .wasAcknowledged()).collect(Collectors.toList()).contains(false);
+                        }catch (DuplicateKeyException ex) {
+                            logger.info("{}mongo UPSERT操作发生重复键异常", mongoData.getUpdateData());
+                            processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
+                        }
                         break;
                     case DELETE:
                         processResult = collection.remove(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList).wasAcknowledged();
