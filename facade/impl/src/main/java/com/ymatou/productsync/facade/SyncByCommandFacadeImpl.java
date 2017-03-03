@@ -23,10 +23,7 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -185,6 +182,10 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      * @return
      */
     private BaseResponse executeCommand(SyncByCommandReq req) {
+        //针对忽略的业务指令场景，直接返回不做任何处理
+        if(checkIgnoreCommandType(req.getActionType())){
+            return BaseResponse.newSuccessInstance();
+        }
         ExecutorConfig config = executorConfigFactory.getCommand(req.getActionType());
         //增加定制化性能监控汇报
         BaseResponse result = PerformanceStatisticContainer.addWithReturn(() -> {
@@ -225,5 +226,18 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             return BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "系统异常");
         }, "QuerySqlData_" + (config != null ? config.getCommand().name() : ""), Constants.APP_ID);
         return result;
+    }
+
+    /**
+     * 业务指令白名单
+     * @param actionType
+     * @return true表示可以忽略 false表示不能忽略 针对不合法的请求返回不能忽略，后继逻辑处理
+     */
+    private boolean checkIgnoreCommandType(String actionType){
+        if(actionType == null || actionType.isEmpty()){
+            return false;
+        }
+        List<String> ignoreCommandTypeList = Arrays.asList(Constants.IGNORE_COMMANDTYPE);
+        return ignoreCommandTypeList.contains(actionType);
     }
 }
