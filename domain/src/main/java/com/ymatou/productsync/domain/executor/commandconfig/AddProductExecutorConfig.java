@@ -69,7 +69,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //创建商品信息
         MapUtil.mapFieldToStringArray(sqlProductDataList, "pics", ",");
         Map<String, Object> tempProductDataMap = sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap());
-        tempProductDataMap.replace("newdesc", tempProductDataMap.get("newdesc"), ((int) tempProductDataMap.get("newdesc")) == 1);
+        tempProductDataMap.replace("newdesc", tempProductDataMap.get("newdesc"), ( tempProductDataMap.get("newdesc") != null ? (int)tempProductDataMap.get("newdesc") : 0) == 1);
+        tempProductDataMap.replace("tariffy", tempProductDataMap.get("tariffy"), ( tempProductDataMap.get("tariffy") != null ? (int)tempProductDataMap.get("tariffy") : 0) == 1);
+        tempProductDataMap.replace("shipping", tempProductDataMap.get("shipping"), ( tempProductDataMap.get("shipping") != null ? (int)tempProductDataMap.get("shipping") : 0) == 1);
         //针对添加商品进直播的情况不能覆盖版本号,如果商品已经存在的话，则不更新商品快照信息
         if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
                 .stream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
