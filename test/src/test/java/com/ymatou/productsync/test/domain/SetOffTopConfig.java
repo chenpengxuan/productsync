@@ -21,6 +21,8 @@ import java.util.Map;
 /**
  * Created by zhangyong on 2017/2/22.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = ProductSyncApplication.class)// 指定我们SpringBoot工程的Application启动类
 public class SetOffTopConfig {
     @Autowired
     private TestCommandQuery commandQuery;
