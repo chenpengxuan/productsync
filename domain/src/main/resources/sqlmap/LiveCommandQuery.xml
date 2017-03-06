@@ -34,12 +34,12 @@ from Ymt_Activity where  iActivityId=#{ActivityId}
 
     <select id="getCountryInfo" parameterType="java.lang.Integer"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-SELECT isnull(sFlag,''),isnull (sCountryNameZh,'') FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId = #{CountryId}
+SELECT isnull(sFlag,'') as sFlag,isnull (sCountryNameZh,'') as sCountryNameZh FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId = #{CountryId}
     </select>
 
     <select id="getProductInfoByActivityId" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-SELECT  isnull(a.sBrand,''),a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+SELECT  isnull(a.sBrand,'') as sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
 WHERE b.[iActivityId] = #{ActivityId}  AND a.iAction > - 1 and isnull(b.iaction,0)>-1
 order by a.dAddTime DESC
     </select>
