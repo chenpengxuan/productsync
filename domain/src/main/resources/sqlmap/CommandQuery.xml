@@ -325,8 +325,8 @@
 
         SELECT
             sCatalogID		AS 'cid',
-            iStockNum		AS 'stock',
-            fActivityPrice	AS 'price'
+            isnull(iStockNum,0)		AS 'stock',
+            isnull(fActivityPrice,0)	AS 'price'
         FROM dbo.Ymt_ProductActivityStock WITH(NOLOCK)
         WHERE iProductInActivityId = ${productInactivityId}
 
