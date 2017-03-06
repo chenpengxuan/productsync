@@ -49,6 +49,7 @@ public class SetOffTopConfig {
         Asserts.check(checkOk, "测试取消置顶fail!");
     }
 
+    @Test
     public void testSetOffTopException() {
         //测试置顶
         long activityId = 157242;

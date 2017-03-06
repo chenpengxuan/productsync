@@ -35,16 +35,16 @@
 			   a.iActivityId AS 'lid',
 			   a.iUserId AS 'sid',
 			   a.dStartTime AS 'start',
-			   a.iCommentNum AS 'comments',
+			   isnull(a.iCommentNum,0) AS 'comments',
 			   a.dEndTime AS 'end',
 			   a.dAddTime AS 'add',
 			   a.dReadyPutawayProductSort AS 'sort',
 			   CAST ((CASE a.iIsTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop',
 			   a.iSellStatus AS 'status',
-			   p.iBrandId AS 'bid',
+			   isnull(p.iBrandId,0) AS 'bid',
 			   p.sBrand AS 'ebrand',
 			   b.sBrand AS 'brand',
-			   p.iThirdCategoryId AS 'tcatid'
+			   isnull(p.iThirdCategoryId,0) AS 'tcatid'
 		FROM Ymt_ProductsInLive (NOLOCK) a
 		INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
 		LEFT JOIN Ymt_ProductBrand (NOLOCK) b ON p.iBrandId = b.iBrandId
@@ -55,9 +55,9 @@
     <select id="getProductNewTimeByActivityId"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
        SELECT
-        p.isNew AS 'isnew',
-        p.dListingTime AS 'newstart',
-        p.dNewEndTime AS 'newend',
+        isnull(p.isNew,0) AS 'isnew',
+        isnull(p.dListingTime,cast('1900-01-01' as datetime)) AS 'newstart',
+        isnull(p.dNewEndTime,cast('1900-01-01' as datetime)) AS 'newend',
         p.sProductId as 'spid'
         FROM Ymt_ProductsInLive (NOLOCK) a
         INNER JOIN Ymt_Products (NOLOCK) p ON a.sProductId = p.sProductId
@@ -67,7 +67,7 @@
     <!--获取商品详情-->
     <select id="getProductDetailInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-         WITH    pcte
+     WITH    pcte
                   AS ( SELECT   sProductId ,
                                 sOriUrl = STUFF(( SELECT    ',' + sOriUrl
                                                   FROM      Ymt_ProductPicture (NOLOCK)
@@ -95,18 +95,18 @@
                     p.IAction AS 'action' ,
                     ipid AS 'ipid' ,
                     P.sProductId AS 'spid' ,
-                    P.iBrandId AS 'bid' ,
+                    isnull(P.iBrandId,0) AS 'bid' ,
                     P.sProduct AS 'title' ,
                     P.dAddTime AS 'addtime' ,
-                    p.fFlight AS 'shipping',
+                    isnull(p.fFlight,0) AS 'shipping',
                     cte.sOriUrl AS 'pics' ,--商品主图列表
                     validStart AS 'start' ,
                     validEnd AS 'end' ,
                     P.iCatalogType AS 'ctype' ,--备货方式
                     P.iCatalogStatus AS 'deliv' ,--发货方式
                     P.sMobileDescription AS 'intro' ,--商品简介
-                    P.iTariffType AS 'tariffy' ,--是否包税
-                    P.iBondedArea AS 'bonded' ,
+                    isnull(P.iTariffType,0) AS 'tariffy' ,--是否包税
+                    isnull(P.iBondedArea,0) AS 'bonded' ,
                     ( SELECT    MAX(fQuotePrice)
                       FROM      Ymt_Catalogs (NOLOCK)
                       WHERE     sProductId = #{productId}
@@ -121,8 +121,8 @@
                     ) AS 'minp' ,--最低规格价
                     P.iUserId AS 'sid' ,
                     P.SellerLoginId AS 'sname' ,
-                    b.sBrand AS 'brand' ,
-                    p.sbrand AS 'ebrand' ,
+                    isnull(b.sBrand,'') AS 'brand' ,
+                    isnull(p.sbrand,'') AS 'ebrand' ,
                     P.iCategoryId AS 'scatid' ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
@@ -144,16 +144,16 @@
                       WHERE     B.iCategoryId = P.iCategoryId
                     ) AS 'mcatname' ,
                     P.SellerCountryId AS 'country' ,
-                    P.iLocalReturn AS 'localr' ,--本土退货
-                    P.bNoticeRisk AS 'risk' ,--砍单风险提醒
-                    P.bNoReasonReturn AS 'noreason' ,--7天无理由退货
+                    isnull(P.iLocalReturn,0) AS 'localr' ,--本土退货
+                    isnull(P.bNoticeRisk,0) AS 'risk' ,--砍单风险提醒
+                    isnull(P.bNoReasonReturn,0) AS 'noreason' ,--7天无理由退货
                     CASE WHEN pdc.ProductID IS NULL THEN 0
                          ELSE 1
                     END AS 'newdesc',--是否新图文描述
-					p.isnew AS 'isnew',--是否新品
-					p.IsPspProduct AS 'ispsp',--是否psp商品
-					p.dListingTime AS 'newstart',--新品有效开始时间
-					p.dNewEndTime AS 'newend',--新品有效结束时间
+					isnull(p.isnew,0) AS 'isnew',--是否新品
+					isnull(p.IsPspProduct,0) AS 'ispsp',--是否psp商品
+					isnull(p.dListingTime,cast('1900-01-01' as datetime)) AS 'newstart',--新品有效开始时间
+					isnull(p.dNewEndTime,cast('1900-01-01' as datetime)) AS 'newend',--新品有效结束时间
 					CAST ((CASE p.isTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'--是否买手热推商品
             FROM    Ymt_Products (NOLOCK) P
                     INNER JOIN cataCTE ON cataCTE.sProductId = P.sProductId
@@ -161,19 +161,19 @@
                     LEFT JOIN pcte cte ON cte.sProductId = P.sProductId
                     LEFT JOIN Ymt_ProductDescConfigWord (NOLOCK) pdc ON pdc.ProductID = P.sProductId
                                                               AND pdc.[Status] > 0
-            WHERE   P.sProductId = #{productId}
+            WHERE   P.sProductId =#{productId}
     </select>
 
     <!--获取商品规格详情-->
     <select id="getProductCatalogInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-SELECT  DISTINCT
+		SELECT  DISTINCT
                 p.sProductId AS 'spid' ,
                 c.sCatalogId AS 'cid' ,--规格编号
-                fQuotePrice AS 'price',--原价
-                c.fNewCustomerPrice AS 'newp',--新客价
-                c.fEarnestPrice AS 'earnest' ,--定金
-                c.fVipPrice AS 'vip',--VIP价
+                isnull(fQuotePrice,0) AS 'price',--原价
+                isnull(c.fNewCustomerPrice,0) AS 'newp',--新客价
+                isnull(c.fEarnestPrice,0) AS 'earnest' ,--定金
+                isnull(c.fVipPrice,0) AS 'vip',--VIP价
                 c.iNum AS 'stock',--规格库存
                 c.sSKU AS 'sku',--单品编号
                 cp.sProductProperty AS 'name' ,--属性名称
@@ -214,11 +214,11 @@ SELECT  DISTINCT
     <!--获取待删除的商品-->
     <select id="getDeleteProducts" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 
-            SELECT P.validStart AS 'start'
+    SELECT P.validStart AS 'start'
     ,P.validEnd AS 'end'
-    ,P.[dListingTime] AS 'newstart'
-    ,P.[dNewEndtime] AS 'newend'
-    ,P.[isNew] AS 'isnew'
+    ,isnull(P.[dListingTime],cast('1900-01-01' as datetime)) AS 'newstart'
+    ,isnull(P.[dNewEndtime],cast('1900-01-01' as datetime)) AS 'newend'
+    ,isnull(P.[isNew],0) AS 'isnew'
     ,P.iAction as 'action'
     FROM [dbo].Ymt_Products AS P WITH(NOLOCK)
     WHERE P.[sProductId] = #{productId,jdbcType=VARCHAR};
@@ -229,8 +229,8 @@ SELECT  DISTINCT
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
          SELECT
                     P.iBrandId AS bid ,
-                    b.sBrand AS brand ,
-                    p.sbrand AS ebrand ,
+                    isnull(b.sBrand,'') AS brand ,
+                    isnull(p.sbrand,'') AS ebrand ,
                     P.iCategoryId AS scatid ,
                     ( SELECT    sCategory
                       FROM      Ymt_ProductCategory(NOLOCK)
@@ -276,7 +276,7 @@ SELECT  DISTINCT
 
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-          SELECT c.sBrand,a.sBrand as sbranden  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+          SELECT isnull(c.sBrand,'') as sBrand ,isnull(a.sBrand,'') as sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
     </select>
@@ -287,10 +287,10 @@ SELECT  DISTINCT
 
         select sProductId as 'spid'
                     ,sCatalogId as 'cid'
-                    ,fQuotePrice as 'price'
-					,fNewCustomerPrice as 'newp'
-					,fVipPrice as 'vip'
-                    ,fEarnestPrice as 'earnest'
+                    ,isnull(fQuotePrice,0) as 'price'
+					,isnull(fNewCustomerPrice,0) as 'newp'
+					,isnull(fVipPrice,0) as 'vip'
+                    ,isnull(fEarnestPrice,0) as 'earnest'
                     ,iNum as 'stock'
                     ,iAction as 'action'
                     from Ymt_Catalogs WITH(NOLOCK)
@@ -307,7 +307,7 @@ SELECT  DISTINCT
             a.iProductInActivityId	AS 'inaid',
             a.dBeginTime			AS 'start',
             a.dEndTime				AS 'end',
-            a.sMarketPrice			AS 'market',
+            isnull(a.sMarketPrice,0)			AS 'market',
             CASE WHEN b.LimitNumType = 0 THEN b.iLimitNum ELSE 0 END AS 'alimit',
             CASE WHEN b.LimitNumType = 1 THEN b.iLimitNum ELSE 0 END AS 'plimit',
             c.IsTradeIsolation      AS 'isolation',

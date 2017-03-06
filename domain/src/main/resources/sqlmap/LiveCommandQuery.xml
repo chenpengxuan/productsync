@@ -8,38 +8,38 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery">
-<!--fixme 这里的数值型传参需要看看#在profile中表现-->
     <!--获取直播相关信息-->
     <select id="getActivityInfo" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
 select top 1 iActivityId as 'lid',
-sName as 'name',sTitle as 'title',
-sContent as 'content',
-sPicUrl as 'pic',
+isnull(sName,'') as 'name',
+isnull(sTitle,'') as 'title',
+isnull(sContent,'') as 'content',
+isnull(sPicUrl,'') as 'pic',
 dAddTime as 'add',
 iCountryId ,
 sBrands as 'brands',
 dBeginTime as 'start',
 dEndTime as 'end',
 iSellerId as 'sid',
-sSellerName as 'sname',
-sPosition as 'addr',
-sVideoCover as 'vcover',
-sVideoUrl as 'vurl',
+isnull(sSellerName,'') as 'sname',
+isnull(sPosition,'') as 'addr',
+isnull(sVideoCover,'') as 'vcover',
+isnull(sVideoUrl,'') as 'vurl',
 iAction as 'action',
 bAppConfirmed as 'confirm',
-sLatlng as 'latlng'
-from Ymt_Activity where iActivityId=#{ActivityId}
+isnull(sLatlng,'') as 'latlng'
+from Ymt_Activity where  iActivityId=#{ActivityId}
     </select>
 
     <select id="getCountryInfo" parameterType="java.lang.Integer"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-SELECT sFlag,sCountryNameZh FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId = #{CountryId}
+SELECT isnull(sFlag,''),isnull (sCountryNameZh,'') FROM dbo.Ymt_Country WITH(NOLOCK) WHERE iCountryId = #{CountryId}
     </select>
 
     <select id="getProductInfoByActivityId" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-SELECT  a.sBrand,a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+SELECT  isnull(a.sBrand,''),a.dAddTime FROM [dbo].[Ymt_Products] a WITH(NOLOCK)   JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
 WHERE b.[iActivityId] = #{ActivityId}  AND a.iAction > - 1 and isnull(b.iaction,0)>-1
 order by a.dAddTime DESC
     </select>
@@ -48,7 +48,7 @@ order by a.dAddTime DESC
     <select id="getActivityBrand" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
         select top 1
-        sBrands as 'brand'
+        isnull(sBrands,'') as 'brand'
         from Ymt_Activity where iActivityId=#{activityId}
     </select>
 </mapper>
