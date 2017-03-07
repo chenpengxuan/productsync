@@ -227,7 +227,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                     return BaseResponse.newSuccessInstance();
                 }
             }
-            return BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "系统异常");
+            return BaseResponse.newFailInstance(SyncStatusEnum.SUCCESS.getCode(), "当前请求对应业务凭据状态为无需处理的状态,对应的transactionId是：" + req.getTransactionId());
         }, "QuerySqlData_" + (config != null ? config.getCommand().name() : ""), Constants.APP_ID);
         return result;
     }
