@@ -42,12 +42,12 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
         }
         List<Map<String, Object>> liveproducts = commandQuery.getValidLiveByProductId(productId);
         if (liveproducts != null && !liveproducts.isEmpty()) {
-            Lists.newArrayList(liveproducts.stream().map(t -> t.get("iActivityId")).iterator()).stream().forEach(t -> {
+            Lists.newArrayList(liveproducts.stream().map(t -> t.get("lid")).iterator()).stream().forEach(t -> {
                 Long lid = Long.parseLong(t.toString());
                 List<Map<String, Object>> products = commandQuery.getProductInfoByActivityIdForBrandAndCategory(lid);
-                Object[] brands = products.stream().distinct().map(x -> Strings.isNullOrEmpty(x.get("sBrand") != null ? x.get("sBrand").toString():"") ? x.get("sBrandEn") : x.get("sBrand")).toArray();
+                Object[] brands = products.stream().distinct().map(x -> Strings.isNullOrEmpty(x.get("sBrand") != null ? x.get("sBrand").toString() : "") ? x.get("sBrandEn") : x.get("sBrand")).toArray();
                 Map<String, Object> liveproduct = liveproducts.stream().findFirst().orElse(Collections.emptyMap());
-                liveproduct.remove("iActivityId");
+                liveproduct.remove("lid");
                 liveproduct.put("brands", brands);// FIXME: 2017/2/8  需要测试(brands == null || brands.Count() == 0) ? null : brands)
                 mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(lid), liveproducts));
                 mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, lid), sqlDataList));
