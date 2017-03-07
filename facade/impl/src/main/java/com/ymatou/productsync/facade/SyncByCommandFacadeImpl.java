@@ -210,6 +210,10 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
                 executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.BizEXCEPTION);
                 logWrapper.recordErrorLog("发生业务级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), bizException.getMessage(), bizException);
                 return BaseResponse.newFailInstance(SyncStatusEnum.BizEXCEPTION.getCode(), "发生业务级异常:" + bizException.getMessage());
+            }catch (Exception ex){
+                executor.updateTransactionInfo(req.getTransactionId(), SyncStatusEnum.FAILED);
+                logWrapper.recordErrorLog("发生系统级异常，异常原因为：ProductId:{},LiveId:{},ActionType:{},TransactionId:{},{}", req.getProductId(), req.getActivityId(), req.getActionType(), req.getTransactionId(), ex.getMessage(), ex);
+                return BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "系统异常");
             }
             //执行成功的并且是商品相关操作
             if (syncSuccess && CmdTypeEnum.valueOf(req.getActionType()).ordinal() < CmdTypeEnum.AddActivity.ordinal()) {

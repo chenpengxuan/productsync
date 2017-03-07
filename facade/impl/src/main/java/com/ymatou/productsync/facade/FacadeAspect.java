@@ -50,7 +50,7 @@ public class FacadeAspect {
     @Autowired
     private LogWrapper logWrapper;
 
-    @Pointcut("execution(com.ymatou.productsync.facade.model.resp.BaseResponse com.ymatou.productsync.facade.*Facade.*(*)) && args(req)")
+    @Pointcut("execution(* com.ymatou.productsync.facade.SyncByCommandFacade.*(*)) && args(req)")
     public void executeFacade(SyncByCommandReq req) {
     }
 
