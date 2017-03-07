@@ -11,7 +11,6 @@ import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.facade.model.resp.BaseResponse;
-import com.ymatou.productsync.infrastructure.config.props.BizProps;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.MessageBusDispatcher;
@@ -62,9 +61,6 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
      */
     @Autowired
     private MessageBusDispatcher messageBusDispatcher;
-
-    @Autowired
-    private BizProps bizProps;
 
     @Override
     @GET

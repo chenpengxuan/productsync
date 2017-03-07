@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -30,6 +31,8 @@ public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
     private static volatile String localIp;
+
+    private static BigDecimal CONST100 = new BigDecimal(100);
 
     public static String uuid() {
         return new ObjectId().toHexString();
@@ -189,6 +192,26 @@ public class Utils {
         BigDecimal bg = new BigDecimal(value);
         double doubleValue = bg.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
         return doubleValue;
+    }
+
+    /**
+     * decimal转 long
+     *
+     * @param value
+     * @return
+     */
+    @NotNull
+    public static Long decimalConvertToLong(BigDecimal value) {
+        return value.multiply(CONST100).longValue();
+    }
+
+    /**
+     * long 转 decimal
+     * @param value
+     * @return
+     */
+    public static BigDecimal longConvertToBigDecimal(Long value) {
+        return new BigDecimal(value).divide(CONST100).setScale(2);
     }
 
     /**

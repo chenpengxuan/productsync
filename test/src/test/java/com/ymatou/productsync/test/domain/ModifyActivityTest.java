@@ -6,6 +6,7 @@ import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
 import org.apache.http.util.Asserts;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class ModifyActivityTest {
         //req.setProductId(productId);
         req.setActivityId(activityId);
         boolean isOk = commandExecutor.executeCommand(req, modifyActivityExecutorConfig);
-        Asserts.check(isOk, "修改直播fail！");
+        Assert.assertTrue(isOk);
     }
 
     @Test(expected = BizException.class)

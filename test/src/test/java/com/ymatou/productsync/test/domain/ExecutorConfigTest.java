@@ -50,6 +50,6 @@ public class ExecutorConfigTest {
         mongoQueryData.setTableName(Constants.LiveProudctDb);
         mongoQueryData.setOperationType(MongoOperationTypeEnum.SELECTMANY);
         List<Map<String,Object>> mapList = mongoRepository.queryMongo(mongoQueryData);
-        Asserts.check(mapList != null && !mapList.isEmpty(),null);
+        Asserts.check(mapList != null && !mapList.isEmpty(),"");
     }
 }
