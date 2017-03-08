@@ -292,7 +292,6 @@
 					,isnull(fVipPrice,0) as 'vip'
                     ,isnull(fEarnestPrice,0) as 'earnest'
                     ,iNum as 'stock'
-                    ,iAction as 'action'
                     from Ymt_Catalogs WITH(NOLOCK)
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
