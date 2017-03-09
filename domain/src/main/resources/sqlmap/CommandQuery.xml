@@ -311,7 +311,8 @@
             CASE WHEN b.LimitNumType = 0 THEN b.iLimitNum ELSE 0 END AS 'alimit',
             CASE WHEN b.LimitNumType = 1 THEN b.iLimitNum ELSE 0 END AS 'plimit',
             c.IsTradeIsolation      AS 'isolation',
-            c.IsPartCatalog			AS 'part'
+            c.IsPartCatalog			AS 'part',
+            isnull(c.bSubsidy,0)              AS 'nbuyer'
         FROM dbo.Ymt_ProductsInActivity a WITH(NOLOCK)
             INNER JOIN dbo.Ymt_Activity b WITH(NOLOCK) ON a.iActivityId = b.iActivityId
             INNER JOIN dbo.Ymt_ActivityTemplate c WITH(NOLOCK) ON b.iActivityTemplateId = c.iActivityTemplateId
