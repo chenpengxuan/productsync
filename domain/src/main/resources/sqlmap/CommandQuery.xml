@@ -260,7 +260,7 @@
     <select id="getValidLiveByProductId" parameterType="java.lang.String"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
             SELECT
-            iActivityId
+            iActivityId as 'lid'
             FROM [dbo].[Ymt_ProductsInLive] WITH(NOLOCK) WHERE [sProductId] = #{productId}  AND dEndTime>GETDATE() and isnull(iaction,0)>-1
     </select>
     <!--获取直播商品时间-->
@@ -292,7 +292,6 @@
 					,isnull(fVipPrice,0) as 'vip'
                     ,isnull(fEarnestPrice,0) as 'earnest'
                     ,iNum as 'stock'
-                    ,iAction as 'action'
                     from Ymt_Catalogs WITH(NOLOCK)
                     WHERE iAction >-1 and  sProductId = #{productId,jdbcType=VARCHAR};
     </select>
