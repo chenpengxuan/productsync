@@ -4,7 +4,6 @@ package com.ymatou.productsync.infrastructure.constants;
 import com.ymatou.productsync.infrastructure.config.TomcatConfig;
 
 /**
- * 我叫张勇
  * Created by zhangyifan on 2016/12/9.
  */
 public class Constants {
