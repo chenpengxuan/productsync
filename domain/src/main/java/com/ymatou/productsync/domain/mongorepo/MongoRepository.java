@@ -11,6 +11,7 @@ import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
+import org.joda.time.DateTime;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.slf4j.Logger;
@@ -147,9 +148,20 @@ public class MongoRepository {
             result = PerformanceStatisticContainer.addWithReturn(() -> {
                 boolean processResult = false;
                 Object[] paramList = processQueryCondition(mongoData.getMatchCondition());
+
+                //全局操作，针对所有操作刷update字段
+                if(mongoData.getUpdateData() != null && !mongoData.getUpdateData().isEmpty()){
+                    List<Map<String,Object>> tempUpdateDataList = mongoData.getUpdateData();
+                    tempUpdateDataList.stream().forEach(x -> {
+                        x.put("updatetime",new DateTime().getMillis());
+                    });
+                    mongoData.setUpdateData(tempUpdateDataList);
+                }
+
                 switch (mongoData.getOperationType()) {
                     case CREATE:
                         try {
+
                             processResult = collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
                         } catch (DuplicateKeyException ex) {
                             logger.info("{}mongo插入操作发生重复键异常", mongoData.getUpdateData());

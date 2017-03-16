@@ -175,6 +175,7 @@
                 isnull(c.fNewCustomerPrice,0) AS 'newp',--新客价
                 isnull(c.fEarnestPrice,0) AS 'earnest' ,--定金
                 isnull(c.fVipPrice,0) AS 'vip',--VIP价
+                isnull(c.iUserId,0) AS 'sid',--买手编号
                 c.iNum AS 'stock',--规格库存
                 c.sSKU AS 'sku',--单品编号
                 cp.sProductProperty AS 'name' ,--属性名称
