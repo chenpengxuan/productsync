@@ -79,7 +79,7 @@ public class MongoRepository {
         switch (mongoQueryData.getOperationType()) {
             case SELECTSINGLE:
                 if (mongoQueryData.getMatchCondition() != null) {
-                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()),paramList).as(HashMap.class);
+                    tempMap = collection.findOne(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()), paramList).as(HashMap.class);
                 } else {
                     tempMap = collection.findOne().as(HashMap.class);
                 }
@@ -89,10 +89,10 @@ public class MongoRepository {
                 break;
             case SELECTMANY:
                 if (mongoQueryData.getMatchCondition() != null) {
-                    if(mongoQueryData.getDistinctKey() != null && !mongoQueryData.getDistinctKey().isEmpty()) {
-                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()),paramList).map(x -> (HashMap<String,Object>)x.toMap()).iterator());
-                    }else{
-                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>)collection.find(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()),paramList).as(tempMap.getClass()).iterator());
+                    if (mongoQueryData.getDistinctKey() != null && !mongoQueryData.getDistinctKey().isEmpty()) {
+                        mapList = Lists.newArrayList(collection.distinct(mongoQueryData.getDistinctKey()).query(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()), paramList).map(x -> (HashMap<String, Object>) x.toMap()).iterator());
+                    } else {
+                        mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find(MapUtil.makeJsonStringFromMapForJongo(mongoQueryData.getMatchCondition()), paramList).as(tempMap.getClass()).iterator());
                     }
                 } else {
                     mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find().as(tempMap.getClass()).iterator());
@@ -104,11 +104,12 @@ public class MongoRepository {
 
     /**
      * 处理mongo查询条件
+     *
      * @param queryMatchConditionData
      * @return
      * @throws IllegalArgumentException
      */
-    private Object[] processQueryCondition(Map<String,Object> queryMatchConditionData){
+    private Object[] processQueryCondition(Map<String, Object> queryMatchConditionData) {
         List tempResult = new ArrayList();
         if (queryMatchConditionData != null && !queryMatchConditionData.isEmpty()) {
             //针对嵌套Map
@@ -131,6 +132,7 @@ public class MongoRepository {
         }
         return tempResult.toArray();
     }
+
     /**
      * mongodata 实际操作
      *
@@ -150,10 +152,10 @@ public class MongoRepository {
                 Object[] paramList = processQueryCondition(mongoData.getMatchCondition());
 
                 //全局操作，针对所有操作刷update字段
-                if(mongoData.getUpdateData() != null && !mongoData.getUpdateData().isEmpty()){
-                    List<Map<String,Object>> tempUpdateDataList = mongoData.getUpdateData();
+                if (mongoData.getUpdateData() != null && !mongoData.getUpdateData().isEmpty()) {
+                    List<Map<String, Object>> tempUpdateDataList = mongoData.getUpdateData();
                     tempUpdateDataList.stream().forEach(x -> {
-                        x.put("updatetime",new DateTime().getMillis());
+                        x.put("updatetime", new DateTime().getMillis());
                     });
                     mongoData.setUpdateData(tempUpdateDataList);
                 }
@@ -169,10 +171,12 @@ public class MongoRepository {
                         }
                         break;
                     case UPDATE:
-                        processResult = !mongoData.getUpdateData().stream().map(xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
-                                .multi()
-                                .with(MapUtil.makeObjFromMap(xData))
-                                .wasAcknowledged()).collect(Collectors.toList()).contains(false);
+                        processResult = mongoData.getUpdateData().stream().allMatch(
+                                xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
+                                         .multi()
+                                         .with(MapUtil.makeObjFromMap(xData))
+                                         .wasAcknowledged()
+                        );
                         break;
                     case UPSERT:
                         try {
@@ -180,7 +184,7 @@ public class MongoRepository {
                                     .upsert()
                                     .with(MapUtil.makeObjFromMap(xData))
                                     .wasAcknowledged()).collect(Collectors.toList()).contains(false);
-                        }catch (DuplicateKeyException ex) {
+                        } catch (DuplicateKeyException ex) {
                             logger.info("{}mongo UPSERT操作发生重复键异常", mongoData.getUpdateData());
                             processResult = true;//如果是因为重复键的插入导致错误,则认为是成功
                         }
@@ -194,8 +198,8 @@ public class MongoRepository {
                 return processResult;
             }, "processMongoData_" + mongoData.getOperationType().name() + "_" + mongoData.getTableName(), Constants.APP_ID);
             logger.info("操作mongo信息：mongo表名{},mongo操作类型{},mongo匹配参数为{},mongo同步数据为{},操作结果为{}", mongoData.getTableName(), mongoData.getOperationType().name(), Utils.toJSONString(mongoData.getMatchCondition()), Utils.toJSONString(mongoData.getUpdateData()), result);
-        }catch (Exception ex){
-            logWrapper.recordErrorLog("processMongoData 发生异常",ex);
+        } catch (Exception ex) {
+            logWrapper.recordErrorLog("processMongoData 发生异常", ex);
         }
         return result;
     }

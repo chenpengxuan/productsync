@@ -166,7 +166,7 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             }
         } catch (Exception ex) {
             logWrapper.recordErrorLog("补单发生异常", ex);
-            return ex != null ? Utils.toJSONString(ex) : "fail,发生异常，且异常对象ex为空";
+            return Utils.toJSONString(ex);
         }
         return "ok";
     }

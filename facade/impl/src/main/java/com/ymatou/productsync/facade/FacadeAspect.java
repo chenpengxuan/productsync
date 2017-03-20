@@ -92,9 +92,9 @@ public class FacadeAspect {
             resp = joinPoint.proceed(new Object[]{req});
         }
         catch (Throwable e) {
-            logWrapper.recordErrorLog("Unknown error in executing request:{}", req, e);
+            logWrapper.recordErrorLog("发生异常,异常原因为:{}", req, e);
             //前端可能将错误msg直接抛给用户
-            resp = buildErrorResponse(joinPoint, SyncStatusEnum.FAILED.getCode(), "系统异常，请稍后重试");
+            resp = buildErrorResponse(joinPoint, SyncStatusEnum.FAILED.getCode(),e.getLocalizedMessage());
             commandExecutor.updateTransactionInfo(req.getTransactionId(),SyncStatusEnum.FAILED);
         } finally {
             long consumedTime = System.currentTimeMillis() - startTime;

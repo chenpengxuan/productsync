@@ -13,10 +13,7 @@ import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 修改分类品牌
@@ -49,7 +46,7 @@ public class ModifyBrandAndCategoryExecutorConfig implements ExecutorConfig {
                 Map<String, Object> liveproduct = liveproducts.stream().findFirst().orElse(Collections.emptyMap());
                 liveproduct.remove("lid");
                 liveproduct.put("brands", brands);// FIXME: 2017/2/8  需要测试(brands == null || brands.Count() == 0) ? null : brands)
-                mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(lid), liveproducts));
+                mongoDataList.add(MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(lid), Arrays.asList(liveproduct)));
                 mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, lid), sqlDataList));
             });
         }
