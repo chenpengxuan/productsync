@@ -111,6 +111,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
                 //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
                 if (tempDescription.get("sizepics") != null) {
                     List<String> sizepics = Arrays.asList(tempDescription.get("sizepics").toString().split(","));
+                    sizepics = new ArrayList<>(sizepics);
                     if (tempProductDataMap.get("MeasurePic") != null) {
                         sizepics.add(tempProductDataMap.get("MeasurePic").toString());
                     }
