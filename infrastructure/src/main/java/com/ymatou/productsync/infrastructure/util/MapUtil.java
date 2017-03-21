@@ -52,7 +52,7 @@ public class MapUtil {
             throw new IllegalArgumentException("mongo 待操作数据不能为空");
         }
         JSON.DEFFAULT_DATE_FORMAT = DEFAULT_DATE_FORMAT;
-        return JSON.toJSONString(map, SerializerFeature.QuoteFieldNames).replaceAll("\"#\"","#");
+        return JSON.toJSONString(map, SerializerFeature.QuoteFieldNames).replaceAll("\"#\"", "#");
     }
 
     /**
@@ -117,22 +117,24 @@ public class MapUtil {
      * @param seperator
      */
     public static void mapFieldToStringArray(List<Map<String, Object>> mapList, String field, String seperator) {
-        if(mapList != null && !mapList.isEmpty()){
-            mapList.stream().forEach(x -> mapFieldToStringArray(x,field,seperator));
+        if (mapList != null && !mapList.isEmpty()) {
+            mapList.stream().forEach(x -> mapFieldToStringArray(x, field, seperator));
         }
     }
 
     /**
      * 将选定键数组转换成嵌套子对象
-     * @param mapList
-     * @param fieldList 要转换的key数组
-     * @param nestedObjKey 嵌套对象的key名
-     * @param checkKey 嵌套聚合依据的key
-     * @return
      *
+     * @param mapList
+     * @param fieldList    要转换的key数组
+     * @param nestedObjKey 嵌套对象的key名
+     * @param checkKey     嵌套聚合依据的key
+     * @return
      */
-    public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList, String[] fieldList, String nestedObjKey,String checkKey) {
-        if (mapList == null) {return null;}
+    public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList, String[] fieldList, String nestedObjKey, String checkKey) {
+        if (mapList == null) {
+            return null;
+        }
         List<Map<String, Object>> tempDataList = new ArrayList<>();
         mapList.forEach(data -> {
             if (!tempDataList.stream().anyMatch(x -> x.containsValue(data.get(checkKey)))) {
@@ -142,14 +144,14 @@ public class MapUtil {
                 Arrays.stream(fieldList).forEach(key -> tempMap.remove(key));
                 Map<String, Object> tempPropertyMap = new HashMap<>();
                 Arrays.stream(fieldList).forEach(key ->
-                    tempPropertyMap.put(key,data.get(key))
+                        tempPropertyMap.put(key, data.get(key))
                 );
-                if(!Maps.filterValues(tempPropertyMap,x -> x != null).isEmpty()) {
+                if (!Maps.filterValues(tempPropertyMap, x -> x != null).isEmpty()) {
                     nestedDataList.add(tempPropertyMap);
                 }
-                if(!nestedDataList.isEmpty()) {
+                if (!nestedDataList.isEmpty()) {
                     tempMap.put(nestedObjKey, nestedDataList);
-                }else{
+                } else {
                     tempMap.put(nestedObjKey, null);
                 }
                 tempDataList.add(tempMap);
@@ -158,15 +160,30 @@ public class MapUtil {
                         .filter(x -> x.containsValue(data.get(checkKey))).findFirst()
                         .orElse(Collections.emptyMap()).get(nestedObjKey);
                 Map<String, Object> tempPropertyMap = new HashMap<>();
-                if(!tempNestedDataList.isEmpty())
-                Arrays.stream(fieldList).forEach(key ->
-                    tempPropertyMap.put(key,data.get(key))
-                );
-                if(!Maps.filterValues(tempPropertyMap,x -> x != null).isEmpty()) {
+                if (!tempNestedDataList.isEmpty())
+                    Arrays.stream(fieldList).forEach(key ->
+                            tempPropertyMap.put(key, data.get(key))
+                    );
+                if (!Maps.filterValues(tempPropertyMap, x -> x != null).isEmpty()) {
                     tempNestedDataList.add(tempPropertyMap);
                 }
             }
         });
         return tempDataList;
     }
+
+//    public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList,String[] fieldList) {
+//        if (mapList == null) {
+//            return null;
+//        }
+//        List<Map<String, Object>> tempDataList = new ArrayList<>();
+//        mapList.forEach(data -> {
+//            Map<String, Object> tempPropertyMap = new HashMap<>();
+//                Arrays.stream(fieldList).forEach(key ->
+//                        tempPropertyMap.put(key, data.get(key))
+//                );
+//
+//        });
+//        return tempDataList;
+//    }
 }

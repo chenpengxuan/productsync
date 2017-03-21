@@ -133,6 +133,10 @@
                       FROM      Ymt_ProductCategory(NOLOCK)
                       WHERE     iCategoryId = P.iThirdCategoryId
                     ) AS 'tcatname' ,
+                    (Select MeasurePic
+					from  Ymt_ProductCategory(NOLOCK)
+                      WHERE     iCategoryId = P.iThirdCategoryId)
+					  AS MeasurePic,
                     ( SELECT    b.iMasterCategory
                       FROM      Ymt_ProductCategory (NOLOCK) A
                                 INNER JOIN Ymt_ProductCategory B ON A.iCategoryId = B.iMasterCategory
@@ -193,13 +197,33 @@
     <!--获取商品图文描述-->
     <select id="getProductDescInfo"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-       SELECT  a.WordContent AS 'content',
+       SELECT  a.WordContent AS 'desc',
                 b.[PictureUrl] AS 'pic',
                 b.ProductID AS 'spid'
         FROM    Ymt_ProductDescConfigWord (NOLOCK)a
                 JOIN Ymt_ProductDescConfigPicture (NOLOCK)b ON b.ProductID = a.ProductID
         WHERE   a.ProductID = #{productId} AND b.iAction >-1
     </select>
+
+    <!--商品图文描述（2） （Descriptions）-->
+    <select id="getProductDescriptions" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+select a.id ,(select PicUrls from Ymt_ProductDescExtra with(nolock) where Id =a.SizeTemplateId) as sizepics
+ ,(select [Description] from Ymt_ProductDescExtra with(nolock) where id=a.BuyerNoticeId) as notice
+ ,(select PicUrls from Ymt_ProductDescExtra with(nolock) where id=a.BuyerNoticeId) as notipics
+ ,(select [Description] from Ymt_ProductDescExtra with(nolock) where id=a.SellerServiceId) as intro
+ ,(select PicUrls from Ymt_ProductDescExtra with(nolock) where id=a.SellerServiceId) as intropics
+  from Ymt_ProductDescMap a where ProductId = #{productId}
+    </select>
+
+    <!--商品图文描述（2） Key,Value-->
+    <select id="getProductDescKeyValue" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
+    select
+    s.Name as 'key'
+    ,p.Value as 'value'
+    from Ymt_ProductProperty p join Spu_Property s on p.PropertyId= s.PropertyId
+    where p.Productid=  #{productId}
+    and p.Status >-1
+</select>
 
     <!-- 获取商品有效的图片列表，ActionType: -> AddProductPics & DeleteProductPics -->
     <select id="getProductPictureList" resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">

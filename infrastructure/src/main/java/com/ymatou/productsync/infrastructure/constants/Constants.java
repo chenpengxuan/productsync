@@ -35,6 +35,11 @@ public class Constants {
     public static final String ProductDescriptionDb = "ProductDescriptions";
 
     /**
+     * 商品图文描述（2）
+     */
+    public static  final  String ProductDescExtraDb="ProductDescExtra";
+
+    /**
      * Mongo直播库名
      */
     public static final String LiveDb = "Lives";

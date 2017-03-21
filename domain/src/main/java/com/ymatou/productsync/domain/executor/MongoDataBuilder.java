@@ -38,6 +38,7 @@ public class MongoDataBuilder {
 
     /**
      * 查询指令创建
+     *
      * @param tableName
      * @param operationType
      * @param matchCondition
@@ -45,10 +46,10 @@ public class MongoDataBuilder {
      * @return
      */
     public static MongoQueryData buildQueryMongoData(String tableName,
-                                           MongoOperationTypeEnum operationType,
-                                           Map<String, Object> matchCondition,
+                                                     MongoOperationTypeEnum operationType,
+                                                     Map<String, Object> matchCondition,
                                                      String distinctKey
-                                           ) {
+    ) {
         MongoQueryData md = new MongoQueryData();
         md.setTableName(tableName);
         md.setOperationType(operationType);
@@ -147,11 +148,12 @@ public class MongoDataBuilder {
 
     /**
      * 查询单个商品信息
+     *
      * @param matchCondition
      * @return
      */
-    public static MongoQueryData querySingleProductInfo(Map<String, Object> matchCondition){
-        return buildQueryMongoData(Constants.ProductDb,MongoOperationTypeEnum.SELECTSINGLE,matchCondition,"");
+    public static MongoQueryData querySingleProductInfo(Map<String, Object> matchCondition) {
+        return buildQueryMongoData(Constants.ProductDb, MongoOperationTypeEnum.SELECTSINGLE, matchCondition, "");
     }
 
     /**
@@ -207,7 +209,7 @@ public class MongoDataBuilder {
      * @return
      */
     public static MongoData createCatalogUpsert(Map<String, Object> matchCondition,
-            List<Map<String, Object>> updateData) {
+                                                List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.CatalogDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
@@ -238,26 +240,39 @@ public class MongoDataBuilder {
      * @param updateData
      * @return
      */
-    public static MongoData createProductDescUpsert(Map<String, Object> matchCondition,List<Map<String, Object>> updateData) {
+    public static MongoData createProductDescUpsert(Map<String, Object> matchCondition, List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.ProductDescriptionDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
     /**
-     * 创建商品直播信息
+     * 更新商品图文描述（2）
+     *
+     * @param matchCondition
      * @param updateData
      * @return
      */
-    public static MongoData createProductLiveAdd(List<Map<String, Object>> updateData){
-        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.CREATE,null,updateData);
+    public static MongoData createDescriptionsUpsert(Map<String, Object> matchCondition, List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.ProductDescExtraDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
+    /**
+     * 创建商品直播信息
+     *
+     * @param updateData
+     * @return
+     */
+    public static MongoData createProductLiveAdd(List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.LiveProudctDb, MongoOperationTypeEnum.CREATE, null, updateData);
     }
 
     /**
      * 更新商品直播信息
+     *
      * @param updateData
      * @return
      */
-    public static MongoData createProductLiveUpsert(Map<String, Object> matchCondition,List<Map<String, Object>> updateData){
-        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPSERT,matchCondition,updateData);
+    public static MongoData createProductLiveUpsert(Map<String, Object> matchCondition, List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.LiveProudctDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
 
@@ -287,11 +302,12 @@ public class MongoDataBuilder {
 
     /**
      * 同步活动商品数据
+     *
      * @param matchCondition
      * @param updateData
      * @return
      */
-    public static MongoData syncActivityProducts(Map<String,Object> matchCondition,
+    public static MongoData syncActivityProducts(Map<String, Object> matchCondition,
                                                  List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.ActivityProductDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
