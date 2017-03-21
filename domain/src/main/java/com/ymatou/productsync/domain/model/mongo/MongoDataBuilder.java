@@ -1,19 +1,30 @@
-package com.ymatou.productsync.domain.executor;
+package com.ymatou.productsync.domain.model.mongo;
 
-import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.google.common.collect.Lists;
-import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
-import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
+import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import javax.annotation.PostConstruct;
+import java.util.*;
 
 /**
  * Created by chenfei on 2017/2/7.
  * mongo数据指令包装器
  */
+@Component
 public class MongoDataBuilder {
+
+    @Autowired
+    private MongoRepository mongoRepository;
+
+    private static MongoRepository repository;
+
+    @PostConstruct
+    private void init(){
+        repository = mongoRepository;
+    }
 
     /**
      * 指令创建
@@ -38,6 +49,7 @@ public class MongoDataBuilder {
 
     /**
      * 查询指令创建
+     *
      * @param tableName
      * @param operationType
      * @param matchCondition
@@ -45,10 +57,10 @@ public class MongoDataBuilder {
      * @return
      */
     public static MongoQueryData buildQueryMongoData(String tableName,
-                                           MongoOperationTypeEnum operationType,
-                                           Map<String, Object> matchCondition,
+                                                     MongoOperationTypeEnum operationType,
+                                                     Map<String, Object> matchCondition,
                                                      String distinctKey
-                                           ) {
+    ) {
         MongoQueryData md = new MongoQueryData();
         md.setTableName(tableName);
         md.setOperationType(operationType);
@@ -147,11 +159,12 @@ public class MongoDataBuilder {
 
     /**
      * 查询单个商品信息
+     *
      * @param matchCondition
      * @return
      */
-    public static MongoQueryData querySingleProductInfo(Map<String, Object> matchCondition){
-        return buildQueryMongoData(Constants.ProductDb,MongoOperationTypeEnum.SELECTSINGLE,matchCondition,"");
+    public static MongoQueryData querySingleProductInfo(Map<String, Object> matchCondition) {
+        return buildQueryMongoData(Constants.ProductDb, MongoOperationTypeEnum.SELECTSINGLE, matchCondition, "");
     }
 
     /**
@@ -207,7 +220,7 @@ public class MongoDataBuilder {
      * @return
      */
     public static MongoData createCatalogUpsert(Map<String, Object> matchCondition,
-            List<Map<String, Object>> updateData) {
+                                                List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.CatalogDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
@@ -238,26 +251,28 @@ public class MongoDataBuilder {
      * @param updateData
      * @return
      */
-    public static MongoData createProductDescUpsert(Map<String, Object> matchCondition,List<Map<String, Object>> updateData) {
+    public static MongoData createProductDescUpsert(Map<String, Object> matchCondition, List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.ProductDescriptionDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
     /**
      * 创建商品直播信息
+     *
      * @param updateData
      * @return
      */
-    public static MongoData createProductLiveAdd(List<Map<String, Object>> updateData){
-        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.CREATE,null,updateData);
+    public static MongoData createProductLiveAdd(List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.LiveProudctDb, MongoOperationTypeEnum.CREATE, null, updateData);
     }
 
     /**
      * 更新商品直播信息
+     *
      * @param updateData
      * @return
      */
-    public static MongoData createProductLiveUpsert(Map<String, Object> matchCondition,List<Map<String, Object>> updateData){
-        return buildMongoData(Constants.LiveProudctDb,MongoOperationTypeEnum.UPSERT,matchCondition,updateData);
+    public static MongoData createProductLiveUpsert(Map<String, Object> matchCondition, List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.LiveProudctDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
     }
 
 
@@ -287,13 +302,53 @@ public class MongoDataBuilder {
 
     /**
      * 同步活动商品数据
+     *
      * @param matchCondition
      * @param updateData
      * @return
      */
-    public static MongoData syncActivityProducts(Map<String,Object> matchCondition,
+    public static MongoData syncActivityProducts(Map<String, Object> matchCondition,
                                                  List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.ActivityProductDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
+    /**
+     * 同步商品相关表时间戳
+     *
+     * @param productId
+     * @param updateTablesList
+     * @return
+     */
+    public static boolean syncProductRelatedTimeStamp(String productId,
+                                                      List<String> updateTablesList) {
+        Map<String, Object> matchCondition = new HashMap<>();
+        matchCondition.put("spid", productId);
+        Map<String, Object> updateData = new HashMap<>();
+        updateData.put("spid", productId);
+        updateTablesList.forEach(x -> {
+            switch (x) {
+                case Constants.ProductDb:
+                    updateData.put("sut", new Date());
+                    break;
+                case Constants.CatalogDb:
+                    updateData.put("cut", new Date());
+                    break;
+                case Constants.LiveProudctDb:
+                    updateData.put("lut", new Date());
+                    break;
+                case Constants.ActivityProductDb:
+                    updateData.put("aut", new Date());
+                    break;
+                default:
+                    break;
+            }
+        });
+        return repository.excuteMongo(
+                buildMongoData(Constants.ProductTimeStamp,
+                        MongoOperationTypeEnum.UPSERT,
+                        matchCondition,
+                        Arrays.asList(updateData))
+        );
     }
 
 }

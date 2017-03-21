@@ -2,6 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -43,12 +46,16 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
                 Object[] brands = products.stream().map(t -> t.get("sBrand")).distinct().toArray();
                 activity.put("brands", brands);
             }
-            Map<String, Object> matchConditionInfo = new HashMap();
-            matchConditionInfo.put("lid", activityId);
             mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId), sqlDataList));
         } else {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getActivityInfo为空");
         }
         return mongoDataList;
     }
+
+    @Override
+    public ProductChangedRange getProductChangeRangeInfo() {
+        return null;
+    }
+
 }

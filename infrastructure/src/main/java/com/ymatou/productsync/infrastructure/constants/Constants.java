@@ -43,4 +43,9 @@ public class Constants {
      * 直播商品库名
      */
     public static final String LiveProudctDb = "LiveProducts";
+
+    /**
+     * 商品相关时间戳表
+     */
+    public static final String ProductTimeStamp = "ProductTimeStamp";
 }

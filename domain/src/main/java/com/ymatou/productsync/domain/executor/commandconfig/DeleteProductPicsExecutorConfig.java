@@ -2,16 +2,13 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.facade.model.BizException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * 同步商品主图列表 - DeleteProductPics
@@ -31,5 +28,10 @@ public class DeleteProductPicsExecutorConfig implements ExecutorConfig {
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
         return addProductPicsExecutorConfig.loadSourceData(activityId, productId);
+    }
+
+    @Override
+    public ProductChangedRange getProductChangeRangeInfo() {
+        return addProductPicsExecutorConfig.getProductChangeRangeInfo();
     }
 }

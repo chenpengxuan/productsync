@@ -2,13 +2,15 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,6 +37,12 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.ModifyActivity;
     }
+
+    private static ProductChangedRange productChangedRange = new ProductChangedRange();
+
+    private static List<String> productChangedTableNameList = new ArrayList<>();
+
+    private static List<String> productIdList = new ArrayList<>();
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
@@ -73,7 +81,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         if (liveProductMapList != null) {
             liveProductMapList.stream().forEach(liveProductItem -> {
                 Object pid = liveProductItem.get("spid");
-                Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(pid.toString(),activityId);
+                Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(pid.toString(), activityId);
                 MongoData liveProductMongoData = MongoDataBuilder.createLiveProductUpdate(liveProductCondition, MapUtil.mapToList(liveProductItem));
                 ///2.商品数据更新
                 if (productMapList != null && productMapList.stream().anyMatch(p -> p.containsValue(pid))) {
@@ -84,7 +92,21 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
                 }
                 mongoDataList.add(liveProductMongoData);
             });
+
+            productIdList.addAll(liveProductMapList
+                    .stream()
+                    .map(p ->
+                            Optional.ofNullable((String) p.get("spid")).orElse("")
+                    ).collect(Collectors.toList()));
+            productChangedTableNameList.add(Constants.LiveProudctDb);
         }
         return mongoDataList;
+    }
+
+    @Override
+    public ProductChangedRange getProductChangeRangeInfo() {
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+        return productChangedRange;
     }
 }

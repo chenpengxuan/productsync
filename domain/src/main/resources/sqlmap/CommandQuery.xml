@@ -278,7 +278,7 @@
 
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-          SELECT isnull(c.sBrand,'') as sBrand ,isnull(a.sBrand,'') as sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+          SELECT isnull(c.sBrand,'') as sBrand ,isnull(a.sBrand,'') as sBrandEn FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
     </select>

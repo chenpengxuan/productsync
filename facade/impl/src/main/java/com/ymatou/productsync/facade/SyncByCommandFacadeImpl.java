@@ -5,6 +5,8 @@ import com.ymatou.messagebus.client.MessageBusException;
 import com.ymatou.performancemonitorclient.PerformanceStatisticContainer;
 import com.ymatou.productsync.domain.executor.*;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
@@ -196,6 +198,12 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             try {
                 if (executor.checkNeedProcessCommand(req.getTransactionId())) {
                     syncSuccess = executor.executeCommand(req, config);
+                    //没有任何异常并且返回成功之后进行商品变更边界的同步
+                    if(syncSuccess){
+                        boolean syncChangeRangeSuccess = executor.syncProductChangeRange(config);
+                        if(!syncChangeRangeSuccess)
+                            logWrapper.recordErrorLog("同步商品变更边界失败,对应指令信息为{}",Utils.toJSONString(config));
+                    }
                     return syncSuccess ? BaseResponse.newSuccessInstance() : BaseResponse.newFailInstance(SyncStatusEnum.FAILED.getCode(), "同步失败");
                 }
             } catch (IllegalArgumentException argException) {

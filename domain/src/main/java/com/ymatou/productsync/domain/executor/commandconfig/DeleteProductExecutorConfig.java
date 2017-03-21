@@ -3,13 +3,15 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,11 +34,16 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
     @Autowired
     private LiveCommandQuery liveCommandQuery;
 
-
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.DeleteProduct;
     }
+
+    private static ProductChangedRange productChangedRange = new ProductChangedRange();
+
+    private static List<String> productChangedTableNameList = new ArrayList<>();
+
+    private static List<String> productIdList = new ArrayList<>();
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
@@ -54,7 +61,6 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             //删除直播商品
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);
-            //fixme:matchConditionInfo.put("end",now); <
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             //删规格
             MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), Lists.newArrayList());
@@ -62,6 +68,10 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             mongoDataList.add(liveProductMd);
             //直播品牌不更新
             mongoDataList.add(catalogMd);
+
+            productChangedTableNameList.add(Constants.ProductDb);
+            productChangedTableNameList.add(Constants.LiveProudctDb);
+            productChangedTableNameList.add(Constants.CatalogDb);
 
         } else { //从直播中删除商品
             //更新直播商品
@@ -80,7 +90,17 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
                 mongoDataList.add(liveMd);
             }
             mongoDataList.add(liveProductMd);
+            productChangedTableNameList.add(Constants.LiveProudctDb);
         }
+
+        productIdList.add(productId);
         return mongoDataList;
+    }
+
+    @Override
+    public ProductChangedRange getProductChangeRangeInfo() {
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+        return productChangedRange;
     }
 }

@@ -1,5 +1,6 @@
 package com.ymatou.productsync.domain.executor;
 
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
@@ -62,6 +63,7 @@ public class CommandExecutor {
 
     /**
      * 设置重试次数
+     *
      * @param transactionId
      */
     public void updateTransactionInfo(int transactionId) {
@@ -118,9 +120,28 @@ public class CommandExecutor {
      * @param req
      * @param config
      */
-    public boolean executeCommand(SyncByCommandReq req, ExecutorConfig config) throws IllegalArgumentException, BizException {
+    public boolean executeCommand(SyncByCommandReq req, ExecutorConfig config) throws
+            IllegalArgumentException,
+            BizException {
         boolean isSuccess = mongoRepository.excuteMongo(config.loadSourceData(req.getActivityId(), req.getProductId()));
         updateTransactionInfo(req.getTransactionId(), isSuccess ? SyncStatusEnum.SUCCESS : SyncStatusEnum.FAILED);
         return isSuccess;
+    }
+
+    /**
+     * 同步更新时间戳
+     * 目前只更新商品相关
+     *
+     * @param config
+     * @return
+     */
+    public boolean syncProductChangeRange(ExecutorConfig config) {
+        if(config.getProductChangeRangeInfo() == null){
+            logWrapper.recordInfoLog("当前场景数据变更边界与商品无关,对应场景为{}",config.getCommand());
+            throw new IllegalArgumentException("当前场景数据变更边界与商品无关,对应场景为:" + config.getCommand());
+        }
+        return config.getProductChangeRangeInfo().getProductIdList().stream().allMatch(productId ->
+                MongoDataBuilder.syncProductRelatedTimeStamp(productId,
+                        config.getProductChangeRangeInfo().getProductTableRangeList()));
     }
 }

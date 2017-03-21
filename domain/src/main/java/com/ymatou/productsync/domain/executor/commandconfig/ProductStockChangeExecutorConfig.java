@@ -3,9 +3,10 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -34,6 +35,12 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.ProductStockChange;
     }
 
+    private static ProductChangedRange productChangedRange = new ProductChangedRange();
+
+    private static List<String> productChangedTableNameList = new ArrayList<>();
+
+    private static List<String> productIdList = new ArrayList<>();
+
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
         List<MongoData> mongoDataList = new ArrayList<>();
@@ -42,6 +49,8 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         if (catalogList == null || catalogList.isEmpty()) {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getProductCatalogs 为空");
         }
+
+        productIdList.add(productId);
         final double[] minPrice = {Double.MAX_VALUE};
         final double[] maxPrice = {Double.MIN_VALUE};
         catalogList.stream().forEach(catalog -> {
@@ -61,6 +70,15 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         productCatalog.add(datas);
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),productCatalog));
 
+        productChangedTableNameList.add(Constants.CatalogDb);
+        productChangedTableNameList.add(Constants.ProductDb);
         return mongoDataList;
+    }
+
+    @Override
+    public ProductChangedRange getProductChangeRangeInfo() {
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+        return productChangedRange;
     }
 }

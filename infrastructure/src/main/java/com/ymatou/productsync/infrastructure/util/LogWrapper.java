@@ -48,4 +48,22 @@ public class LogWrapper {
             logger.debug(msg,objects);
         }
     }
+
+    /**
+     * 普通消息日志记录
+     * @param msg
+     * @param objects
+     */
+    public void recordInfoLog(String msg,Object...objects){
+        logger.info(msg,objects);
+    }
+
+    /**
+     * DEBUG消息日志记录
+     * @param msg
+     * @param objects
+     */
+    public void recordDebugLog(String msg,Object...objects){
+        logger.info(msg,objects);
+    }
 }

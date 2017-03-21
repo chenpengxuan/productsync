@@ -2,14 +2,16 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,12 @@ public class AddProductExecutorConfig implements ExecutorConfig {
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.AddProduct;
     }
+
+    private static ProductChangedRange productChangedRange = new ProductChangedRange();
+
+    private static List<String> productChangedTableNameList = new ArrayList<>();
+
+    private static List<String> productIdList = new ArrayList<>();
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
@@ -117,7 +125,20 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempLiveMap.put("brands", brands);
             sqlLiveDataList.add(tempLiveMap);
             mongoDataList.add(MongoDataBuilder.createLiveUpsert(MongoQueryBuilder.queryLiveId(activityId), sqlLiveDataList));
+
+            productChangedTableNameList.add(Constants.LiveProudctDb);
         }
+
+        productIdList.add(productId);
+        productChangedTableNameList.add(Constants.ProductDb);
+        productChangedTableNameList.add(Constants.CatalogDb);
         return mongoDataList;
+    }
+
+    @Override
+    public ProductChangedRange getProductChangeRangeInfo() {
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+        return productChangedRange;
     }
 }
