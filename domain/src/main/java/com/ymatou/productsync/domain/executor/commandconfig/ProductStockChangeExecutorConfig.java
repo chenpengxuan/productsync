@@ -43,6 +43,9 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.规格价格及库存更新
         List<Map<String, Object>> catalogList = commandQuery.getProductCatalogs(productId);
@@ -72,13 +75,15 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
 
         productChangedTableNameList.add(Constants.CatalogDb);
         productChangedTableNameList.add(Constants.ProductDb);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+
         return productChangedRange;
     }
 }

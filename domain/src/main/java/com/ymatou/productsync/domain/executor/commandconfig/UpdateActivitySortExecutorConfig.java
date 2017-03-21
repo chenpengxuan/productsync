@@ -38,6 +38,9 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         if (activityId <= 0) {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "直播id必须大于0");
         }
@@ -64,13 +67,14 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig {
 
         productChangedTableNameList.add(Constants.LiveProudctDb);
 
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

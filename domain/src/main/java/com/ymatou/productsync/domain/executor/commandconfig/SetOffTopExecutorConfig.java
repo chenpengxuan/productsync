@@ -39,6 +39,8 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
+        productIdList.clear();
+        productChangedTableNameList.clear();
 
         List<MongoData> mongoDataList = new ArrayList<>();
         //直播商品更新-istop
@@ -50,13 +52,14 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
 
         productIdList.add(productId);
         productChangedTableNameList.add(Constants.LiveProudctDb);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

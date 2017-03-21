@@ -47,6 +47,8 @@ public class AddProductExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+        productIdList.clear();
+        productChangedTableNameList.clear();
         //商品信息
         List<Map<String, Object>> sqlProductDataList = commandQuery.getProductDetailInfo(productId);
         //商品规格信息
@@ -132,13 +134,13 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         productIdList.add(productId);
         productChangedTableNameList.add(Constants.ProductDb);
         productChangedTableNameList.add(Constants.CatalogDb);
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

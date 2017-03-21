@@ -38,6 +38,9 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
     private static List<String> productIdList = new ArrayList<>();
 
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getProductStockInfo(productId);
         if(sqlDataList == null || sqlDataList.isEmpty()){
@@ -50,13 +53,14 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
 
         productIdList.add(productId);
         productChangedTableNameList.add(Constants.CatalogDb);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

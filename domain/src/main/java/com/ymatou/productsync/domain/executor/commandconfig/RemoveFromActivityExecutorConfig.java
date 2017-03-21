@@ -45,6 +45,9 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.删掉直播商品关系
         Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId);
@@ -78,13 +81,14 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
 
         productChangedTableNameList.add(Constants.ProductDb);
         productIdList.add(productId);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

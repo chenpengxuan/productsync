@@ -38,6 +38,9 @@ public class SetTopProductExecutorConfig implements ExecutorConfig {
     private static List<String> productIdList = new ArrayList<>();
 
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> istop = commandQuery.getProductOnOffTop(productId);
         if (istop == null || istop.isEmpty()) {
@@ -47,13 +50,14 @@ public class SetTopProductExecutorConfig implements ExecutorConfig {
 
         productIdList.add(productId);
         productChangedTableNameList.add(Constants.ProductDb);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

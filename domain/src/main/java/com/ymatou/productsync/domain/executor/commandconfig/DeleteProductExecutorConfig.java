@@ -47,6 +47,8 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
+        productIdList.clear();
+        productChangedTableNameList.clear();
         List<MongoData> mongoDataList = new ArrayList<>();
         //pc上删除商品
         if (activityId <= 0) {
@@ -94,13 +96,15 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
         }
 
         productIdList.add(productId);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+
         return productChangedRange;
     }
 }

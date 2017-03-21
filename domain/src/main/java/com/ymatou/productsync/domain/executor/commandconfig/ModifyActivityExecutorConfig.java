@@ -46,6 +46,9 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.直播数据更新
         List<Map<String, Object>> mapList = liveCommandQuery.getActivityInfo(activityId);
@@ -100,13 +103,13 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
                     ).collect(Collectors.toList()));
             productChangedTableNameList.add(Constants.LiveProudctDb);
         }
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return productChangedRange;
     }
 }

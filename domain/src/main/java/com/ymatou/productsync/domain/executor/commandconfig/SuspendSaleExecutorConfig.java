@@ -34,6 +34,9 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
+        productIdList.clear();
+        productChangedTableNameList.clear();
+
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sourceData = new ArrayList<>();
         Map<String, Object> map = new HashMap();
@@ -44,13 +47,15 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
 
         productIdList.add(productId);
         productChangedTableNameList.add(Constants.LiveProudctDb);
+
+        productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+
         return productChangedRange;
     }
 }

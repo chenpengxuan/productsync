@@ -38,6 +38,8 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+        productIdList.clear();
+        productChangedTableNameList.clear();
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> tempSqlDataList = commandQuery.getProductPictureList(productId);
 
@@ -54,15 +56,14 @@ public class AddProductPicsExecutorConfig implements ExecutorConfig {
         productChangedTableNameList.add(Constants.ProductDb);
         productIdList.add(productId);
 
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         productChangedRange.setProductIdList(productIdList);
+        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
 
     @Override
     public ProductChangedRange getProductChangeRangeInfo() {
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
+
         return productChangedRange;
     }
 }
