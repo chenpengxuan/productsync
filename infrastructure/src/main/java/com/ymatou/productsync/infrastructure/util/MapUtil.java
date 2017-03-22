@@ -171,19 +171,4 @@ public class MapUtil {
         });
         return tempDataList;
     }
-
-//    public static List<Map<String, Object>> mapFieldArrayToNestedObj(List<Map<String, Object>> mapList,String[] fieldList) {
-//        if (mapList == null) {
-//            return null;
-//        }
-//        List<Map<String, Object>> tempDataList = new ArrayList<>();
-//        mapList.forEach(data -> {
-//            Map<String, Object> tempPropertyMap = new HashMap<>();
-//                Arrays.stream(fieldList).forEach(key ->
-//                        tempPropertyMap.put(key, data.get(key))
-//                );
-//
-//        });
-//        return tempDataList;
-//    }
 }
