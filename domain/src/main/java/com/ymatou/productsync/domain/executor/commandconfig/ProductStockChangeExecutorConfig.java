@@ -1,11 +1,12 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Doubles;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
@@ -54,24 +55,43 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         }
 
         productIdList.add(productId);
-        final double[] minPrice = {Double.MAX_VALUE};
-        final double[] maxPrice = {Double.MIN_VALUE};
+
+        double[] originalPriceList = catalogList.stream().mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString() : "0"), 2))
+                .toArray();
+        double[] newpPriceList = catalogList.stream().mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("newp") != null ? catalog.get("newp").toString() : "0"), 2))
+                .toArray();
+        double[] vipPriceList = catalogList.stream().mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("vip") != null ? catalog.get("vip").toString() : "0"), 2))
+                .toArray();
+
+        String maxPrice =
+                String.valueOf(Doubles.max(originalPriceList))
+                        + ","
+                        + String.valueOf(Doubles.max(newpPriceList))
+                        + ","
+                        + String.valueOf(Doubles.max(vipPriceList));
+
+        String minPrice =
+                String.valueOf(Doubles.min(originalPriceList))
+                        + ","
+                        + String.valueOf(Doubles.min(newpPriceList))
+                        + ","
+                        + String.valueOf(Doubles.min(vipPriceList));
         catalogList.stream().forEach(catalog -> {
-            double price = Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString():"0");
-            minPrice[0] = Double.min(price, minPrice[0]);
-            maxPrice[0] = Double.max(price, maxPrice[0]);
-            Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid") != null ? catalog.get("spid").toString():"");
+            Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid") != null ? catalog.get("spid").toString() : "");
             conditions.put("cid", catalog.get("cid"));
             mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(catalog)));
         });
 
         //更新商品最大最小价格
         List<Map<String, Object>> productCatalog = Lists.newArrayList();
-         Map<String,Object> datas = new HashMap<>();
-        datas.put("minp", Utils.doubleFormat(minPrice[0],2));
-        datas.put("maxp",Utils.doubleFormat(maxPrice[0],2));
+        Map<String, Object> datas = new HashMap<>();
+        datas.put("minp", minPrice);
+        datas.put("maxp", maxPrice);
         productCatalog.add(datas);
-        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId),productCatalog));
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), productCatalog));
 
         productChangedTableNameList.add(Constants.CatalogDb);
         productChangedTableNameList.add(Constants.ProductDb);
