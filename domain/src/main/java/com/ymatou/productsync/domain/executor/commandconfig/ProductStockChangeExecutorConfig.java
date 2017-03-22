@@ -17,10 +17,7 @@ import com.ymatou.productsync.infrastructure.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by chenfei on 2017/2/9.
@@ -56,29 +53,6 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
 
         productIdList.add(productId);
 
-        double[] originalPriceList = catalogList.stream().mapToDouble(catalog ->
-                Utils.doubleFormat(Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString() : "0"), 2))
-                .toArray();
-        double[] newpPriceList = catalogList.stream().mapToDouble(catalog ->
-                Utils.doubleFormat(Double.parseDouble(catalog.get("newp") != null ? catalog.get("newp").toString() : "0"), 2))
-                .toArray();
-        double[] vipPriceList = catalogList.stream().mapToDouble(catalog ->
-                Utils.doubleFormat(Double.parseDouble(catalog.get("vip") != null ? catalog.get("vip").toString() : "0"), 2))
-                .toArray();
-
-        String maxPrice =
-                String.valueOf(Doubles.max(originalPriceList))
-                        + ","
-                        + String.valueOf(Doubles.max(newpPriceList))
-                        + ","
-                        + String.valueOf(Doubles.max(vipPriceList));
-
-        String minPrice =
-                String.valueOf(Doubles.min(originalPriceList))
-                        + ","
-                        + String.valueOf(Doubles.min(newpPriceList))
-                        + ","
-                        + String.valueOf(Doubles.min(vipPriceList));
         catalogList.stream().forEach(catalog -> {
             Map<String, Object> conditions = MongoQueryBuilder.queryProductId(catalog.get("spid") != null ? catalog.get("spid").toString() : "");
             conditions.put("cid", catalog.get("cid"));
@@ -86,10 +60,11 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         });
 
         //更新商品最大最小价格
+        List<String> priceRangeInfo = calculateProductPriceRange(catalogList);
         List<Map<String, Object>> productCatalog = Lists.newArrayList();
         Map<String, Object> datas = new HashMap<>();
-        datas.put("minp", minPrice);
-        datas.put("maxp", maxPrice);
+        datas.put("minp", priceRangeInfo.get(0));
+        datas.put("maxp", priceRangeInfo.get(1));
         productCatalog.add(datas);
         mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), productCatalog));
 
@@ -105,5 +80,38 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
     public ProductChangedRange getProductChangeRangeInfo() {
 
         return productChangedRange;
+    }
+
+    /**
+     * 计算商品价格区间
+     *
+     * @param catalogList
+     * @return 始终返回2个元素的列表 第一个为最小价格 第二个为最大价格
+     */
+    public List<String> calculateProductPriceRange(List<Map<String, Object>> catalogList) {
+        double[] originalPriceList = catalogList.stream().mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString() : "0"), 2))
+                .toArray();
+        double[] newpPriceList = catalogList.stream().mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("newp") != null ? catalog.get("newp").toString() : "0"), 2))
+                .filter(x -> x > 0D).toArray();
+        double[] vipPriceList = catalogList.stream().mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("vip") != null ? catalog.get("vip").toString() : "0"), 2))
+                .filter(x -> x > 0D).toArray();
+
+        String maxPrice =
+                String.valueOf(Doubles.max(originalPriceList))
+                        + ","
+                        + (newpPriceList.length != 0 ? String.valueOf(Doubles.max(newpPriceList)) : "0.00")
+                        + ","
+                        + (vipPriceList.length != 0 ? String.valueOf(Doubles.max(vipPriceList)) : "0.00");
+
+        String minPrice =
+                String.valueOf(Doubles.min(originalPriceList))
+                        + ","
+                        + (newpPriceList.length != 0 ? String.valueOf(Doubles.min(newpPriceList)) : "0.00")
+                        + ","
+                        + (vipPriceList.length != 0 ? String.valueOf(Doubles.min(vipPriceList)) : "0.00");
+        return Arrays.asList(minPrice, maxPrice);
     }
 }

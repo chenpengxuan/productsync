@@ -34,6 +34,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
     @Autowired
     private MongoRepository mongoRepository;
 
+    @Autowired
+    private ProductStockChangeExecutorConfig productStockChangeExecutorConfig;
+
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.AddProduct;
@@ -86,6 +89,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap()).put("ver", "1001");
             sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap()).put("verupdate", Utils.getNow());
         }
+        List<String> productPriceRangeInfo = productStockChangeExecutorConfig.calculateProductPriceRange(sqlCatalogDataList);
+        tempProductDataMap.put("minp",productPriceRangeInfo.get(0));
+        tempProductDataMap.put("maxp",productPriceRangeInfo.get(1));
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //创建规格信息 先删除再更新

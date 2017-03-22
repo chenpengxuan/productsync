@@ -107,24 +107,6 @@
                     P.sMobileDescription AS 'intro' ,--商品简介
                     isnull(P.iTariffType,0) AS 'tariffy' ,--是否包税
                     isnull(P.iBondedArea,0) AS 'bonded' ,
-                    ( SELECT STUFF((SELECT
-						  ',' +  CAST(MAX(fQuotePrice) AS VARCHAR(36))
-						+ ',' +  CAST(MAX(isnull(fNewCustomerPrice,0)) AS VARCHAR(36))
-						+ ',' +  CAST(MAX(isnull(fVipPrice,0)) AS VARCHAR(36))
-                      FROM      Ymt_Catalogs (NOLOCK)
-                      WHERE     sProductId = #{productId}
-                                AND iAction = 0
-								  FOR XML PATH('')), 1, 1, '')
-                    ) AS 'maxp' ,--最高规格价
-                    ( SELECT STUFF((SELECT
-						  ',' +  CAST(MIN(fQuotePrice) AS VARCHAR(36))
-						+ ',' +  CAST(MIN(isnull(fNewCustomerPrice,0)) AS VARCHAR(36))
-						+ ',' +  CAST(MIN(isnull(fVipPrice,0)) AS VARCHAR(36))
-                      FROM      Ymt_Catalogs (NOLOCK)
-                      WHERE     sProductId = '82d1532a-605b-423a-bba6-3b3cf3772d79'
-                                AND iAction = 0
-								  FOR XML PATH('')), 1, 1, '')
-                    ) AS 'minp' ,--最低规格价
                     P.iUserId AS 'sid' ,
                     P.SellerLoginId AS 'sname' ,
                     isnull(b.sBrand,'') AS 'brand' ,
