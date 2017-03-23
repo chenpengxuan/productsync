@@ -44,7 +44,7 @@ public class ProductStockChangeTest {
     }
 
     @Test(expected = BizException.class)
-    public void TestProductStockChangeException() {
+    public void testProductStockChangeException() {
         //不存在的商品id，exception
         String productId2 = "7577884f-8606-4571-ba52-4881e89e111c";
         SyncByCommandReq req2 = new SyncByCommandReq();

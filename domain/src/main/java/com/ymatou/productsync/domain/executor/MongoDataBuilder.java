@@ -256,6 +256,17 @@ public class MongoDataBuilder {
     }
 
     /**
+     * 更新商品图文描述（2）
+     *
+     * @param matchCondition
+     * @param updateData
+     * @return
+     */
+    public static MongoData createDescriptionsUpdate(Map<String, Object> matchCondition, List<Map<String, Object>> updateData) {
+        return buildMongoData(Constants.ProductDescExtraDb, MongoOperationTypeEnum.UPDATE, matchCondition, updateData);
+    }
+
+    /**
      * 创建商品直播信息
      *
      * @param updateData

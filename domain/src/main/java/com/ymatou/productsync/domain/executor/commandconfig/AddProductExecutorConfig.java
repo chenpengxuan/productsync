@@ -115,9 +115,6 @@ public class AddProductExecutorConfig implements ExecutorConfig {
                         sizepics.add(tempProductDataMap.get("MeasurePic").toString());
                     }
                     tempDescMap.put("sizepics", sizepics);
-                    //写product中尺码图片
-                    //Object sizepics = sqlDescriptionsData.stream().findFirst().orElse(Collections.emptyMap()).get("sizepics");
-                    //tempProductDataMap.put("sizepics", sizepics != null ? sizepics : new String[]{});
                     tempProductDataMap.put("sizepics", sizepics);
                 }
             }
