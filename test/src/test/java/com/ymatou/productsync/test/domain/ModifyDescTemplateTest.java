@@ -23,8 +23,8 @@ public class ModifyDescTemplateTest {
     private ModifyDescTemplateExecutorConfig modifyDescTemplateExecutorConfig;
 
     @Test
-    public void testAddLiveProduct() {
-        String productId = "1eab4b17-486d-4f31-aa37-94be0646cd6f";
+    public void testModifyDescTemplate() {
+        String productId = "bf7c9922-2e4f-4385-85cf-47867555a92f";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, modifyDescTemplateExecutorConfig);

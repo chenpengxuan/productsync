@@ -44,28 +44,27 @@ public class ModifyDescTemplateExecutorConfig implements ExecutorConfig {
         Map<String, Object> tempDescMap = new HashMap<>();
         Map<String, Object> tempProductMap = new HashMap<>();
 
-        if (sqlDescriptionsData != null && !sqlDescriptionsData.isEmpty()) {
-            Map<String, Object> tempDescription = sqlDescriptionsData.stream().findFirst().orElse(Collections.emptyMap());
-            MapUtil.mapFieldToStringArray(tempDescription, "notipics", ",");
-            MapUtil.mapFieldToStringArray(tempDescription, "intropics", ",");
-            tempDescMap.put("notice", tempDescription.get("notice"));
-            tempDescMap.put("notipics", tempDescription.get("notipics"));
-            tempDescMap.put("intro", tempDescription.get("intro"));
-            tempDescMap.put("intropics", tempDescription.get("intropics"));
+        Map<String, Object> tempDescription = sqlDescriptionsData.stream().findFirst().orElse(Collections.emptyMap());
+        MapUtil.mapFieldToStringArray(tempDescription, "notipics", ",");
+        MapUtil.mapFieldToStringArray(tempDescription, "intropics", ",");
+        tempDescMap.put("notice", tempDescription.get("notice"));
+        tempDescMap.put("notipics", tempDescription.get("notipics"));
+        tempDescMap.put("intro", tempDescription.get("intro"));
+        tempDescMap.put("intropics", tempDescription.get("intropics"));
 
-            //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
-            if (tempDescription.get("sizepics") != null) {
-                List<String> sizepics = Arrays.asList(tempDescription.get("sizepics").toString().split(","));
-                sizepics = new ArrayList<>(sizepics);
-                if (tempProductDataMap.get("MeasurePic") != null) {
-                    sizepics.add(tempProductDataMap.get("MeasurePic").toString());
-                }
-                tempDescMap.put("sizepics", sizepics);
-                tempProductMap.put("sizepics", sizepics);
-                mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), MapUtil.mapToList(tempProductMap)));
+        List<String> sizepics = null;
+        //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
+        if (tempDescription.get("sizepics") != null) {
+            sizepics = Arrays.asList(tempDescription.get("sizepics").toString().split(","));
+            sizepics = new ArrayList<>(sizepics);
+            if (tempProductDataMap.get("MeasurePic") != null) {
+                sizepics.add(tempProductDataMap.get("MeasurePic").toString());
             }
-            mongoDataList.add(MongoDataBuilder.createDescriptionsUpdate(MongoQueryBuilder.queryProductId(productId), MapUtil.mapToList(tempDescMap)));
         }
+        tempDescMap.put("sizepics", sizepics);
+        tempProductMap.put("sizepics", sizepics);
+        mongoDataList.add(MongoDataBuilder.createProductUpdate(MongoQueryBuilder.queryProductId(productId), MapUtil.mapToList(tempProductMap)));
+        mongoDataList.add(MongoDataBuilder.createDescriptionsUpdate(MongoQueryBuilder.queryProductId(productId), MapUtil.mapToList(tempDescMap)));
         return mongoDataList;
     }
 }

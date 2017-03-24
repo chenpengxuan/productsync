@@ -94,29 +94,28 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             tempDescMap.put("descpics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
             sqlProductDescDataList.clear();
 
-            if (sqlDescriptionsData != null && !sqlDescriptionsData.isEmpty()) {
-                Map<String, Object> tempDescription = sqlDescriptionsData.stream().findFirst().orElse(Collections.emptyMap());
-                MapUtil.mapFieldToStringArray(tempDescription, "notipics", ",");
-                MapUtil.mapFieldToStringArray(tempDescription, "intropics", ",");
-                tempDescMap.put("notice", tempDescription.get("notice"));
-                tempDescMap.put("notipics", tempDescription.get("notipics"));
-                tempDescMap.put("intro", tempDescription.get("intro"));
-                tempDescMap.put("intropics", tempDescription.get("intropics"));
+            Map<String, Object> tempDescription = sqlDescriptionsData.stream().findFirst().orElse(Collections.emptyMap());
+            MapUtil.mapFieldToStringArray(tempDescription, "notipics", ",");
+            MapUtil.mapFieldToStringArray(tempDescription, "intropics", ",");
+            tempDescMap.put("notice", tempDescription.get("notice"));
+            tempDescMap.put("notipics", tempDescription.get("notipics"));
+            tempDescMap.put("intro", tempDescription.get("intro"));
+            tempDescMap.put("intropics", tempDescription.get("intropics"));
 
-                tempDescMap.put("props", sqlDescKeyValueData);
+            tempDescMap.put("props", sqlDescKeyValueData);
 
-                //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
-                if (tempDescription.get("sizepics") != null) {
-                    List<String> sizepics = Arrays.asList(tempDescription.get("sizepics").toString().split(","));
-                    sizepics = new ArrayList<>(sizepics);
-                    if (tempProductDataMap.get("MeasurePic") != null) {
-                        sizepics.add(tempProductDataMap.get("MeasurePic").toString());
-                    }
-                    tempDescMap.put("sizepics", sizepics);
-                    tempProductDataMap.put("sizepics", sizepics);
+            List<String> sizepics = null;
+            //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
+            if (tempDescription.get("sizepics") != null) {
+                sizepics = Arrays.asList(tempDescription.get("sizepics").toString().split(","));
+                sizepics = new ArrayList<>(sizepics);
+                if (tempProductDataMap.get("MeasurePic") != null) {
+                    sizepics.add(tempProductDataMap.get("MeasurePic").toString());
                 }
-            }
 
+            }
+            tempDescMap.put("sizepics", sizepics);
+            tempProductDataMap.put("sizepics", sizepics);
             sqlProductDescDataList.add(tempDescMap);
             mongoDataList.add(MongoDataBuilder.createDescriptionsUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
         }
