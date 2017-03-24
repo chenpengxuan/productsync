@@ -103,9 +103,7 @@ public class AddProductExecutorConfig implements ExecutorConfig {
                 tempDescMap.put("intro", tempDescription.get("intro"));
                 tempDescMap.put("intropics", tempDescription.get("intropics"));
 
-                if (sqlDescKeyValueData != null && !sqlDescKeyValueData.isEmpty()) {
-                    tempDescMap.put("props", sqlDescKeyValueData);
-                }
+                tempDescMap.put("props", sqlDescKeyValueData);
 
                 //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
                 if (tempDescription.get("sizepics") != null) {

@@ -38,7 +38,7 @@ public class AddProductTest {
 
     @Test
     public void testAddProduct() {
-        String productId = "7024a359-c151-477a-af5e-1570fdb54bec";
+        String productId = "2626d1e9-1aaa-410e-ad57-a1b21e286fb7";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);
