@@ -121,9 +121,16 @@ allprojects {
 
 subprojects {
     configurations {
-
         compile.exclude group: "org.eclipse.jetty.websocket"
         compile.exclude module: "c3p0"
+    }
+    // 默认情况下gradle会选用版本最高的那个依赖，有时候会带来问题
+    configurations.all {
+        // 有版本冲突的时候强制使用指定的版本，对于相关依赖也同样有效
+        resolutionStrategy.force(
+                "org.apache.httpcomponents:httpclient:${httpclientVersion}",
+                "org.apache.httpcomponents:httpcore:${httpcoreVersion}"
+        )
     }
 }
 
