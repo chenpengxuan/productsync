@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by zhangyong on 2017/2/22.
  */
@@ -38,9 +41,25 @@ public class AddProductTest {
 
     @Test
     public void testAddProduct() {
-        String productId = "f4329674-8da0-4dc8-aaa5-0d2e2258ad6f";
+        String productId = "3be45de7-1301-42f7-888c-278657e98336";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, addProductExecutorConfig);
+    }
+
+    @Test
+    public void testAddProductList() {
+        List<String> productIdList = new ArrayList<>();
+        productIdList.add("c1ba2ba5-ee5b-4139-8731-99127715ffb0");
+        productIdList.add("ce4fed93-0e50-4595-a8c2-5adf9d99725e");
+        productIdList.add("37bd5942-3ccf-4c24-ad2b-f026b18e6794");
+        productIdList.add("8d74a622-fb36-456d-8927-5336b0226486");
+        productIdList.add("88d079ac-45cf-430c-9f8d-0629bb8f17be");
+        productIdList.add("8ffec130-316b-48c2-97ec-70f0a54d7cb5");
+        productIdList.forEach(pid -> {
+            SyncByCommandReq req = new SyncByCommandReq();
+            req.setProductId(pid);
+            commandExecutor.executeCommand(req, addProductExecutorConfig);
+        });
     }
 }

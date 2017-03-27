@@ -92,11 +92,15 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
         double[] originalPriceList = catalogList.stream().mapToDouble(catalog ->
                 Utils.doubleFormat(Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString() : "0"), 2))
                 .toArray();
+        //针对新人价的区间计算必须考虑库存大于0的逻辑
         double[] newpPriceList = catalogList.stream().mapToDouble(catalog ->
-                Utils.doubleFormat(Double.parseDouble(catalog.get("newp") != null ? catalog.get("newp").toString() : "0"), 2))
+                Utils.doubleFormat(Double.parseDouble(catalog.get("newp") != null ?
+                        catalog.get("newp").toString() : "0"), 2))
                 .filter(x -> x > 0D).toArray();
+        //针对vip价的区间计算必须考虑库存大于0的逻辑
         double[] vipPriceList = catalogList.stream().mapToDouble(catalog ->
-                Utils.doubleFormat(Double.parseDouble(catalog.get("vip") != null ? catalog.get("vip").toString() : "0"), 2))
+                Utils.doubleFormat(Double.parseDouble(catalog.get("vip") != null ?
+                        catalog.get("vip").toString() : "0"), 2))
                 .filter(x -> x > 0D).toArray();
 
         String maxPrice =

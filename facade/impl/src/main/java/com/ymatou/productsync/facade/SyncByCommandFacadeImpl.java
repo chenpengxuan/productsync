@@ -175,7 +175,6 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
 
     /**
      * 同步
-     *
      * @param req
      * @return
      */
