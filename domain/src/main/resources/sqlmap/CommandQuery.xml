@@ -201,8 +201,8 @@
                 b.[PictureUrl] AS 'pic',
                 b.ProductID AS 'spid'
         FROM    Ymt_ProductDescConfigWord (NOLOCK)a
-                JOIN Ymt_ProductDescConfigPicture (NOLOCK)b ON b.ProductID = a.ProductID
-        WHERE   a.ProductID = #{productId} AND b.iAction >-1
+                left JOIN Ymt_ProductDescConfigPicture b ON b.ProductID = a.ProductID and b.iAction>-1
+        WHERE   a.ProductID = #{productId}
     </select>
 
     <!--商品图文描述（2） （Descriptions）-->
