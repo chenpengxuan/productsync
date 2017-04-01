@@ -199,7 +199,7 @@
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
        SELECT  a.WordContent AS 'desc',
                 b.[PictureUrl] AS 'pic',
-                b.ProductID AS 'spid'
+                a.ProductID AS 'spid'
         FROM    Ymt_ProductDescConfigWord (NOLOCK)a
                 left JOIN Ymt_ProductDescConfigPicture b ON b.ProductID = a.ProductID and b.iAction>-1
         WHERE   a.ProductID = #{productId}

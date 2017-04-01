@@ -24,7 +24,7 @@ public class ModifyDescTemplateTest {
 
     @Test
     public void testModifyDescTemplate() {
-        String productId = "bf7c9922-2e4f-4385-85cf-47867555a92f";
+        String productId = "db58891e-0e84-4707-b00b-84750f9f5aad";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         commandExecutor.executeCommand(req, modifyDescTemplateExecutorConfig);
