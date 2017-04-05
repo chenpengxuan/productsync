@@ -151,7 +151,6 @@ public class CommandExecutor {
      * @return
      */
     public boolean syncProductChangeRange(SyncByCommandReq req, List<MongoData> mongoDataList) {
-
        return MongoDataBuilder.syncProductRelatedTimeStamp(req,mongoDataList);
     }
 }
