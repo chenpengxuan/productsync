@@ -89,14 +89,19 @@ public class ProductStockChangeExecutorConfig implements ExecutorConfig {
      * @return 始终返回2个元素的列表 第一个为最小价格 第二个为最大价格
      */
     public List<String> calculateProductPriceRange(List<Map<String, Object>> catalogList) {
-        double[] originalPriceList = catalogList.stream().mapToDouble(catalog ->
-                Utils.doubleFormat(Double.parseDouble(catalog.get("price") != null ? catalog.get("price").toString() : "0"), 2))
+        double[] originalPriceList = catalogList
+                .stream()
+                .mapToDouble(catalog ->
+                Utils.doubleFormat(Double.parseDouble(catalog.get("price") != null ?
+                        catalog.get("price").toString() : "0"), 2))
                 .toArray();
+
         //针对新人价的区间计算必须考虑库存大于0的逻辑
         double[] newpPriceList = catalogList.stream().mapToDouble(catalog ->
                 Utils.doubleFormat(Double.parseDouble(catalog.get("newp") != null ?
                         catalog.get("newp").toString() : "0"), 2))
                 .filter(x -> x > 0D).toArray();
+
         //针对vip价的区间计算必须考虑库存大于0的逻辑
         double[] vipPriceList = catalogList.stream().mapToDouble(catalog ->
                 Utils.doubleFormat(Double.parseDouble(catalog.get("vip") != null ?

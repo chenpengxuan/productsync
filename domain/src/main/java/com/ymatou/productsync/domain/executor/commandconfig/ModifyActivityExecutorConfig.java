@@ -102,6 +102,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
                             Optional.ofNullable((String) p.get("spid")).orElse("")
                     ).collect(Collectors.toList()));
             productChangedTableNameList.add(Constants.LiveProudctDb);
+            productChangedTableNameList.add(Constants.ProductDb);
         }
         productChangedRange.setProductIdList(productIdList);
         productChangedRange.setProductTableRangeList(productChangedTableNameList);
