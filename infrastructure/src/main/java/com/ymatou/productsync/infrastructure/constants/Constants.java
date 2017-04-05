@@ -12,7 +12,7 @@ public class Constants {
     public static TomcatConfig TOMCAT_CONFIG;
     public static final String SNAPSHOP_MQ_ID = "product";
     public static final String SNAPSHOP_MQ_CODE = "snapshotmq_from_apollo";
-    public static final String[] IGNORE_COMMANDTYPE = new String[]{"ActivityStockChange","ActivityStockTransfer","ModifyActivityPrice"};
+    public static final String[] IGNORE_COMMANDTYPE = new String[]{"ActivityStockChange","ActivityStockTransfer","ModifyActivityPrice","UpdateProductsInfo"};
 
     /**
      * Mongo商品库名
@@ -33,6 +33,11 @@ public class Constants {
      * 活动商品库名
      */
     public static final String ProductDescriptionDb = "ProductDescriptions";
+
+    /**
+     * 商品图文描述（2）
+     */
+    public static  final  String ProductDescExtraDb="ProductDescExtra";
 
     /**
      * Mongo直播库名

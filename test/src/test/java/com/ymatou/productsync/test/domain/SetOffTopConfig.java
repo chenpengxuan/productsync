@@ -54,8 +54,8 @@ public class SetOffTopConfig {
     @Test
     public void testSetOffTopException() {
         //测试置顶
-        long activityId = 157242;
-        String productId = "7577884f-8606-4571-ba52-4881e89e660c";
+        long activityId = 157815;
+        String productId = "3be45de7-1301-42f7-888c-278657e98336";
         SyncByCommandReq req2 = new SyncByCommandReq();
         req2.setProductId(productId);
         req2.setActivityId(activityId);

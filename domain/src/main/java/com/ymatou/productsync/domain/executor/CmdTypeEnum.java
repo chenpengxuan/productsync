@@ -43,7 +43,7 @@ public enum CmdTypeEnum {
     DeleteProductPics,
 
     /**
-     *  删除商品
+     * 删除商品
      */
     DeleteProduct,
 
@@ -102,6 +102,11 @@ public enum CmdTypeEnum {
      */
     CatalogStockChange,
 
+    /**
+     * 编辑商品描述模板
+     */
+    ModifyDescTemplate,
+
 //    /**
 //     * 交易更新商品活动库存
 //     */
@@ -119,7 +124,7 @@ public enum CmdTypeEnum {
 
 //    直播部分
     /**
-     *添加直播
+     * 添加直播
      */
     AddActivity,
 
@@ -171,6 +176,5 @@ public enum CmdTypeEnum {
     /**
      * 同步活动商品
      */
-    SyncActivityProduct
-    ;
+    SyncActivityProduct;
 }
