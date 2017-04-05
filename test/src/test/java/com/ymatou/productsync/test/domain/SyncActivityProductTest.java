@@ -41,7 +41,7 @@ public class SyncActivityProductTest {
      */
     @Test
     public void testSyncActivityProduct() {
-        long productInActivityId = 286006;
+        long productInActivityId = 286177;
         SyncByCommandReq req = new SyncByCommandReq();
         req.setActivityId(productInActivityId);
         commandExecutor.executeCommand(req, syncActivityProductExecutorConfig);

@@ -12,6 +12,7 @@ import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,6 +50,10 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         List<Map<String, Object>> sqlProductInLiveDataList = commandQuery.getProductLiveInfo(activityId, productId);
         //直播信息
         List<Map<String, Object>> sqlLiveDataList = liveCommandQuery.getProductInfoByActivityId(activityId);
+        //商品图文描述（2） （Descriptions）
+        List<Map<String, Object>> sqlDescriptionsData = commandQuery.getProductDescriptions(productId);
+        //商品图文描述（2） Key,Value
+        List<Map<String, Object>> sqlDescKeyValueData = commandQuery.getProductDescKeyValue(productId);
 
         //前置条件检查
         if (sqlProductDataList == null || sqlProductDataList.isEmpty()) {
@@ -69,29 +74,53 @@ public class AddProductExecutorConfig implements ExecutorConfig {
         //创建商品信息
         MapUtil.mapFieldToStringArray(sqlProductDataList, "pics", ",");
         Map<String, Object> tempProductDataMap = sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap());
-        tempProductDataMap.replace("newdesc", tempProductDataMap.get("newdesc"), ( tempProductDataMap.get("newdesc") != null ? (int)tempProductDataMap.get("newdesc") : 0) == 1);
+        tempProductDataMap.replace("newdesc", tempProductDataMap.get("newdesc"), (tempProductDataMap.get("newdesc") != null ? (int) tempProductDataMap.get("newdesc") : 0) == 1);
         //针对添加商品进直播的情况不能覆盖版本号,如果商品已经存在的话，则不更新商品快照信息
         if (mongoRepository.queryMongo(MongoDataBuilder.querySingleProductInfo(MongoQueryBuilder.queryProductId(productId)))
                 .stream().findFirst().orElse(Collections.emptyMap()).isEmpty()) {
             sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap()).put("ver", "1001");
             sqlProductDataList.stream().findFirst().orElse(Collections.emptyMap()).put("verupdate", Utils.getNow());
         }
-        mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //创建规格信息 先删除再更新
         mongoDataList.add(MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), null));
         mongoDataList.add(MongoDataBuilder.createCatalogAdd(MapUtil.mapFieldArrayToNestedObj(sqlCatalogDataList, new String[]{"name", "pic", "value"}, "props", "cid")));
 
-        //创建商品图文描述信息
+        //商品图文描述（2） Key,Value
         if (sqlProductDescDataList != null && !sqlProductDescDataList.isEmpty()) {
             Map<String, Object> tempDescMap = new HashMap<>();
             tempDescMap.putAll(sqlProductDescDataList.stream().findFirst().orElse(Collections.emptyMap()));
             tempDescMap.remove("pic");
-            tempDescMap.put("pics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
+            tempDescMap.put("descpics", sqlProductDescDataList.stream().map(x -> x.get("pic")).toArray());
             sqlProductDescDataList.clear();
+
+            Map<String, Object> tempDescription = sqlDescriptionsData.stream().findFirst().orElse(Collections.emptyMap());
+            MapUtil.mapFieldToStringArray(tempDescription, "notipics", ",");
+            MapUtil.mapFieldToStringArray(tempDescription, "intropics", ",");
+            tempDescMap.put("notice", tempDescription.get("notice"));
+            tempDescMap.put("notipics", tempDescription.get("notipics"));
+            tempDescMap.put("intro", tempDescription.get("intro"));
+            tempDescMap.put("intropics", tempDescription.get("intropics"));
+
+            tempDescMap.put("props", sqlDescKeyValueData);
+
+            List<String> sizepics = null;
+            //ProductDetailModel中尺码表图片,卖家上传的放前面,系统导入的放后面
+            if (tempDescription.get("sizepics") != null) {
+                sizepics = Arrays.asList(tempDescription.get("sizepics").toString().split(","));
+                sizepics = new ArrayList<>(sizepics);
+                if (tempProductDataMap.get("MeasurePic") != null) {
+                    sizepics.add(tempProductDataMap.get("MeasurePic").toString());
+                }
+
+            }
+            tempDescMap.put("sizepics", sizepics);
+            tempProductDataMap.put("sizepics", sizepics);
             sqlProductDescDataList.add(tempDescMap);
-            mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
+            mongoDataList.add(MongoDataBuilder.createDescriptionsUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
         }
+        tempProductDataMap.remove("MeasurePic");
+        mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景
         if (activityId > 0) {

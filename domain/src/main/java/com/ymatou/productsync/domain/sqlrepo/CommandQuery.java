@@ -205,6 +205,7 @@ public interface CommandQuery {
 
     /**
      * 获取需要补单的信息
+     *
      * @param readCount
      * @param minuteLimit
      * @param hourLimit
@@ -225,9 +226,28 @@ public interface CommandQuery {
 
     /**
      * 根据productid获取商品开始结束时间
+     *
      * @param productId
      * @return
      */
     @TargetDataSource("productDataSource")
     List<Map<String, Object>> getProductTime(@Param("productId") String productId);
+
+    /**
+     * 根据productid获取商品描述（2）
+     *
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductDescriptions(@Param("productId") String productId);
+
+    /**
+     * 根据prodcutid获取商品描述属性
+     *
+     * @param productId
+     * @return
+     */
+    @TargetDataSource("productDataSource")
+    List<Map<String, Object>> getProductDescKeyValue(@Param("productId") String productId);
 }
