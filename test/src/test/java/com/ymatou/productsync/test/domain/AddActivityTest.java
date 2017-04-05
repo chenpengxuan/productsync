@@ -45,6 +45,7 @@ public class AddActivityTest {
         SyncByCommandReq req = new SyncByCommandReq();
         long nActivityId = 1572420;
         req.setActivityId(nActivityId);
+
         commandExecutor.executeCommand(req, addActivityExecutorConfig);
     }
 }

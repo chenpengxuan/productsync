@@ -196,10 +196,11 @@ public class SyncByCommandFacadeImpl implements SyncCommandFacade {
             boolean syncSuccess = false;
             try {
                 if (executor.checkNeedProcessCommand(req.getTransactionId())) {
-                    syncSuccess = executor.executeCommand(req, config);
+                    List<MongoData> mongoDataList = config.loadSourceData(req.getActivityId(),req.getProductId());
+                    syncSuccess = executor.executeCommand(req, mongoDataList);
                     //没有任何异常并且返回成功之后进行商品变更边界的同步
                     if(syncSuccess){
-                        boolean syncChangeRangeSuccess = executor.syncProductChangeRange(config);
+                        boolean syncChangeRangeSuccess = executor.syncProductChangeRange(req,mongoDataList);
                         if(!syncChangeRangeSuccess)
                             logWrapper.recordErrorLog("同步商品变更边界失败,对应指令信息为{}",Utils.toJSONString(config));
                     }
