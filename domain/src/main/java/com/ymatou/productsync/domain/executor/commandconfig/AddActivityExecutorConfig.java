@@ -1,18 +1,20 @@
 package com.ymatou.productsync.domain.executor.commandconfig;
 
-import com.ymatou.productsync.domain.executor.*;
+import com.ymatou.productsync.domain.executor.CmdTypeEnum;
+import com.ymatou.productsync.domain.executor.ExecutorConfig;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 添加直播
@@ -52,10 +54,4 @@ public class AddActivityExecutorConfig implements ExecutorConfig {
         }
         return mongoDataList;
     }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return null;
-    }
-
 }

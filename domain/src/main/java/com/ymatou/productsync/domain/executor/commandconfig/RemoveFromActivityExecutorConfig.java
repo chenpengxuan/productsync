@@ -2,15 +2,13 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,23 +35,13 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.RemoveFromActivity;
     }
 
-    private static ProductChangedRange productChangedRange = new ProductChangedRange();
-
-    private static List<String> productChangedTableNameList = new ArrayList<>();
-
-    private static List<String> productIdList = new ArrayList<>();
-
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
-        productIdList.clear();
-        productChangedTableNameList.clear();
 
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.删掉直播商品关系
         Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId);
         mongoDataList.add(MongoDataBuilder.createLiveProductDelete(liveProductCondition));
-
-        productChangedTableNameList.add(Constants.LiveProudctDb);
 
         //2，更新直播品牌
         Map<String, Object> lives = new HashMap();
@@ -78,17 +66,6 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
         Map<String, Object> pidCondition = MongoQueryBuilder.queryProductId(productId);
         MongoData productMongoData = MongoDataBuilder.createProductUpdate(pidCondition, productMapList);
         mongoDataList.add(productMongoData);
-
-        productChangedTableNameList.add(Constants.ProductDb);
-        productIdList.add(productId);
-
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
-    }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return productChangedRange;
     }
 }

@@ -1,7 +1,6 @@
 package com.ymatou.productsync.domain.executor;
 
 import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.facade.model.BizException;
 
 import java.util.List;
@@ -24,10 +23,4 @@ public interface ExecutorConfig {
      * @return
      */
     List<MongoData> loadSourceData(long activityId, String productId) throws BizException;
-
-    /**
-     * 获取商品相关变更边界信息
-     * @return
-     */
-    ProductChangedRange getProductChangeRangeInfo();
 }

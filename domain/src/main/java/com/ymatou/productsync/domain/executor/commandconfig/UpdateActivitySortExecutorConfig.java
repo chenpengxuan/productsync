@@ -2,19 +2,19 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
-import com.ymatou.productsync.infrastructure.constants.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 直播中商品排序
@@ -30,17 +30,8 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.UpdateActivitySort;
     }
 
-    private static ProductChangedRange productChangedRange = new ProductChangedRange();
-
-    private static List<String> productChangedTableNameList = new ArrayList<>();
-
-    private static List<String> productIdList = new ArrayList<>();
-
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
-        productIdList.clear();
-        productChangedTableNameList.clear();
-
         if (activityId <= 0) {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "直播id必须大于0");
         }
@@ -48,13 +39,6 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig {
         if (sortInfoList == null || sortInfoList.isEmpty()) {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductsLiveSort为空");
         }
-
-        productIdList.addAll(sortInfoList
-                .stream()
-                .map(sort ->
-                        Optional.ofNullable((String) sort.get("spid")).orElse(""))
-                .collect(Collectors.toList())
-        );
 
         List<MongoData> mongoDataList = new ArrayList<>();
         sortInfoList.stream().forEach(sortInfo -> {
@@ -65,16 +49,6 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig {
             mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(sortInfo.get("spid").toString(), activityId), tempUpdateData));
         });
 
-        productChangedTableNameList.add(Constants.LiveProudctDb);
-
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
-
         return mongoDataList;
-    }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return productChangedRange;
     }
 }

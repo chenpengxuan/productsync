@@ -2,10 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -47,10 +46,5 @@ public class UpdateProductsInfoExecutorConfig implements ExecutorConfig{
         List<MongoData> mongoDataList = new ArrayList<>();
         mongoDataList.add(MongoDataBuilder.createProductDescUpsert(MongoQueryBuilder.queryProductId(productId),sqlProductDescDataList));
         return mongoDataList;
-    }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return null;
     }
 }

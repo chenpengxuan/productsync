@@ -1,6 +1,8 @@
 package com.ymatou.productsync.domain.executor;
 
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.model.sql.TransactionInfo;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
@@ -8,6 +10,7 @@ import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.infrastructure.config.props.BizProps;
+import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.Utils;
 import org.joda.time.DateTime;
@@ -15,8 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 业务指令执行器
@@ -37,6 +44,11 @@ public class CommandExecutor {
 
     @Autowired
     private LogWrapper logWrapper;
+
+    private static final String[] recordChangeTableArray = {Constants.ProductDb,
+            Constants.CatalogDb,
+            Constants.ActivityProductDb,
+            Constants.LiveProudctDb};
 
     /**
      * 更新业务凭据状态设置
@@ -132,16 +144,34 @@ public class CommandExecutor {
      * 同步更新时间戳
      * 目前只更新商品相关
      *
-     * @param config
+     * @param mongoDataList
      * @return
      */
-    public boolean syncProductChangeRange(ExecutorConfig config) {
-        if(config.getProductChangeRangeInfo() == null){
-            logWrapper.recordInfoLog("当前场景数据变更边界与商品无关,对应场景为{}",config.getCommand());
-            throw new IllegalArgumentException("当前场景数据变更边界与商品无关,对应场景为:" + config.getCommand());
+    public boolean syncProductChangeRange(SyncByCommandReq req,List<MongoData> mongoDataList) {
+        if(mongoDataList == null){
+            logWrapper.recordInfoLog("当前场景数据变更为空,对应场景为{}",req.getActionType());
+            throw new IllegalArgumentException("当前场景数据变更为空,对应场景为:" + req.getActionType());
         }
-        return config.getProductChangeRangeInfo().getProductIdList().stream().allMatch(productId ->
-                MongoDataBuilder.syncProductRelatedTimeStamp(productId,
-                        config.getProductChangeRangeInfo().getProductTableRangeList()));
+        ProductChangedRange productChangedRange = new ProductChangedRange();
+        List<String> productIdList = mongoDataList
+                .stream()
+                .map(x -> Optional.ofNullable((String)x.getMatchCondition().get("spid")).orElse(""))
+                .collect(Collectors.toList());
+        productIdList.add(req.getProductId());
+
+        productIdList = productIdList
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        productChangedRange.setProductIdList(productIdList);
+
+        List<String> productTableNameList = mongoDataList
+                .stream()
+                .filter(z -> Arrays.asList(recordChangeTableArray).contains(z.getTableName()))
+                .map(x -> x.getTableName())
+                .collect(Collectors.toList());
+
+        return
     }
 }

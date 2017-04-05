@@ -315,16 +315,18 @@ public class MongoDataBuilder {
     /**
      * 同步商品相关表时间戳
      *
-     * @param productId
-     * @param updateTablesList
+     * @param updateInfoListMap key为productId的集合 value为key对应的表修改边界
      * @return
      */
-    public static boolean syncProductRelatedTimeStamp(String productId,
-                                                      List<String> updateTablesList) {
-        Map<String, Object> matchCondition = new HashMap<>();
-        matchCondition.put("spid", productId);
+    public static boolean syncProductRelatedTimeStamp(Map<List<String>,List<String>> updateInfoListMap) {
+
+
+        Map<String, Object> matchConditionMap = new HashMap<>();
+        Map<String, Object> tempProductIdMap = new HashMap<>();
+        tempProductIdMap.put("$in", productIdList);
+        matchConditionMap.put("spid", tempProductIdMap);
+
         Map<String, Object> updateData = new HashMap<>();
-        updateData.put("spid", productId);
         updateTablesList.forEach(x -> {
             switch (x) {
                 case Constants.ProductDb:
@@ -346,7 +348,7 @@ public class MongoDataBuilder {
         return repository.excuteMongo(
                 buildMongoData(Constants.ProductTimeStamp,
                         MongoOperationTypeEnum.UPSERT,
-                        matchCondition,
+                        matchConditionMap,
                         Arrays.asList(updateData))
         );
     }

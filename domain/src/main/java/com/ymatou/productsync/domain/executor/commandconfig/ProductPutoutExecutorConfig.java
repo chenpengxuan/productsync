@@ -3,10 +3,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -43,17 +42,8 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.ProductPutout;
     }
 
-    private static ProductChangedRange productChangedRange = new ProductChangedRange();
-
-    private static List<String> productChangedTableNameList = new ArrayList<>();
-
-    private static List<String> productIdList = new ArrayList<>();
-
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
-        productIdList.clear();
-        productChangedTableNameList.clear();
-
         List<MongoData> mongoDataList = new ArrayList<>();
         if (activityId <= 0) {
             List<Map<String, Object>> deleteProducts = commandQuery.getDeleteProducts(productId);
@@ -73,10 +63,6 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             matchConditionInfo.put("end", tempMap);
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             mongoDataList.add(liveProductMd);
-
-            productChangedTableNameList.add(Constants.ProductDb);
-            productChangedTableNameList.add(Constants.LiveProudctDb);
-
         } else {
             //是否下过单，调订单接口
             int productOrderCount = 0;
@@ -106,33 +92,15 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
                 //直播商品更新-istop,status
                 List<Map<String, Object>> productTop = commandQuery.getLiveProductTop(productId, activityId);
                 mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
-
-                productChangedTableNameList.add(Constants.LiveProudctDb);
             } else {
                 //删除商品相关Mongo数据
                 mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDb, MongoQueryBuilder.queryProductId(productId)));
                 mongoDataList.add(MongoDataBuilder.createDelete(Constants.LiveProudctDb, MongoQueryBuilder.queryProductId(productId)));
                 mongoDataList.add(MongoDataBuilder.createDelete(Constants.ProductDescriptionDb, MongoQueryBuilder.queryProductId(productId)));
                 mongoDataList.add(MongoDataBuilder.createDelete(Constants.CatalogDb, MongoQueryBuilder.queryProductId(productId)));
-
-                productChangedTableNameList.add(Constants.ProductDb);
-                productChangedTableNameList.add(Constants.LiveProudctDb);
-                productChangedTableNameList.add(Constants.CatalogDb);
             }
 
         }
-
-        productIdList.add(productId);
-
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
     }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return productChangedRange;
-    }
-
-
 }

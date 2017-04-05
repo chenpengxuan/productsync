@@ -2,10 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.infrastructure.constants.Constants;
 import org.springframework.stereotype.Component;
@@ -33,10 +32,4 @@ public class DeleteActivityExecutorConfig implements ExecutorConfig {
         return mongoDataList;
 
     }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return null;
-    }
-
 }

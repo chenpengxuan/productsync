@@ -2,10 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
+import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
-import com.ymatou.productsync.domain.model.mongo.MongoData;
-import com.ymatou.productsync.domain.model.mongo.ProductChangedRange;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -31,16 +30,7 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
         return CmdTypeEnum.CatalogStockChange;
     }
 
-    private static ProductChangedRange productChangedRange = new ProductChangedRange();
-
-    private static List<String> productChangedTableNameList = new ArrayList<>();
-
-    private static List<String> productIdList = new ArrayList<>();
-
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
-        productIdList.clear();
-        productChangedTableNameList.clear();
-
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sqlDataList = commandQuery.getProductStockInfo(productId);
         if(sqlDataList == null || sqlDataList.isEmpty()){
@@ -51,16 +41,6 @@ public class CatalogStockChangeExecutorConfig implements ExecutorConfig {
                 mongoDataList.add(MongoDataBuilder.createUpdate(Constants.CatalogDb, conditions, MapUtil.mapToList(t)));
             });
 
-        productIdList.add(productId);
-        productChangedTableNameList.add(Constants.CatalogDb);
-
-        productChangedRange.setProductIdList(productIdList);
-        productChangedRange.setProductTableRangeList(productChangedTableNameList);
         return mongoDataList;
-    }
-
-    @Override
-    public ProductChangedRange getProductChangeRangeInfo() {
-        return productChangedRange;
     }
 }
