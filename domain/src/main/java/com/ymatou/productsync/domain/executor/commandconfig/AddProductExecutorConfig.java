@@ -32,6 +32,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
     @Autowired
     private MongoRepository mongoRepository;
 
+    @Autowired
+    private ProductStockChangeExecutorConfig productStockChangeExecutorConfig;
+
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.AddProduct;
@@ -119,6 +122,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             mongoDataList.add(MongoDataBuilder.createDescriptionsUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
         }
         tempProductDataMap.remove("MeasurePic");
+        List<String> productPriceRangeInfo = productStockChangeExecutorConfig.calculateProductPriceRange(sqlCatalogDataList);
+        tempProductDataMap.put("minp",productPriceRangeInfo.get(0));
+        tempProductDataMap.put("maxp",productPriceRangeInfo.get(1));
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景
