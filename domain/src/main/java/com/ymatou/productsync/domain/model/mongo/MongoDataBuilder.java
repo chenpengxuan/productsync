@@ -355,13 +355,23 @@ public class MongoDataBuilder {
                 .map(x -> {
                     MongoData tempData = new MongoData();
                     List<String> productIdList = new ArrayList<>();
-                    if(x.getMatchCondition().get("spid") != null){
+                    //针对update delete操作
+                    if(x.getMatchCondition() != null
+                            && x.getMatchCondition().get("spid") != null){
                         if(x.getMatchCondition().get("spid") instanceof Map){
                             Map<String,Object> tempMap = (Map<String,Object>)x.getMatchCondition().get("spid");
                             productIdList.addAll((List<String>)tempMap.get("$in"));
                         }else{
                             productIdList.add(x.getMatchCondition().get("spid").toString());
                         }
+                    }
+                    else if(x.getUpdateData() != null){
+                        List<String> tempProductIdList = x.getUpdateData()
+                                .stream()
+                                .filter(z -> z.get("spid") != null)
+                                .map(xx -> xx.get("spid").toString())
+                                .collect(Collectors.toList());
+                        productIdList.addAll(tempProductIdList);
                     }
                     //针对涉及到相关表修改，但是不拿商品id作为查询匹配条件的情况
                     //例如规格表的修改

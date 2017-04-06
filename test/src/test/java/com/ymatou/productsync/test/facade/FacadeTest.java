@@ -1,7 +1,7 @@
 package com.ymatou.productsync.test.facade;
 
 import com.ymatou.productsync.domain.executor.CommandExecutor;
-import com.ymatou.productsync.domain.executor.commandconfig.SyncActivityProductExecutorConfig;
+import com.ymatou.productsync.domain.executor.commandconfig.AddProductExecutorConfig;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.web.ProductSyncApplication;
@@ -24,14 +24,14 @@ public class FacadeTest {
     private CommandExecutor commandExecutor;
 
     @Autowired
-    private SyncActivityProductExecutorConfig syncActivityProductExecutorConfig;
+    private AddProductExecutorConfig addProductExecutorConfig;
 
     @Test
     public void syncProductChangeRangeTest(){
-        long productInActivityId = 286177;
+        String productId = "c1ba2ba5-ee5b-4139-8731-99127715ffb0";
         SyncByCommandReq req = new SyncByCommandReq();
-        req.setActivityId(productInActivityId);
-        List<MongoData> mongoDataList = syncActivityProductExecutorConfig
+        req.setProductId(productId);
+        List<MongoData> mongoDataList = addProductExecutorConfig
                 .loadSourceData(req.getActivityId(),req.getProductId());
         commandExecutor.syncProductChangeRange(req,mongoDataList);
     }
