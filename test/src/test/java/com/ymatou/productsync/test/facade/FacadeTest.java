@@ -28,7 +28,7 @@ public class FacadeTest {
 
     @Test
     public void syncProductChangeRangeTest(){
-        String productId = "c1ba2ba5-ee5b-4139-8731-99127715ffb0";
+        String productId = "dd5e3204-af80-4cfb-a236-3e1aebef587e";
         SyncByCommandReq req = new SyncByCommandReq();
         req.setProductId(productId);
         List<MongoData> mongoDataList = addProductExecutorConfig

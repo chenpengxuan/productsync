@@ -383,25 +383,32 @@ public class MongoDataBuilder {
                     tempProductIdMap.put("$in", productIdList);
                     matchConditionMap.put("spid", tempProductIdMap);
                     tempData.setMatchCondition(matchConditionMap);
+                    List<Map<String,Object>> updateDataList = new ArrayList<>();
+                    productIdList
+                            .stream()
+                            .forEach(tempId -> {
+                                Map<String, Object> updateData = new HashMap<>();
+                                updateData.put("spid",tempId);
+                                switch (x.getTableName()) {
+                                    case Constants.ProductDb:
+                                        updateData.put("sut", new Date());
+                                        break;
+                                    case Constants.CatalogDb:
+                                        updateData.put("cut", new Date());
+                                        break;
+                                    case Constants.LiveProudctDb:
+                                        updateData.put("lut", new Date());
+                                        break;
+                                    case Constants.ActivityProductDb:
+                                        updateData.put("aut", new Date());
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                updateDataList.add(updateData);
+                            });
 
-                    Map<String, Object> updateData = new HashMap<>();
-                    switch (x.getTableName()) {
-                        case Constants.ProductDb:
-                            updateData.put("sut", new Date());
-                            break;
-                        case Constants.CatalogDb:
-                            updateData.put("cut", new Date());
-                            break;
-                        case Constants.LiveProudctDb:
-                            updateData.put("lut", new Date());
-                            break;
-                        case Constants.ActivityProductDb:
-                            updateData.put("aut", new Date());
-                            break;
-                        default:
-                            break;
-                    }
-                    tempData.setUpdateData(Arrays.asList(updateData));
+                    tempData.setUpdateData(updateDataList);
 
                     tempData.setTableName(Constants.ProductTimeStamp);
 
