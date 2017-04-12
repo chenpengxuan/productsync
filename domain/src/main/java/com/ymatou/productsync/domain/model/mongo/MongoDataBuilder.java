@@ -1,19 +1,37 @@
-package com.ymatou.productsync.domain.executor;
+package com.ymatou.productsync.domain.model.mongo;
 
-import com.ymatou.productsync.domain.model.mongo.MongoData;
 import com.google.common.collect.Lists;
-import com.ymatou.productsync.domain.model.mongo.MongoOperationTypeEnum;
-import com.ymatou.productsync.domain.model.mongo.MongoQueryData;
+import com.ymatou.productsync.domain.mongorepo.MongoRepository;
+import com.ymatou.productsync.facade.model.req.SyncByCommandReq;
 import com.ymatou.productsync.infrastructure.constants.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by chenfei on 2017/2/7.
  * mongo数据指令包装器
  */
+@Component
 public class MongoDataBuilder {
+
+    @Autowired
+    private MongoRepository mongoRepository;
+
+    private static final String[] recordChangeTableArray = {Constants.ProductDb,
+            Constants.CatalogDb,
+            Constants.ActivityProductDb,
+            Constants.LiveProudctDb};
+
+    private static MongoRepository repository;
+
+    @PostConstruct
+    private void init(){
+        repository = mongoRepository;
+    }
 
     /**
      * 指令创建
@@ -321,6 +339,86 @@ public class MongoDataBuilder {
     public static MongoData syncActivityProducts(Map<String, Object> matchCondition,
                                                  List<Map<String, Object>> updateData) {
         return buildMongoData(Constants.ActivityProductDb, MongoOperationTypeEnum.UPSERT, matchCondition, updateData);
+    }
+
+    /**
+     * 同步商品相关表时间戳
+     *
+     * @param mongoDataList key为productId的集合 value为key对应的表修改边界
+     * @return
+     */
+    public static boolean syncProductRelatedTimeStamp(SyncByCommandReq req,List<MongoData> mongoDataList) {
+
+       List<MongoData> timeStampList = mongoDataList
+                .stream()
+                .filter(z -> Arrays.asList(recordChangeTableArray).contains(z.getTableName()))
+                .map(x -> {
+                    MongoData tempData = new MongoData();
+                    List<String> productIdList = new ArrayList<>();
+                    //针对update delete操作
+                    if(x.getMatchCondition() != null
+                            && x.getMatchCondition().get("spid") != null){
+                        if(x.getMatchCondition().get("spid") instanceof Map){
+                            Map<String,Object> tempMap = (Map<String,Object>)x.getMatchCondition().get("spid");
+                            productIdList.addAll((List<String>)tempMap.get("$in"));
+                        }else{
+                            productIdList.add(x.getMatchCondition().get("spid").toString());
+                        }
+                    }
+                    else if(x.getUpdateData() != null){
+                        List<String> tempProductIdList = x.getUpdateData()
+                                .stream()
+                                .filter(z -> z.get("spid") != null)
+                                .map(xx -> xx.get("spid").toString())
+                                .collect(Collectors.toList());
+                        productIdList.addAll(tempProductIdList);
+                    }
+                    //针对涉及到相关表修改，但是不拿商品id作为查询匹配条件的情况
+                    //例如规格表的修改
+                    else{
+                        productIdList.add(req.getProductId());
+                    }
+                    Map<String, Object> matchConditionMap = new HashMap<>();
+                    Map<String, Object> tempProductIdMap = new HashMap<>();
+                    tempProductIdMap.put("$in", productIdList);
+                    matchConditionMap.put("spid", tempProductIdMap);
+                    tempData.setMatchCondition(matchConditionMap);
+                    List<Map<String,Object>> updateDataList = new ArrayList<>();
+                    productIdList
+                            .stream()
+                            .forEach(tempId -> {
+                                Map<String, Object> updateData = new HashMap<>();
+                                updateData.put("spid",tempId);
+                                switch (x.getTableName()) {
+                                    case Constants.ProductDb:
+                                        updateData.put("sut", new Date());
+                                        break;
+                                    case Constants.CatalogDb:
+                                        updateData.put("cut", new Date());
+                                        break;
+                                    case Constants.LiveProudctDb:
+                                        updateData.put("lut", new Date());
+                                        break;
+                                    case Constants.ActivityProductDb:
+                                        updateData.put("aut", new Date());
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                updateDataList.add(updateData);
+                            });
+
+                    tempData.setUpdateData(updateDataList);
+
+                    tempData.setTableName(Constants.ProductTimeStamp);
+
+                    tempData.setOperationType(MongoOperationTypeEnum.UPSERT);
+
+                    return tempData;
+                })
+                .collect(Collectors.toList());
+
+        return repository.excuteMongo(timeStampList);
     }
 
 }

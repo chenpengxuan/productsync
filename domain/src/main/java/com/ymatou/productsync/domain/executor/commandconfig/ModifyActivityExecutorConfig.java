@@ -2,9 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -73,7 +73,7 @@ public class ModifyActivityExecutorConfig implements ExecutorConfig {
         if (liveProductMapList != null) {
             liveProductMapList.stream().forEach(liveProductItem -> {
                 Object pid = liveProductItem.get("spid");
-                Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(pid.toString(),activityId);
+                Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(pid.toString(), activityId);
                 MongoData liveProductMongoData = MongoDataBuilder.createLiveProductUpdate(liveProductCondition, MapUtil.mapToList(liveProductItem));
                 ///2.商品数据更新
                 if (productMapList != null && productMapList.stream().anyMatch(p -> p.containsValue(pid))) {

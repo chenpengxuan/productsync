@@ -2,9 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -37,10 +37,12 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
+
         List<MongoData> mongoDataList = new ArrayList<>();
         ///1.删掉直播商品关系
         Map<String, Object> liveProductCondition = MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId);
         mongoDataList.add(MongoDataBuilder.createLiveProductDelete(liveProductCondition));
+
         //2，更新直播品牌
         Map<String, Object> lives = new HashMap();
         List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
@@ -64,7 +66,6 @@ public class RemoveFromActivityExecutorConfig implements ExecutorConfig {
         Map<String, Object> pidCondition = MongoQueryBuilder.queryProductId(productId);
         MongoData productMongoData = MongoDataBuilder.createProductUpdate(pidCondition, productMapList);
         mongoDataList.add(productMongoData);
-
         return mongoDataList;
     }
 }

@@ -3,9 +3,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -63,7 +63,6 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             matchConditionInfo.put("end", tempMap);
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             mongoDataList.add(liveProductMd);
-
         } else {
             //是否下过单，调订单接口
             int productOrderCount = 0;
@@ -73,12 +72,12 @@ public class ProductPutoutExecutorConfig implements ExecutorConfig {
             }
             Map<String, Object> sellerMap = userIdSource.stream().findFirst().orElse(Collections.emptyMap());
             long sellerId = Long.parseLong(sellerMap.get("userId").toString());
-            GetOrderProductAmountInfosReq getOrderAmountInfosReqequest = new GetOrderProductAmountInfosReq();
-            getOrderAmountInfosReqequest.setProductIds(Lists.newArrayList(productId));
-            getOrderAmountInfosReqequest.setSellerId(sellerId);
+            GetOrderProductAmountInfosReq getOrderAmountInfosRequest = new GetOrderProductAmountInfosReq();
+            getOrderAmountInfosRequest.setProductIds(Lists.newArrayList(productId));
+            getOrderAmountInfosRequest.setSellerId(sellerId);
             //调订单接口，业务对下架无太大影响，可以忽略异常
             try {
-                GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosReqequest);
+                GetOrderProductAmountInfosResp respOrderAmount = orderProductInfoFacade.getOrderProductAmountInfos(getOrderAmountInfosRequest);
                 if (respOrderAmount != null && respOrderAmount.isSuccess()) {
                     HashMap<String, OrderProductAmountInfo> orderAmountMap = respOrderAmount.getAmountInfos();
                     if (orderAmountMap.get(productId) != null)

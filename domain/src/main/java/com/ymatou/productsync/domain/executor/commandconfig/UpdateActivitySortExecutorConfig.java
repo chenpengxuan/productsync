@@ -2,9 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by chenpengxuan on 2017/2/15.
  */
 @Component("updateActivitySortExecutorConfig")
-public class UpdateActivitySortExecutorConfig implements ExecutorConfig{
+public class UpdateActivitySortExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
 
@@ -32,21 +32,23 @@ public class UpdateActivitySortExecutorConfig implements ExecutorConfig{
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) throws BizException {
-        if(activityId <= 0){
-            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(),"直播id必须大于0");
+        if (activityId <= 0) {
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "直播id必须大于0");
         }
-        List<Map<String,Object>> sortInfoList = commandQuery.getProductsLiveSort(activityId);
-        if(sortInfoList == null || sortInfoList.isEmpty()){
-            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(),"getProductsLiveSort为空");
+        List<Map<String, Object>> sortInfoList = commandQuery.getProductsLiveSort(activityId);
+        if (sortInfoList == null || sortInfoList.isEmpty()) {
+            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), "getProductsLiveSort为空");
         }
+
         List<MongoData> mongoDataList = new ArrayList<>();
         sortInfoList.stream().forEach(sortInfo -> {
-            List<Map<String,Object>> tempUpdateData = new ArrayList<>();
-            Map<String,Object> tempMap = new HashMap();
-            tempMap.put("sort",sortInfo.get("sort"));
+            List<Map<String, Object>> tempUpdateData = new ArrayList<>();
+            Map<String, Object> tempMap = new HashMap();
+            tempMap.put("sort", sortInfo.get("sort"));
             tempUpdateData.add(tempMap);
-            mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(sortInfo.get("spid").toString(),activityId),tempUpdateData));
+            mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(sortInfo.get("spid").toString(), activityId), tempUpdateData));
         });
+
         return mongoDataList;
     }
 }

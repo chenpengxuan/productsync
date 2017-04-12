@@ -2,9 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.mongorepo.MongoRepository;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
@@ -12,7 +12,6 @@ import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +31,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
 
     @Autowired
     private MongoRepository mongoRepository;
+
+    @Autowired
+    private ProductStockChangeExecutorConfig productStockChangeExecutorConfig;
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -120,6 +122,9 @@ public class AddProductExecutorConfig implements ExecutorConfig {
             mongoDataList.add(MongoDataBuilder.createDescriptionsUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDescDataList));
         }
         tempProductDataMap.remove("MeasurePic");
+        List<String> productPriceRangeInfo = productStockChangeExecutorConfig.calculateProductPriceRange(sqlCatalogDataList);
+        tempProductDataMap.put("minp",productPriceRangeInfo.get(0));
+        tempProductDataMap.put("maxp",productPriceRangeInfo.get(1));
         mongoDataList.add(MongoDataBuilder.createProductUpsert(MongoQueryBuilder.queryProductId(productId), sqlProductDataList));
 
         //针对添加是商品进直播与直播中添加商品的场景

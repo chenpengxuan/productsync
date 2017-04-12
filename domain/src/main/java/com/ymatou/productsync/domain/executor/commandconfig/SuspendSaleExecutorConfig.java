@@ -2,9 +2,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
 
     @Override
     public List<MongoData> loadSourceData(long activityId, String productId) {
+
         List<MongoData> mongoDataList = new ArrayList<>();
         List<Map<String, Object>> sourceData = new ArrayList<>();
         Map<String, Object> map = new HashMap();
@@ -33,7 +34,7 @@ public class SuspendSaleExecutorConfig implements ExecutorConfig {
         map.put("istop", false);
         sourceData.add(map);
         mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), sourceData));
+
         return mongoDataList;
     }
-
 }

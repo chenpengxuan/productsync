@@ -1,4 +1,4 @@
-package com.ymatou.productsync.domain.executor;
+package com.ymatou.productsync.domain.model.mongo;
 
 import java.util.HashMap;
 import java.util.Map;

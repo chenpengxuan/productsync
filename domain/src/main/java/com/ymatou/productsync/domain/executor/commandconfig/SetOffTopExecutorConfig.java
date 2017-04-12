@@ -2,12 +2,11 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
-import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
 import com.ymatou.productsync.facade.model.BizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,8 +23,6 @@ import java.util.Map;
 public class SetOffTopExecutorConfig implements ExecutorConfig {
     @Autowired
     private CommandQuery commandQuery;
-    @Autowired
-    private LiveCommandQuery liveCommandQuery;
 
     @Override
     public CmdTypeEnum getCommand() {
@@ -42,20 +39,6 @@ public class SetOffTopExecutorConfig implements ExecutorConfig {
             throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getLiveProductTop 为空");
         }
         mongoDataList.add(MongoDataBuilder.createLiveProductUpdate(MongoQueryBuilder.queryProductIdAndLiveId(productId, activityId), productTop));
-
-        //更新直播品牌-brands
-//        Map<String, Object> lives = new HashMap();
-//        List<Map<String, Object>> products = liveCommandQuery.getProductInfoByActivityId(activityId);
-//        if (products == null || products.isEmpty()) {
-//            throw new BizException(SyncStatusEnum.BizEXCEPTION.getCode(), this.getCommand() + "-getProductInfoByActivityId 为空");
-//        }
-//        products.stream().forEach(t -> t.remove("dAddTime"));
-//        Object[] brands = products.stream().map(t -> t.get("sBrand")).distinct().toArray();
-//        lives.put("brands", brands);
-//
-//        //更新直播
-//        MongoData liveMd = MongoDataBuilder.createLiveUpdate(MongoQueryBuilder.queryLiveId(activityId), MapUtil.mapToList(lives));
-//        mongoDataList.add(liveMd);
 
         return mongoDataList;
     }

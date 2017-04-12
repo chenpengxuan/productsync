@@ -11,7 +11,6 @@ import com.ymatou.productsync.infrastructure.constants.Constants;
 import com.ymatou.productsync.infrastructure.util.LogWrapper;
 import com.ymatou.productsync.infrastructure.util.MapUtil;
 import com.ymatou.productsync.infrastructure.util.Utils;
-import org.joda.time.DateTime;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 import org.slf4j.Logger;
@@ -46,15 +45,27 @@ public class MongoRepository {
         if (mongoDataList == null || mongoDataList.isEmpty()) {
             throw new IllegalArgumentException("mongoDataList 不能为空");
         }
-        List<Boolean> resultList = new ArrayList();
-        mongoDataList.stream().forEach(x -> {
+        return mongoDataList.stream().allMatch(x -> {
             try {
-                resultList.add(processMongoData(x));
+                return processMongoData(x);
             } catch (Exception ex) {
                 logWrapper.recordErrorLog("processMongoData 操作发生异常,异常原因为：{}", ex.getMessage(), ex);
             }
+            return false;
         });
-        return !resultList.contains(false);
+    }
+
+    /**
+     * mongo excutor
+     *
+     * @param mongoData
+     * @return
+     */
+    public boolean excuteMongo(MongoData mongoData) throws IllegalArgumentException {
+        if (mongoData == null) {
+            throw new IllegalArgumentException("mongoDataList 不能为空");
+        }
+        return processMongoData(mongoData);
     }
 
     /**
@@ -98,6 +109,8 @@ public class MongoRepository {
                     mapList = Lists.newArrayList((Iterator<? extends Map<String, Object>>) collection.find().as(tempMap.getClass()).iterator());
                 }
                 break;
+            default:
+                throw new IllegalArgumentException("mongo 查询类型不正确");
         }
         return mapList;
     }
@@ -155,7 +168,7 @@ public class MongoRepository {
                 if (mongoData.getUpdateData() != null && !mongoData.getUpdateData().isEmpty()) {
                     List<Map<String, Object>> tempUpdateDataList = mongoData.getUpdateData();
                     tempUpdateDataList.stream().forEach(x -> {
-                        x.put("updatetime", new DateTime().getMillis());
+                        x.put("updatetime", new Date());
                     });
                     mongoData.setUpdateData(tempUpdateDataList);
                 }
@@ -163,7 +176,6 @@ public class MongoRepository {
                 switch (mongoData.getOperationType()) {
                     case CREATE:
                         try {
-
                             processResult = collection.insert(MapUtil.makeObjFromMap(mongoData.getUpdateData())).wasAcknowledged();
                         } catch (DuplicateKeyException ex) {
                             logger.info("{}mongo插入操作发生重复键异常", mongoData.getUpdateData());
@@ -173,9 +185,9 @@ public class MongoRepository {
                     case UPDATE:
                         processResult = mongoData.getUpdateData().stream().allMatch(
                                 xData -> collection.update(MapUtil.makeJsonStringFromMapForJongo(mongoData.getMatchCondition()), paramList)
-                                         .multi()
-                                         .with(MapUtil.makeObjFromMap(xData))
-                                         .wasAcknowledged()
+                                        .multi()
+                                        .with(MapUtil.makeObjFromMap(xData))
+                                        .wasAcknowledged()
                         );
                         break;
                     case UPSERT:

@@ -3,9 +3,9 @@ package com.ymatou.productsync.domain.executor.commandconfig;
 import com.google.common.collect.Lists;
 import com.ymatou.productsync.domain.executor.CmdTypeEnum;
 import com.ymatou.productsync.domain.executor.ExecutorConfig;
-import com.ymatou.productsync.domain.executor.MongoDataBuilder;
-import com.ymatou.productsync.domain.executor.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.mongo.MongoData;
+import com.ymatou.productsync.domain.model.mongo.MongoDataBuilder;
+import com.ymatou.productsync.domain.model.mongo.MongoQueryBuilder;
 import com.ymatou.productsync.domain.model.sql.SyncStatusEnum;
 import com.ymatou.productsync.domain.sqlrepo.CommandQuery;
 import com.ymatou.productsync.domain.sqlrepo.LiveCommandQuery;
@@ -32,7 +32,6 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
     @Autowired
     private LiveCommandQuery liveCommandQuery;
 
-
     @Override
     public CmdTypeEnum getCommand() {
         return CmdTypeEnum.DeleteProduct;
@@ -54,7 +53,6 @@ public class DeleteProductExecutorConfig implements ExecutorConfig {
             //删除直播商品
             Map<String, Object> matchConditionInfo = new HashMap();
             matchConditionInfo.put("spid", productId);
-            //fixme:matchConditionInfo.put("end",now); <
             MongoData liveProductMd = MongoDataBuilder.createLiveProductDelete(matchConditionInfo);
             //删规格
             MongoData catalogMd = MongoDataBuilder.createCatalogDelete(MongoQueryBuilder.queryProductId(productId), Lists.newArrayList());

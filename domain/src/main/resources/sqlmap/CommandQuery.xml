@@ -107,18 +107,6 @@
                     P.sMobileDescription AS 'intro' ,--商品简介
                     isnull(P.iTariffType,0) AS 'tariffy' ,--是否包税
                     isnull(P.iBondedArea,0) AS 'bonded' ,
-                    ( SELECT    MAX(fQuotePrice)
-                      FROM      Ymt_Catalogs (NOLOCK)
-                      WHERE     sProductId = #{productId}
-                                AND iAction = 0
-                      GROUP BY  sProductId
-                    ) AS 'maxp' ,--最高规格价
-                    ( SELECT    MIN(fQuotePrice)
-                      FROM      Ymt_Catalogs (NOLOCK)
-                      WHERE     sProductId = #{productId}
-                                AND iAction = 0
-                      GROUP BY  sProductId
-                    ) AS 'minp' ,--最低规格价
                     P.iUserId AS 'sid' ,
                     P.SellerLoginId AS 'sname' ,
                     isnull(b.sBrand,'') AS 'brand' ,
@@ -302,7 +290,7 @@ select a.id ,(select PicUrls from Ymt_ProductDescExtra with(nolock) where Id =a.
 
     <select id="getProductInfoByActivityIdForBrandAndCategory" parameterType="java.lang.Long"
             resultMap="com.ymatou.productsync.domain.sqlrepo.ProductResultMap.keyValueMap1">
-          SELECT isnull(c.sBrand,'') as sBrand ,isnull(a.sBrand,'') as sBrandEn  FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
+          SELECT isnull(c.sBrand,'') as sBrand ,isnull(a.sBrand,'') as sBrandEn FROM [dbo].[Ymt_Products] a WITH(NOLOCK)  JOIN dbo.Ymt_ProductsInLive b WITH(NOLOCK) ON a.sProductId = b.sProductId
                                                 LEFT JOIN dbo.Ymt_ProductBrand c WITH(NOLOCK) ON a.iBrandId = c.iBrandId
                                                 WHERE b.[iActivityId] =#{activityId} AND a.iAction > - 1 and isnull(b.iaction,0)>-1 order by a.dAddTime desc
     </select>
