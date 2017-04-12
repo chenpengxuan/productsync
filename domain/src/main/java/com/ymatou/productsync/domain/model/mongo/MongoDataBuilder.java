@@ -385,7 +385,6 @@ public class MongoDataBuilder {
                     tempData.setMatchCondition(matchConditionMap);
                     List<Map<String,Object>> updateDataList = new ArrayList<>();
                     productIdList
-                            .stream()
                             .forEach(tempId -> {
                                 Map<String, Object> updateData = new HashMap<>();
                                 updateData.put("spid",tempId);
