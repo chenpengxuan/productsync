@@ -145,6 +145,7 @@
 					isnull(p.isnew,0) AS 'isnew',--是否新品
 					isnull(p.IsPspProduct,0) AS 'ispsp',--是否psp商品
 					p.sGrade AS 'grade', --商品等级
+					isnull(p.iOwnProduct,0) AS 'own',--自营商品
 					isnull(p.dListingTime,cast('1900-01-01' as datetime)) AS 'newstart',--新品有效开始时间
 					isnull(p.dNewEndTime,cast('1900-01-01' as datetime)) AS 'newend',--新品有效结束时间
 					CAST ((CASE p.isTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'--是否买手热推商品
