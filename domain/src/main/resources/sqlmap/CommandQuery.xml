@@ -146,6 +146,8 @@
 					isnull(p.IsPspProduct,0) AS 'ispsp',--是否psp商品
 					p.sGrade AS 'grade', --商品等级
 					isnull(p.iOwnProduct,0) AS 'own',--自营商品
+					isnull(p.iMultiLogistics,0) AS 'mdeliv',--商品多物流类型
+					isnull(p.dFlightBalance,0) AS  'mflight',--运费差价（默认值为 0）
 					isnull(p.dListingTime,cast('1900-01-01' as datetime)) AS 'newstart',--新品有效开始时间
 					isnull(p.dNewEndTime,cast('1900-01-01' as datetime)) AS 'newend',--新品有效结束时间
 					CAST ((CASE p.isTop WHEN 1 THEN 1 ELSE 0 END) AS BIT )AS 'istop'--是否买手热推商品
@@ -174,7 +176,8 @@
                 cp.sProductProperty AS 'name' ,--属性名称
                 cs.sCategoryAttribute AS 'value' ,--属性值
                 cs.sPicUrl AS 'pic',--属性图
-				ISNULL(c.IsPreSale,0) AS 'presale'--是否预售规格
+				ISNULL(c.IsPreSale,0) AS 'presale',--是否预售规格
+				isnull(c.iMultiLogistics,0) AS 'mdeliv'
         FROM    Ymt_Products (NOLOCK) p
                 LEFT JOIN Ymt_Catalogs (NOLOCK) c ON p.sProductId = c.sProductId
                 LEFT JOIN Ymt_CatalogProperty (NOLOCK) cp ON c.sCatalogId = cp.sCatalogId
