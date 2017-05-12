@@ -114,7 +114,6 @@ public class AddProductExecutorConfig implements ExecutorConfig {
                 if (tempProductDataMap.get("MeasurePic") != null) {
                     sizepics.add(tempProductDataMap.get("MeasurePic").toString());
                 }
-
             }
             tempDescMap.put("sizepics", sizepics);
             tempProductDataMap.put("sizepics", sizepics);
