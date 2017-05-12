@@ -178,7 +178,7 @@
                 cs.sPicUrl AS 'pic',--属性图
 				ISNULL(c.IsPreSale,0) AS 'presale',--是否预售规格
 				isnull(c.iMultiLogistics,0) AS 'mdeliv',
-				isnull(p.dFlightBalance,0) AS  'mflight',--运费差价（默认值为 0）
+				isnull(p.dFlightBalance,0) AS  'mflight'--运费差价（默认值为 0）
         FROM    Ymt_Products (NOLOCK) p
                 LEFT JOIN Ymt_Catalogs (NOLOCK) c ON p.sProductId = c.sProductId
                 LEFT JOIN Ymt_CatalogProperty (NOLOCK) cp ON c.sCatalogId = cp.sCatalogId
